@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/wheatandcat/memoir-backend/auth"
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
@@ -16,7 +17,16 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 }
 
 func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	user := auth.ForContext(ctx)
+	if user == nil {
+		return nil, fmt.Errorf("Access denied")
+	}
+
+	u := &model.User{
+		ID: user.ID,
+	}
+
+	return u, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
