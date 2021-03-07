@@ -1,6 +1,10 @@
 # memoir-backend
 
+## ローカル実行
 
+```
+$ go run app.go
+```
 
 ## GraphQLスキーマ更新
 
