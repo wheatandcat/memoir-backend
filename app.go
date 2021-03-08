@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"os"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/wheatandcat/memoir-backend/auth"
 	"github.com/wheatandcat/memoir-backend/graph"
 	"github.com/wheatandcat/memoir-backend/graph/generated"
+	"github.com/wheatandcat/memoir-backend/repository"
 )
 
 const defaultPort = "8080"
@@ -24,11 +26,28 @@ func main() {
 
 	router.Use(auth.NotLoginMiddleware())
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	ctx := context.Background()
+	f, err := repository.FirebaseApp(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	fc, err := f.Firestore(ctx)
+	if err != nil {
+		panic(err)
+	}
+	app := graph.NewApplication()
+
+	resolver := &graph.Resolver{
+		FirestoreClient: fc,
+		App:             app,
+	}
+
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", srv)
 
-	err := http.ListenAndServe(":"+port, router)
+	err = http.ListenAndServe(":"+port, router)
 	if err != nil {
 		panic(err)
 	}

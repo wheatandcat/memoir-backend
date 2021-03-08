@@ -3,7 +3,7 @@
 ## ローカル実行
 
 ```
-$ go run app.go
+$ dev_appserver.py app.local.yaml
 ```
 
 ## GraphQLスキーマ更新

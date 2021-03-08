@@ -13,7 +13,22 @@ import (
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	user := auth.ForContext(ctx)
+	if user == nil {
+		return nil, fmt.Errorf("Access denied")
+	}
+
+	nu := &model.NewUser{
+		ID: user.ID,
+	}
+
+	r.App.UserRepository.Create(ctx, r.FirestoreClient, nu)
+
+	u := &model.User{
+		ID: user.ID,
+	}
+
+	return u, nil
 }
 
 func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
@@ -22,8 +37,9 @@ func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
 		return nil, fmt.Errorf("Access denied")
 	}
 
-	u := &model.User{
-		ID: user.ID,
+	u, err := r.App.UserRepository.FindByUID(ctx, r.FirestoreClient, user.ID)
+	if err != nil {
+		return nil, err
 	}
 
 	return u, nil
