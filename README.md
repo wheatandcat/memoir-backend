@@ -11,3 +11,9 @@ $ dev_appserver.py app.local.yaml
 ```
 $ go run github.com/99designs/gqlgen generate
 ```
+
+## デプロイ
+
+```
+$ gcloud app deploy
+```
