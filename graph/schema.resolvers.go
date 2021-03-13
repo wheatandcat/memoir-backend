@@ -13,19 +13,14 @@ import (
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	user := auth.ForContext(ctx)
-	if user == nil {
-		return nil, fmt.Errorf("Access denied")
-	}
-
 	nu := &model.NewUser{
-		ID: user.ID,
+		ID: input.ID,
 	}
 
 	r.App.UserRepository.Create(ctx, r.FirestoreClient, nu)
 
 	u := &model.User{
-		ID: user.ID,
+		ID: input.ID,
 	}
 
 	return u, nil
