@@ -30,7 +30,6 @@ input NewUser {
 }
 
 input NewItem {
-  id: ID!
   title: String!
   category: Int!
   date: Time!
