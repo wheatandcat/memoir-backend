@@ -11,7 +11,7 @@ type User {
 type Item {
   id: ID!
   title: String!
-  category: Int!
+  categoryID: Int!
   date: Time!
   like: Boolean!
   dislike: Boolean!
@@ -31,7 +31,7 @@ input NewUser {
 
 input NewItem {
   title: String!
-  category: Int!
+  categoryID: Int!
   date: Time!
   like: Boolean!
   dislike: Boolean!
