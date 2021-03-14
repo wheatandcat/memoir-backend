@@ -326,7 +326,6 @@ input NewUser {
 }
 
 input NewItem {
-  id: ID!
   title: String!
   category: Int!
   date: Time!
@@ -2207,14 +2206,6 @@ func (ec *executionContext) unmarshalInputNewItem(ctx context.Context, obj inter
 
 	for k, v := range asMap {
 		switch k {
-		case "id":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalNID2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "title":
 			var err error
 

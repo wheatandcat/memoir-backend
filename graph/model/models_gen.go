@@ -18,7 +18,6 @@ type Item struct {
 }
 
 type NewItem struct {
-	ID       string    `json:"id"`
 	Title    string    `json:"title"`
 	Category int       `json:"category"`
 	Date     time.Time `json:"date"`

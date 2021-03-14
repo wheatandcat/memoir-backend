@@ -10,7 +10,7 @@ import (
 // CreateItem アイテム作成
 func (g *Graph) CreateItem(ctx context.Context, input *model.NewItem) (*model.Item, error) {
 	i := &model.Item{
-		ID:        input.ID,
+		ID:        g.Client.UUID.Get(),
 		Title:     input.Title,
 		Date:      input.Date,
 		Category:  input.Category,
