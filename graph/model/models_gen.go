@@ -2,10 +2,36 @@
 
 package model
 
+import (
+	"time"
+)
+
+type Item struct {
+	ID        string    `json:"id"`
+	Title     string    `json:"title"`
+	Category  int       `json:"category"`
+	Date      time.Time `json:"date"`
+	Like      bool      `json:"like"`
+	Dislike   bool      `json:"dislike"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+type NewItem struct {
+	ID       string    `json:"id"`
+	Title    string    `json:"title"`
+	Category int       `json:"category"`
+	Date     time.Time `json:"date"`
+	Like     bool      `json:"like"`
+	Dislike  bool      `json:"dislike"`
+}
+
 type NewUser struct {
 	ID string `json:"id"`
 }
 
 type User struct {
-	ID string `json:"id"`
+	ID        string    `json:"id"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }

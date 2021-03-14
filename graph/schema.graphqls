@@ -4,16 +4,43 @@
 
 type User {
   id: ID!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type Item {
+  id: ID!
+  title: String!
+  category: Int!
+  date: Time!
+  like: Boolean!
+  dislike: Boolean!
+  createdAt: Time!
+  updatedAt: Time!
 }
 
 type Query {
   user: User!
+  item(id: ID!): Item
+  itemsByDate(date: Time!): [Item]
 }
 
 input NewUser {
   id: ID!
 }
 
+input NewItem {
+  id: ID!
+  title: String!
+  category: Int!
+  date: Time!
+  like: Boolean!
+  dislike: Boolean!
+}
+
 type Mutation {
   createUser(input: NewUser!): User!
+  createItem(input: NewItem!): Item!
 }
+
+scalar Time
