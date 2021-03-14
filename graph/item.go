@@ -10,14 +10,14 @@ import (
 // CreateItem アイテム作成
 func (g *Graph) CreateItem(ctx context.Context, input *model.NewItem) (*model.Item, error) {
 	i := &model.Item{
-		ID:        g.Client.UUID.Get(),
-		Title:     input.Title,
-		Date:      input.Date,
-		Category:  input.Category,
-		Like:      input.Like,
-		Dislike:   input.Dislike,
-		CreatedAt: g.Client.Time.Now(),
-		UpdatedAt: g.Client.Time.Now(),
+		ID:         g.Client.UUID.Get(),
+		Title:      input.Title,
+		Date:       input.Date,
+		CategoryID: input.CategoryID,
+		Like:       input.Like,
+		Dislike:    input.Dislike,
+		CreatedAt:  g.Client.Time.Now(),
+		UpdatedAt:  g.Client.Time.Now(),
 	}
 
 	if err := g.App.ItemRepository.Create(ctx, g.FirestoreClient, g.UserID, i); err != nil {

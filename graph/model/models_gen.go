@@ -7,22 +7,22 @@ import (
 )
 
 type Item struct {
-	ID        string    `json:"id"`
-	Title     string    `json:"title"`
-	Category  int       `json:"category"`
-	Date      time.Time `json:"date"`
-	Like      bool      `json:"like"`
-	Dislike   bool      `json:"dislike"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	ID         string    `json:"id"`
+	Title      string    `json:"title"`
+	CategoryID int       `json:"categoryID"`
+	Date       time.Time `json:"date"`
+	Like       bool      `json:"like"`
+	Dislike    bool      `json:"dislike"`
+	CreatedAt  time.Time `json:"createdAt"`
+	UpdatedAt  time.Time `json:"updatedAt"`
 }
 
 type NewItem struct {
-	Title    string    `json:"title"`
-	Category int       `json:"category"`
-	Date     time.Time `json:"date"`
-	Like     bool      `json:"like"`
-	Dislike  bool      `json:"dislike"`
+	Title      string    `json:"title"`
+	CategoryID int       `json:"categoryID"`
+	Date       time.Time `json:"date"`
+	Like       bool      `json:"like"`
+	Dislike    bool      `json:"dislike"`
 }
 
 type NewUser struct {

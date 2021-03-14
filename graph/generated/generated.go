@@ -45,14 +45,14 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Item struct {
-		Category  func(childComplexity int) int
-		CreatedAt func(childComplexity int) int
-		Date      func(childComplexity int) int
-		Dislike   func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Like      func(childComplexity int) int
-		Title     func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
+		CategoryID func(childComplexity int) int
+		CreatedAt  func(childComplexity int) int
+		Date       func(childComplexity int) int
+		Dislike    func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Like       func(childComplexity int) int
+		Title      func(childComplexity int) int
+		UpdatedAt  func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -98,12 +98,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Item.category":
-		if e.complexity.Item.Category == nil {
+	case "Item.categoryID":
+		if e.complexity.Item.CategoryID == nil {
 			break
 		}
 
-		return e.complexity.Item.Category(childComplexity), true
+		return e.complexity.Item.CategoryID(childComplexity), true
 
 	case "Item.createdAt":
 		if e.complexity.Item.CreatedAt == nil {
@@ -307,7 +307,7 @@ type User {
 type Item {
   id: ID!
   title: String!
-  category: Int!
+  categoryID: Int!
   date: Time!
   like: Boolean!
   dislike: Boolean!
@@ -327,7 +327,7 @@ input NewUser {
 
 input NewItem {
   title: String!
-  category: Int!
+  categoryID: Int!
   date: Time!
   like: Boolean!
   dislike: Boolean!
@@ -530,7 +530,7 @@ func (ec *executionContext) _Item_title(ctx context.Context, field graphql.Colle
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Item_category(ctx context.Context, field graphql.CollectedField, obj *model.Item) (ret graphql.Marshaler) {
+func (ec *executionContext) _Item_categoryID(ctx context.Context, field graphql.CollectedField, obj *model.Item) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -548,7 +548,7 @@ func (ec *executionContext) _Item_category(ctx context.Context, field graphql.Co
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Category, nil
+		return obj.CategoryID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2214,11 +2214,11 @@ func (ec *executionContext) unmarshalInputNewItem(ctx context.Context, obj inter
 			if err != nil {
 				return it, err
 			}
-		case "category":
+		case "categoryID":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
-			it.Category, err = ec.unmarshalNInt2int(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryID"))
+			it.CategoryID, err = ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2301,8 +2301,8 @@ func (ec *executionContext) _Item(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "category":
-			out.Values[i] = ec._Item_category(ctx, field, obj)
+		case "categoryID":
+			out.Values[i] = ec._Item_categoryID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
