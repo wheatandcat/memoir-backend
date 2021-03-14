@@ -10,7 +10,7 @@ import (
 
 // UserRepositoryInterface is repository interface
 type UserRepositoryInterface interface {
-	Create(ctx context.Context, f *firestore.Client, u *model.NewUser) error
+	Create(ctx context.Context, f *firestore.Client, u *model.User) error
 	FindByUID(ctx context.Context, f *firestore.Client, uid string) (*model.User, error)
 }
 
@@ -24,7 +24,7 @@ func NewUserRepository() UserRepositoryInterface {
 }
 
 // Create ユーザーを作成する
-func (re *UserRepository) Create(ctx context.Context, f *firestore.Client, u *model.NewUser) error {
+func (re *UserRepository) Create(ctx context.Context, f *firestore.Client, u *model.User) error {
 	_, err := f.Collection("users").Doc(u.ID).Set(ctx, u)
 
 	return err

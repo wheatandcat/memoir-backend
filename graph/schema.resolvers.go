@@ -5,39 +5,77 @@ package graph
 
 import (
 	"context"
-	"fmt"
+	"time"
 
-	"github.com/wheatandcat/memoir-backend/auth"
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	nu := &model.NewUser{
-		ID: input.ID,
-	}
+	g := NewGraphWithSetUserID(r.App, r.FirestoreClient, input.ID)
+	result, err := g.CreateUser(ctx, &input)
 
-	r.App.UserRepository.Create(ctx, r.FirestoreClient, nu)
-
-	u := &model.User{
-		ID: input.ID,
-	}
-
-	return u, nil
-}
-
-func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
-	user := auth.ForContext(ctx)
-	if user == nil {
-		return nil, fmt.Errorf("Access denied")
-	}
-
-	u, err := r.App.UserRepository.FindByUID(ctx, r.FirestoreClient, user.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	return u, nil
+	return result, nil
+}
+
+func (r *mutationResolver) CreateItem(ctx context.Context, input model.NewItem) (*model.Item, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.CreateItem(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.GetUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *queryResolver) Item(ctx context.Context, id string) (*model.Item, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.GetItem(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *queryResolver) ItemsByDate(ctx context.Context, date time.Time) ([]*model.Item, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.GetItemsByDate(ctx, date)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
