@@ -2,3 +2,6 @@ vendor
 app.yaml
 app.local.yaml
 serviceAccount.json
+package.json
+yarn.lock
+node_modules

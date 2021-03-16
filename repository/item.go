@@ -59,7 +59,7 @@ func (re *ItemRepository) GetItem(ctx context.Context, f *firestore.Client, user
 func (re *ItemRepository) GetItemsByDate(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error) {
 	var items []*model.Item
 
-	matchItem := f.CollectionGroup("items").Where("Date", "==", date).OrderBy("ID", firestore.Asc).Documents(ctx)
+	matchItem := getItemCollection(f, userID).Where("Date", "==", date).OrderBy("CreatedAt", firestore.Desc).Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
 		return nil, err
