@@ -3,42 +3,60 @@
 # https://gqlgen.com/getting-started/
 
 type User {
+  "ユーザーID"
   id: ID!
+  "作成日時"
   createdAt: Time!
+  "更新日時"
   updatedAt: Time!
 }
 
 type Item {
+  "アイテムID"
   id: ID!
+  "タイトル"
   title: String!
+  "カテゴリーID"
   categoryID: Int!
+  "日付"
   date: Time!
   like: Boolean!
   dislike: Boolean!
+  "作成日時"
   createdAt: Time!
+  "更新日時"
   updatedAt: Time!
 }
 
 type Query {
+  "ユーザーを取得する"
   user: User!
+  "アイテムを取得する"
   item(id: ID!): Item
+  "アイテムを日付で取得する"
   itemsByDate(date: Time!): [Item]
 }
 
 input NewUser {
+  "ユーザーID"
   id: ID!
 }
 
 input NewItem {
+  "タイトル"
   title: String!
+  "カテゴリーID"
   categoryID: Int!
+  "日付"
   date: Time!
   like: Boolean!
   dislike: Boolean!
 }
 
 type Mutation {
+  "ユーザーを作成する"
   createUser(input: NewUser!): User!
+  "アイテムを作成する"
   createItem(input: NewItem!): Item!
 }
 

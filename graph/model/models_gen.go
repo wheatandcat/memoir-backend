@@ -7,30 +7,43 @@ import (
 )
 
 type Item struct {
-	ID         string    `json:"id"`
-	Title      string    `json:"title"`
-	CategoryID int       `json:"categoryID"`
-	Date       time.Time `json:"date"`
-	Like       bool      `json:"like"`
-	Dislike    bool      `json:"dislike"`
-	CreatedAt  time.Time `json:"createdAt"`
-	UpdatedAt  time.Time `json:"updatedAt"`
+	// アイテムID
+	ID string `json:"id"`
+	// タイトル
+	Title string `json:"title"`
+	// カテゴリーID
+	CategoryID int `json:"categoryID"`
+	// 日付
+	Date    time.Time `json:"date"`
+	Like    bool      `json:"like"`
+	Dislike bool      `json:"dislike"`
+	// 作成日時
+	CreatedAt time.Time `json:"createdAt"`
+	// 更新日時
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 type NewItem struct {
-	Title      string    `json:"title"`
-	CategoryID int       `json:"categoryID"`
-	Date       time.Time `json:"date"`
-	Like       bool      `json:"like"`
-	Dislike    bool      `json:"dislike"`
+	// タイトル
+	Title string `json:"title"`
+	// カテゴリーID
+	CategoryID int `json:"categoryID"`
+	// 日付
+	Date    time.Time `json:"date"`
+	Like    bool      `json:"like"`
+	Dislike bool      `json:"dislike"`
 }
 
 type NewUser struct {
+	// ユーザーID
 	ID string `json:"id"`
 }
 
 type User struct {
-	ID        string    `json:"id"`
+	// ユーザーID
+	ID string `json:"id"`
+	// 作成日時
 	CreatedAt time.Time `json:"createdAt"`
+	// 更新日時
 	UpdatedAt time.Time `json:"updatedAt"`
 }
