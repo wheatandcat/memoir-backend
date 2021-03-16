@@ -1,5 +1,3 @@
-yarn run v1.22.4
-$ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.bin/graphql-markdown http://localhost:8080/query
 # Schema Types
 
 <details>
