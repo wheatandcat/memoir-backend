@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+type DeleteItem struct {
+	// アイテムID
+	ID string `json:"id"`
+}
+
 type Item struct {
 	// アイテムID
 	ID string `json:"id"`
@@ -37,6 +42,19 @@ type NewItem struct {
 type NewUser struct {
 	// ユーザーID
 	ID string `json:"id"`
+}
+
+type UpdateItem struct {
+	// アイテムID
+	ID string `json:"id"`
+	// タイトル
+	Title *string `json:"title"`
+	// カテゴリーID
+	CategoryID *int `json:"categoryID"`
+	// 日付
+	Date    *time.Time `json:"date"`
+	Like    *bool      `json:"like"`
+	Dislike *bool      `json:"dislike"`
 }
 
 type User struct {
