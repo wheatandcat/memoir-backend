@@ -53,11 +53,33 @@ input NewItem {
   dislike: Boolean!
 }
 
+input UpdateItem {
+  "アイテムID"
+  id: ID!
+  "タイトル"
+  title: String
+  "カテゴリーID"
+  categoryID: Int
+  "日付"
+  date: Time
+  like: Boolean
+  dislike: Boolean
+}
+
+input DeleteItem {
+  "アイテムID"
+  id: ID!
+}
+
 type Mutation {
   "ユーザーを作成する"
   createUser(input: NewUser!): User!
   "アイテムを作成する"
   createItem(input: NewItem!): Item!
+  "アイテムを更新する"
+  updateItem(input: UpdateItem!): Item!
+  "アイテムを削除する"
+  deleteItem(input: DeleteItem!): Item!
 }
 
 scalar Time

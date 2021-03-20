@@ -27,6 +27,33 @@ func (g *Graph) CreateItem(ctx context.Context, input *model.NewItem) (*model.It
 	return i, nil
 }
 
+// UpdateItem アイテム更新
+func (g *Graph) UpdateItem(ctx context.Context, input *model.UpdateItem) (*model.Item, error) {
+	i := &model.Item{
+		ID:        input.ID,
+		UpdatedAt: g.Client.Time.Now(),
+	}
+
+	if err := g.App.ItemRepository.Update(ctx, g.FirestoreClient, g.UserID, input, i.UpdatedAt); err != nil {
+		return nil, err
+	}
+
+	return i, nil
+}
+
+// DeleteItem アイテム削除
+func (g *Graph) DeleteItem(ctx context.Context, input *model.DeleteItem) (*model.Item, error) {
+	i := &model.Item{
+		ID: input.ID,
+	}
+
+	if err := g.App.ItemRepository.Delete(ctx, g.FirestoreClient, g.UserID, input); err != nil {
+		return nil, err
+	}
+
+	return i, nil
+}
+
 // GetItem アイテム取得
 func (g *Graph) GetItem(ctx context.Context, id string) (*model.Item, error) {
 	i, err := g.App.ItemRepository.GetItem(ctx, g.FirestoreClient, g.UserID, id)

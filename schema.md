@@ -1,3 +1,5 @@
+yarn run v1.22.4
+$ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.bin/graphql-markdown http://localhost:8080/query
 # Schema Types
 
 <details>
@@ -9,8 +11,10 @@
     * [Item](#item)
     * [User](#user)
   * [Inputs](#inputs)
+    * [DeleteItem](#deleteitem)
     * [NewItem](#newitem)
     * [NewUser](#newuser)
+    * [UpdateItem](#updateitem)
   * [Scalars](#scalars)
     * [Boolean](#boolean)
     * [Float](#float)
@@ -109,6 +113,34 @@
 <tr>
 <td colspan="2" align="right" valign="top">input</td>
 <td valign="top"><a href="#newitem">NewItem</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>updateItem</strong></td>
+<td valign="top"><a href="#item">Item</a>!</td>
+<td>
+
+アイテムを更新する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#updateitem">UpdateItem</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>deleteItem</strong></td>
+<td valign="top"><a href="#item">Item</a>!</td>
+<td>
+
+アイテムを削除する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#deleteitem">DeleteItem</a>!</td>
 <td></td>
 </tr>
 </tbody>
@@ -239,6 +271,29 @@
 
 ## Inputs
 
+### DeleteItem
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
+<td>
+
+アイテムID
+
+</td>
+</tr>
+</tbody>
+</table>
+
 ### NewItem
 
 <table>
@@ -313,6 +368,66 @@
 </tbody>
 </table>
 
+### UpdateItem
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
+<td>
+
+アイテムID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>title</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td>
+
+タイトル
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>categoryID</strong></td>
+<td valign="top"><a href="#int">Int</a></td>
+<td>
+
+カテゴリーID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>date</strong></td>
+<td valign="top"><a href="#time">Time</a></td>
+<td>
+
+日付
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>like</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>dislike</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
 ## Scalars
 
 ### Boolean
@@ -337,4 +452,4 @@ The `String`scalar type represents textual data, represented as UTF-8 character 
 
 ### Time
 
-Done in 1.78s.
+Done in 2.63s.
