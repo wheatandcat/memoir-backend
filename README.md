@@ -18,6 +18,13 @@ $ yarn graphql-markdown http://localhost:8080/query > schema.md
 $ go run github.com/99designs/gqlgen generate
 ```
 
+## テスト
+
+```
+$ go test -race ./...
+```
+
+
 ## デプロイ
 
 ```
