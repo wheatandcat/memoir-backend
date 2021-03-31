@@ -18,6 +18,19 @@ $ yarn graphql-markdown http://localhost:8080/query > schema.md
 $ go run github.com/99designs/gqlgen generate
 ```
 
+## テスト
+
+Interfaceをmock
+```
+$ moq -out=moq.go . ItemRepositoryInterface UserRepositoryInterface
+```
+
+テストを実行
+```
+$ go test -race ./...
+```
+
+
 ## デプロイ
 
 ```
