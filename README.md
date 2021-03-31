@@ -22,7 +22,7 @@ $ go run github.com/99designs/gqlgen generate
 
 Interfaceをmock
 ```
-$ moq -out=moq.go . ItemRepositoryInterface UserRepositoryInterface
+$ moq -out=repository/moq.go ./repository ItemRepositoryInterface UserRepositoryInterface
 ```
 
 テストを実行
