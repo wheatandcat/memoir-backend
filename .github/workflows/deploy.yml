@@ -1,6 +1,9 @@
 name: Deploy
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 env:
   REVIEW_APP_YAML: ${{ secrets.REVIEW_APP_YAML }}
   SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
