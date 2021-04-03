@@ -10,9 +10,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
     - name: Create .env file
-      run: base64 -D -o app.yaml \<<< ${{ secrets.REVIEW_APP_YAML }}"
+      run: echo "${{ secrets.REVIEW_APP_YAML }}" > app.yaml
     - name: Create serviceAccount.json file
-      run: base64 -D -o serviceAccount.json \<<< ${{ secrets.SERVICE_ACCOUNT_JSON }}"
+      run: echo "${{ secrets.SERVICE_ACCOUNT_JSON }}" > serviceAccount.json
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@master
       with:
