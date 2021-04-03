@@ -11,7 +11,6 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
 	github.com/vektah/gqlparser/v2 v2.1.0
-	golang.org/x/oauth2 v0.0.0-20210218202405-ba52d332ba99
 	google.golang.org/api v0.40.0
 	gopkg.in/go-playground/assert.v1 v1.2.1
 )
