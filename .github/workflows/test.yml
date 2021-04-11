@@ -1,0 +1,21 @@
+name: Test
+on: [push]
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '^1.15'
+    - run: go version
+    - name: cache
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-memoir-backend-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-memoir-backend-
+    - name: Test
+      run: go test -race ./...
