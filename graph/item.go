@@ -2,9 +2,11 @@ package graph
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
+	"github.com/wheatandcat/memoir-backend/repository"
 )
 
 // CreateItem アイテム作成
@@ -86,4 +88,48 @@ func (g *Graph) GetItemsByDate(ctx context.Context, date time.Time) ([]*model.It
 	}
 
 	return items, nil
+}
+
+// GetItemsByPeriod 期間でアイテムを取得
+func (g *Graph) GetItemsByPeriod(ctx context.Context, input model.InputItemsByPeriod) (*model.ItemsByPeriod, error) {
+	t := g.Client.Time
+
+	cursorDate := strings.Split(*input.After, "/")
+	cursor := repository.ItemsByPeriodCursor{
+		Date:      t.ParseInLocationTimezone(cursorDate[0]),
+		CreatedAt: t.ParseInLocationTimezone(cursorDate[1]),
+		ID:        cursorDate[2],
+	}
+
+	items, err := g.App.ItemRepository.GetItemsByPeriod(ctx, g.FirestoreClient, g.UserID, input.StartDate, input.EndDate, input.First, cursor)
+	if err != nil {
+		return nil, err
+	}
+
+	var ibpes []*model.ItemsByPeriodEdge
+	for index, i := range items {
+		items[index].Date = t.Location(i.Date)
+		items[index].CreatedAt = t.Location(i.CreatedAt)
+		items[index].UpdatedAt = t.Location(i.UpdatedAt)
+
+		ibpes = append(ibpes, &model.ItemsByPeriodEdge{
+			Node:   items[index],
+			Cursor: i.Date.Format("2006-01-02T15:04:05+09:00") + "/" + i.CreatedAt.Format("2006-01-02T15:04:05+09:00") + "/" + i.ID,
+		})
+	}
+
+	pi := &model.PageInfo{
+		HasNextPage: false,
+		EndCursor:   "",
+	}
+	if len(ibpes) > 0 {
+		pi.HasNextPage = input.First == len(items)
+		pi.EndCursor = ibpes[len(items)-1].Cursor
+	}
+	ibp := &model.ItemsByPeriod{
+		Edges:    ibpes,
+		PageInfo: pi,
+	}
+
+	return ibp, nil
 }

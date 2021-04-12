@@ -9,6 +9,7 @@ type TimeGenerator interface {
 	Now() time.Time
 	Location(date time.Time) time.Time
 	ParseInLocation(dateText string) time.Time
+	ParseInLocationTimezone(dateText string) time.Time
 }
 
 // Time has generating method.
@@ -27,6 +28,14 @@ func (*Time) ParseInLocation(dateText string) time.Time {
 	loc := getLoadLocation()
 
 	d, _ := time.ParseInLocation("2006-01-02T15:04:05", dateText, loc)
+	return d
+}
+
+// Location timezoneを設定する
+func (*Time) ParseInLocationTimezone(dateText string) time.Time {
+	loc := getLoadLocation()
+
+	d, _ := time.ParseInLocation("2006-01-02T15:04:05+09:00", dateText, loc)
 	return d
 }
 

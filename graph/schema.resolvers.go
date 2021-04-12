@@ -106,6 +106,20 @@ func (r *queryResolver) ItemsByDate(ctx context.Context, date time.Time) ([]*mod
 	return result, nil
 }
 
+func (r *queryResolver) ItemsByPeriod(ctx context.Context, input model.InputItemsByPeriod) (*model.ItemsByPeriod, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.GetItemsByPeriod(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 

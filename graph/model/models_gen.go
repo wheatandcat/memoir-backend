@@ -11,6 +11,13 @@ type DeleteItem struct {
 	ID string `json:"id"`
 }
 
+type InputItemsByPeriod struct {
+	After     *string   `json:"after"`
+	First     int       `json:"first"`
+	StartDate time.Time `json:"startDate"`
+	EndDate   time.Time `json:"endDate"`
+}
+
 type Item struct {
 	// アイテムID
 	ID string `json:"id"`
@@ -28,6 +35,16 @@ type Item struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+type ItemsByPeriod struct {
+	PageInfo *PageInfo            `json:"pageInfo"`
+	Edges    []*ItemsByPeriodEdge `json:"edges"`
+}
+
+type ItemsByPeriodEdge struct {
+	Node   *Item  `json:"node"`
+	Cursor string `json:"cursor"`
+}
+
 type NewItem struct {
 	// タイトル
 	Title string `json:"title"`
@@ -42,6 +59,11 @@ type NewItem struct {
 type NewUser struct {
 	// ユーザーID
 	ID string `json:"id"`
+}
+
+type PageInfo struct {
+	EndCursor   string `json:"endCursor"`
+	HasNextPage bool   `json:"hasNextPage"`
 }
 
 type UpdateItem struct {

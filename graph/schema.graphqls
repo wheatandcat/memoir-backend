@@ -2,6 +2,11 @@
 #
 # https://gqlgen.com/getting-started/
 
+type PageInfo {
+  endCursor: String!
+  hasNextPage: Boolean!
+}
+
 type User {
   "ユーザーID"
   id: ID!
@@ -28,6 +33,23 @@ type Item {
   updatedAt: Time!
 }
 
+type ItemsByPeriodEdge {
+  node: Item
+  cursor: String!
+}
+
+type ItemsByPeriod {
+  pageInfo: PageInfo!
+  edges: [ItemsByPeriodEdge!]!
+}
+
+input InputItemsByPeriod {
+  after: String
+  first: Int!
+  startDate: Time!
+  endDate: Time!
+}
+
 type Query {
   "ユーザーを取得する"
   user: User!
@@ -35,6 +57,8 @@ type Query {
   item(id: ID!): Item
   "アイテムを日付で取得する"
   itemsByDate(date: Time!): [Item]
+  "期間でアイテムを取得する"
+  itemsByPeriod(input: InputItemsByPeriod!): ItemsByPeriod!
 }
 
 input NewUser {

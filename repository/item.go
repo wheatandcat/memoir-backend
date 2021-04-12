@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -15,6 +16,7 @@ type ItemRepositoryInterface interface {
 	Delete(ctx context.Context, f *firestore.Client, userID string, i *model.DeleteItem) error
 	GetItem(ctx context.Context, f *firestore.Client, userID string, id string) (*model.Item, error)
 	GetItemsByDate(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error)
+	GetItemsByPeriod(ctx context.Context, f *firestore.Client, userID string, stertDate time.Time, endDate time.Time, first int, cursor ItemsByPeriodCursor) ([]*model.Item, error)
 }
 
 // ItemKey is item key
@@ -94,6 +96,39 @@ func (re *ItemRepository) GetItemsByDate(ctx context.Context, f *firestore.Clien
 
 	matchItem := getItemCollection(f, userID).Where("Date", "==", date).OrderBy("CreatedAt", firestore.Desc).Documents(ctx)
 	docs, err := matchItem.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, doc := range docs {
+		var item *model.Item
+		doc.DataTo(&item)
+
+		items = append(items, item)
+	}
+
+	return items, nil
+}
+
+type ItemsByPeriodCursor struct {
+	Date      time.Time
+	CreatedAt time.Time
+	ID        string
+}
+
+// GetItemsByPeriod 期間でアイテムを取得する
+func (re *ItemRepository) GetItemsByPeriod(ctx context.Context, f *firestore.Client, userID string, startDate time.Time, endDate time.Time, first int, cursor ItemsByPeriodCursor) ([]*model.Item, error) {
+	var items []*model.Item
+	query := getItemCollection(f, userID).Where("Date", ">=", startDate).Where("Date", "<=", endDate).OrderBy("Date", firestore.Asc).OrderBy("CreatedAt", firestore.Asc).OrderBy("ID", firestore.Asc)
+
+	log.Println(cursor.ID)
+	if cursor.ID != "" {
+		query = query.StartAfter(cursor.Date, cursor.CreatedAt, cursor.ID)
+	}
+
+	matchItem := query.Limit(first).Documents(ctx)
+	docs, err := matchItem.GetAll()
+
 	if err != nil {
 		return nil, err
 	}
