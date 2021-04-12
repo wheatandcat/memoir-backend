@@ -94,11 +94,18 @@ func (g *Graph) GetItemsByDate(ctx context.Context, date time.Time) ([]*model.It
 func (g *Graph) GetItemsByPeriod(ctx context.Context, input model.InputItemsByPeriod) (*model.ItemsByPeriod, error) {
 	t := g.Client.Time
 
-	cursorDate := strings.Split(*input.After, "/")
 	cursor := repository.ItemsByPeriodCursor{
-		Date:      t.ParseInLocationTimezone(cursorDate[0]),
-		CreatedAt: t.ParseInLocationTimezone(cursorDate[1]),
-		ID:        cursorDate[2],
+		Date:      time.Now(),
+		CreatedAt: time.Now(),
+		ID:        "",
+	}
+	cursorDate := strings.Split(*input.After, "/")
+	if len(cursorDate) > 1 {
+		cursor = repository.ItemsByPeriodCursor{
+			Date:      t.ParseInLocationTimezone(cursorDate[0]),
+			CreatedAt: t.ParseInLocationTimezone(cursorDate[1]),
+			ID:        cursorDate[2],
+		}
 	}
 
 	items, err := g.App.ItemRepository.GetItemsByPeriod(ctx, g.FirestoreClient, g.UserID, input.StartDate, input.EndDate, input.First, cursor)
