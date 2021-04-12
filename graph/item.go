@@ -108,7 +108,7 @@ func (g *Graph) GetItemsByPeriod(ctx context.Context, input model.InputItemsByPe
 		}
 	}
 
-	items, err := g.App.ItemRepository.GetItemsByPeriod(ctx, g.FirestoreClient, g.UserID, input.StartDate, input.EndDate, input.First, cursor)
+	items, err := g.App.ItemRepository.GetItemUserMultipleInPeriod(ctx, g.FirestoreClient, g.UserID, input.StartDate, input.EndDate, input.First, cursor)
 	if err != nil {
 		return nil, err
 	}
