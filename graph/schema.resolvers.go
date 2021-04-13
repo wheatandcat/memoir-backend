@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/wheatandcat/memoir-backend/graph/generated"
@@ -98,7 +99,7 @@ func (r *queryResolver) ItemsByDate(ctx context.Context, date time.Time) ([]*mod
 		return nil, err
 	}
 
-	result, err := g.GetItemsByDate(ctx, date)
+	result, err := g.GetItemsInDate(ctx, date)
 	if err != nil {
 		return nil, err
 	}
@@ -106,13 +107,27 @@ func (r *queryResolver) ItemsByDate(ctx context.Context, date time.Time) ([]*mod
 	return result, nil
 }
 
-func (r *queryResolver) ItemsByPeriod(ctx context.Context, input model.InputItemsByPeriod) (*model.ItemsByPeriod, error) {
+func (r *queryResolver) ItemsInDate(ctx context.Context, date time.Time) ([]*model.Item, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := g.GetItemsByPeriod(ctx, input)
+	result, err := g.GetItemsInDate(ctx, date)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *queryResolver) ItemsInPeriod(ctx context.Context, input model.InputItemsInPeriod) (*model.ItemsInPeriod, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.GetItemsInPeriod(ctx, input)
 	if err != nil {
 		return nil, err
 	}
@@ -128,3 +143,13 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *queryResolver) ItemsByPeriod(ctx context.Context, input model.InputItemsInPeriod) (*model.ItemsInPeriod, error) {
+	panic(fmt.Errorf("not implemented"))
+}

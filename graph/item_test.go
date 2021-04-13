@@ -15,7 +15,7 @@ import (
 	"gopkg.in/go-playground/assert.v1"
 )
 
-func TestGetItemsByDate(t *testing.T) {
+func TestGetItemsInDate(t *testing.T) {
 	ctx := context.Background()
 
 	client := &graph.Client{
@@ -37,7 +37,7 @@ func TestGetItemsByDate(t *testing.T) {
 	g := newGraph()
 
 	itemRepositoryMock := &repository.ItemRepositoryInterfaceMock{
-		GetItemsByDateFunc: func(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error) {
+		GetItemsInDateFunc: func(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error) {
 			return items, nil
 		},
 	}
@@ -58,7 +58,7 @@ func TestGetItemsByDate(t *testing.T) {
 
 	for _, td := range tests {
 		t.Run(td.name, func(t *testing.T) {
-			r, _ := g.GetItemsByDate(ctx, td.param)
+			r, _ := g.GetItemsInDate(ctx, td.param)
 			diff := cmp.Diff(r, td.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)

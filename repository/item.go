@@ -15,9 +15,9 @@ type ItemRepositoryInterface interface {
 	Update(ctx context.Context, f *firestore.Client, userID string, i *model.UpdateItem, updatedAt time.Time) error
 	Delete(ctx context.Context, f *firestore.Client, userID string, i *model.DeleteItem) error
 	GetItem(ctx context.Context, f *firestore.Client, userID string, id string) (*model.Item, error)
-	GetItemsByDate(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error)
-	GetItemsByPeriod(ctx context.Context, f *firestore.Client, userID string, stertDate time.Time, endDate time.Time, first int, cursor ItemsByPeriodCursor) ([]*model.Item, error)
-	GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, userID string, stertDate time.Time, endDate time.Time, first int, cursor ItemsByPeriodCursor) ([]*model.Item, error)
+	GetItemsInDate(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error)
+	GetItemsInPeriod(ctx context.Context, f *firestore.Client, userID string, stertDate time.Time, endDate time.Time, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error)
+	GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, userID []string, stertDate time.Time, endDate time.Time, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error)
 }
 
 // ItemKey is item key
@@ -91,8 +91,8 @@ func (re *ItemRepository) GetItem(ctx context.Context, f *firestore.Client, user
 	return i, nil
 }
 
-// GetItemsByDate 日付でアイテムを取得する
-func (re *ItemRepository) GetItemsByDate(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error) {
+// GetItemsInDate 日付でアイテムを取得する
+func (re *ItemRepository) GetItemsInDate(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error) {
 	var items []*model.Item
 
 	matchItem := getItemCollection(f, userID).Where("Date", "==", date).OrderBy("CreatedAt", firestore.Desc).Documents(ctx)
@@ -111,14 +111,14 @@ func (re *ItemRepository) GetItemsByDate(ctx context.Context, f *firestore.Clien
 	return items, nil
 }
 
-type ItemsByPeriodCursor struct {
+type ItemsInPeriodCursor struct {
 	Date      time.Time
 	CreatedAt time.Time
 	ID        string
 }
 
-// GetItemsByPeriod 期間でアイテムを取得する
-func (re *ItemRepository) GetItemsByPeriod(ctx context.Context, f *firestore.Client, userID string, startDate time.Time, endDate time.Time, first int, cursor ItemsByPeriodCursor) ([]*model.Item, error) {
+// GetItemsInPeriod 期間でアイテムを取得する
+func (re *ItemRepository) GetItemsInPeriod(ctx context.Context, f *firestore.Client, userID string, startDate time.Time, endDate time.Time, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error) {
 	var items []*model.Item
 	query := getItemCollection(f, userID).Where("Date", ">=", startDate).Where("Date", "<=", endDate).OrderBy("Date", firestore.Asc).OrderBy("CreatedAt", firestore.Asc).OrderBy("ID", firestore.Asc)
 
@@ -145,9 +145,9 @@ func (re *ItemRepository) GetItemsByPeriod(ctx context.Context, f *firestore.Cli
 }
 
 // GetItemUserMultipleInPeriod 期間でアイテムを取得する
-func (re *ItemRepository) GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, userID string, startDate time.Time, endDate time.Time, first int, cursor ItemsByPeriodCursor) ([]*model.Item, error) {
+func (re *ItemRepository) GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, userID []string, startDate time.Time, endDate time.Time, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error) {
 	var items []*model.Item
-	query := f.CollectionGroup("items").Where("UserID", "in", []string{userID}).Where("Date", ">=", startDate).Where("Date", "<=", endDate).OrderBy("Date", firestore.Asc).OrderBy("CreatedAt", firestore.Asc).OrderBy("ID", firestore.Asc)
+	query := f.CollectionGroup("items").Where("UserID", "in", userID).Where("Date", ">=", startDate).Where("Date", "<=", endDate).OrderBy("Date", firestore.Asc).OrderBy("CreatedAt", firestore.Asc).OrderBy("ID", firestore.Asc)
 
 	if cursor.ID != "" {
 		query = query.StartAfter(cursor.Date, cursor.CreatedAt, cursor.ID)

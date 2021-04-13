@@ -53,14 +53,15 @@ type ComplexityRoot struct {
 		Like       func(childComplexity int) int
 		Title      func(childComplexity int) int
 		UpdatedAt  func(childComplexity int) int
+		UserID     func(childComplexity int) int
 	}
 
-	ItemsByPeriod struct {
+	ItemsInPeriod struct {
 		Edges    func(childComplexity int) int
 		PageInfo func(childComplexity int) int
 	}
 
-	ItemsByPeriodEdge struct {
+	ItemsInPeriodEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
 	}
@@ -79,8 +80,9 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Item          func(childComplexity int, id string) int
-		ItemsByDate   func(childComplexity int, date time.Time) int
-		ItemsByPeriod func(childComplexity int, input model.InputItemsByPeriod) int
+		ItemsInDate   func(childComplexity int, date time.Time) int
+		ItemsInDate   func(childComplexity int, date time.Time) int
+		ItemsInPeriod func(childComplexity int, input model.InputItemsInPeriod) int
 		User          func(childComplexity int) int
 	}
 
@@ -100,8 +102,9 @@ type MutationResolver interface {
 type QueryResolver interface {
 	User(ctx context.Context) (*model.User, error)
 	Item(ctx context.Context, id string) (*model.Item, error)
-	ItemsByDate(ctx context.Context, date time.Time) ([]*model.Item, error)
-	ItemsByPeriod(ctx context.Context, input model.InputItemsByPeriod) (*model.ItemsByPeriod, error)
+	ItemsInDate(ctx context.Context, date time.Time) ([]*model.Item, error)
+	ItemsInDate(ctx context.Context, date time.Time) ([]*model.Item, error)
+	ItemsInPeriod(ctx context.Context, input model.InputItemsInPeriod) (*model.ItemsInPeriod, error)
 }
 
 type executableSchema struct {
@@ -175,33 +178,40 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Item.UpdatedAt(childComplexity), true
 
-	case "ItemsByPeriod.edges":
-		if e.complexity.ItemsByPeriod.Edges == nil {
+	case "Item.userID":
+		if e.complexity.Item.UserID == nil {
 			break
 		}
 
-		return e.complexity.ItemsByPeriod.Edges(childComplexity), true
+		return e.complexity.Item.UserID(childComplexity), true
 
-	case "ItemsByPeriod.pageInfo":
-		if e.complexity.ItemsByPeriod.PageInfo == nil {
+	case "ItemsInPeriod.edges":
+		if e.complexity.ItemsInPeriod.Edges == nil {
 			break
 		}
 
-		return e.complexity.ItemsByPeriod.PageInfo(childComplexity), true
+		return e.complexity.ItemsInPeriod.Edges(childComplexity), true
 
-	case "ItemsByPeriodEdge.cursor":
-		if e.complexity.ItemsByPeriodEdge.Cursor == nil {
+	case "ItemsInPeriod.pageInfo":
+		if e.complexity.ItemsInPeriod.PageInfo == nil {
 			break
 		}
 
-		return e.complexity.ItemsByPeriodEdge.Cursor(childComplexity), true
+		return e.complexity.ItemsInPeriod.PageInfo(childComplexity), true
 
-	case "ItemsByPeriodEdge.node":
-		if e.complexity.ItemsByPeriodEdge.Node == nil {
+	case "ItemsInPeriodEdge.cursor":
+		if e.complexity.ItemsInPeriodEdge.Cursor == nil {
 			break
 		}
 
-		return e.complexity.ItemsByPeriodEdge.Node(childComplexity), true
+		return e.complexity.ItemsInPeriodEdge.Cursor(childComplexity), true
+
+	case "ItemsInPeriodEdge.node":
+		if e.complexity.ItemsInPeriodEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.ItemsInPeriodEdge.Node(childComplexity), true
 
 	case "Mutation.createItem":
 		if e.complexity.Mutation.CreateItem == nil {
@@ -278,7 +288,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		return e.complexity.Query.Item(childComplexity, args["id"].(string)), true
 
 	case "Query.itemsByDate":
-		if e.complexity.Query.ItemsByDate == nil {
+		if e.complexity.Query.ItemsInDate == nil {
 			break
 		}
 
@@ -287,19 +297,31 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ItemsByDate(childComplexity, args["date"].(time.Time)), true
+		return e.complexity.Query.ItemsInDate(childComplexity, args["date"].(time.Time)), true
 
-	case "Query.itemsByPeriod":
-		if e.complexity.Query.ItemsByPeriod == nil {
+	case "Query.itemsInDate":
+		if e.complexity.Query.ItemsInDate == nil {
 			break
 		}
 
-		args, err := ec.field_Query_itemsByPeriod_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_itemsInDate_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.ItemsByPeriod(childComplexity, args["input"].(model.InputItemsByPeriod)), true
+		return e.complexity.Query.ItemsInDate(childComplexity, args["date"].(time.Time)), true
+
+	case "Query.itemsInPeriod":
+		if e.complexity.Query.ItemsInPeriod == nil {
+			break
+		}
+
+		args, err := ec.field_Query_itemsInPeriod_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ItemsInPeriod(childComplexity, args["input"].(model.InputItemsInPeriod)), true
 
 	case "Query.user":
 		if e.complexity.Query.User == nil {
@@ -414,6 +436,8 @@ type User {
 type Item {
   "アイテムID"
   id: ID!
+  "ユーザーID"
+  userID: String!
   "タイトル"
   title: String!
   "カテゴリーID"
@@ -428,17 +452,17 @@ type Item {
   updatedAt: Time!
 }
 
-type ItemsByPeriodEdge {
+type ItemsInPeriodEdge {
   node: Item
   cursor: String!
 }
 
-type ItemsByPeriod {
+type ItemsInPeriod {
   pageInfo: PageInfo!
-  edges: [ItemsByPeriodEdge!]!
+  edges: [ItemsInPeriodEdge!]!
 }
 
-input InputItemsByPeriod {
+input InputItemsInPeriod {
   after: String
   first: Int!
   startDate: Time!
@@ -452,8 +476,10 @@ type Query {
   item(id: ID!): Item
   "アイテムを日付で取得する"
   itemsByDate(date: Time!): [Item]
+  "アイテムを日付で取得する"
+  itemsInDate(date: Time!): [Item]
   "期間でアイテムを取得する"
-  itemsByPeriod(input: InputItemsByPeriod!): ItemsByPeriod!
+  itemsInPeriod(input: InputItemsInPeriod!): ItemsInPeriod!
 }
 
 input NewUser {
@@ -615,13 +641,28 @@ func (ec *executionContext) field_Query_itemsByDate_args(ctx context.Context, ra
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_itemsByPeriod_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_itemsInDate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.InputItemsByPeriod
+	var arg0 time.Time
+	if tmp, ok := rawArgs["date"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+		arg0, err = ec.unmarshalNTime2timeᚐTime(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["date"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_itemsInPeriod_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.InputItemsInPeriod
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNInputItemsByPeriod2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐInputItemsByPeriod(ctx, tmp)
+		arg0, err = ec.unmarshalNInputItemsInPeriod2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐInputItemsInPeriod(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -701,6 +742,41 @@ func (ec *executionContext) _Item_id(ctx context.Context, field graphql.Collecte
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Item_userID(ctx context.Context, field graphql.CollectedField, obj *model.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Item_title(ctx context.Context, field graphql.CollectedField, obj *model.Item) (ret graphql.Marshaler) {
@@ -948,7 +1024,7 @@ func (ec *executionContext) _Item_updatedAt(ctx context.Context, field graphql.C
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ItemsByPeriod_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.ItemsByPeriod) (ret graphql.Marshaler) {
+func (ec *executionContext) _ItemsInPeriod_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.ItemsInPeriod) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -956,7 +1032,7 @@ func (ec *executionContext) _ItemsByPeriod_pageInfo(ctx context.Context, field g
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "ItemsByPeriod",
+		Object:     "ItemsInPeriod",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -983,7 +1059,7 @@ func (ec *executionContext) _ItemsByPeriod_pageInfo(ctx context.Context, field g
 	return ec.marshalNPageInfo2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐPageInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ItemsByPeriod_edges(ctx context.Context, field graphql.CollectedField, obj *model.ItemsByPeriod) (ret graphql.Marshaler) {
+func (ec *executionContext) _ItemsInPeriod_edges(ctx context.Context, field graphql.CollectedField, obj *model.ItemsInPeriod) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -991,7 +1067,7 @@ func (ec *executionContext) _ItemsByPeriod_edges(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "ItemsByPeriod",
+		Object:     "ItemsInPeriod",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1013,12 +1089,12 @@ func (ec *executionContext) _ItemsByPeriod_edges(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.ItemsByPeriodEdge)
+	res := resTmp.([]*model.ItemsInPeriodEdge)
 	fc.Result = res
-	return ec.marshalNItemsByPeriodEdge2ᚕᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsByPeriodEdgeᚄ(ctx, field.Selections, res)
+	return ec.marshalNItemsInPeriodEdge2ᚕᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsInPeriodEdgeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ItemsByPeriodEdge_node(ctx context.Context, field graphql.CollectedField, obj *model.ItemsByPeriodEdge) (ret graphql.Marshaler) {
+func (ec *executionContext) _ItemsInPeriodEdge_node(ctx context.Context, field graphql.CollectedField, obj *model.ItemsInPeriodEdge) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1026,7 +1102,7 @@ func (ec *executionContext) _ItemsByPeriodEdge_node(ctx context.Context, field g
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "ItemsByPeriodEdge",
+		Object:     "ItemsInPeriodEdge",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1050,7 +1126,7 @@ func (ec *executionContext) _ItemsByPeriodEdge_node(ctx context.Context, field g
 	return ec.marshalOItem2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItem(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ItemsByPeriodEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *model.ItemsByPeriodEdge) (ret graphql.Marshaler) {
+func (ec *executionContext) _ItemsInPeriodEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *model.ItemsInPeriodEdge) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1058,7 +1134,7 @@ func (ec *executionContext) _ItemsByPeriodEdge_cursor(ctx context.Context, field
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "ItemsByPeriodEdge",
+		Object:     "ItemsInPeriodEdge",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1422,7 +1498,7 @@ func (ec *executionContext) _Query_itemsByDate(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ItemsByDate(rctx, args["date"].(time.Time))
+		return ec.resolvers.Query().ItemsInDate(rctx, args["date"].(time.Time))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1436,7 +1512,7 @@ func (ec *executionContext) _Query_itemsByDate(ctx context.Context, field graphq
 	return ec.marshalOItem2ᚕᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItem(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_itemsByPeriod(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_itemsInDate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1453,7 +1529,7 @@ func (ec *executionContext) _Query_itemsByPeriod(ctx context.Context, field grap
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_itemsByPeriod_args(ctx, rawArgs)
+	args, err := ec.field_Query_itemsInDate_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1461,7 +1537,46 @@ func (ec *executionContext) _Query_itemsByPeriod(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ItemsByPeriod(rctx, args["input"].(model.InputItemsByPeriod))
+		return ec.resolvers.Query().ItemsInDate(rctx, args["date"].(time.Time))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Item)
+	fc.Result = res
+	return ec.marshalOItem2ᚕᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItem(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_itemsInPeriod(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_itemsInPeriod_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ItemsInPeriod(rctx, args["input"].(model.InputItemsInPeriod))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1473,9 +1588,9 @@ func (ec *executionContext) _Query_itemsByPeriod(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.ItemsByPeriod)
+	res := resTmp.(*model.ItemsInPeriod)
 	fc.Result = res
-	return ec.marshalNItemsByPeriod2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsByPeriod(ctx, field.Selections, res)
+	return ec.marshalNItemsInPeriod2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsInPeriod(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2761,8 +2876,8 @@ func (ec *executionContext) unmarshalInputDeleteItem(ctx context.Context, obj in
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputInputItemsByPeriod(ctx context.Context, obj interface{}) (model.InputItemsByPeriod, error) {
-	var it model.InputItemsByPeriod
+func (ec *executionContext) unmarshalInputInputItemsInPeriod(ctx context.Context, obj interface{}) (model.InputItemsInPeriod, error) {
+	var it model.InputItemsInPeriod
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -2961,6 +3076,11 @@ func (ec *executionContext) _Item(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "userID":
+			out.Values[i] = ec._Item_userID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "title":
 			out.Values[i] = ec._Item_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -3007,24 +3127,24 @@ func (ec *executionContext) _Item(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
-var itemsByPeriodImplementors = []string{"ItemsByPeriod"}
+var itemsInPeriodImplementors = []string{"ItemsInPeriod"}
 
-func (ec *executionContext) _ItemsByPeriod(ctx context.Context, sel ast.SelectionSet, obj *model.ItemsByPeriod) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, itemsByPeriodImplementors)
+func (ec *executionContext) _ItemsInPeriod(ctx context.Context, sel ast.SelectionSet, obj *model.ItemsInPeriod) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, itemsInPeriodImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("ItemsByPeriod")
+			out.Values[i] = graphql.MarshalString("ItemsInPeriod")
 		case "pageInfo":
-			out.Values[i] = ec._ItemsByPeriod_pageInfo(ctx, field, obj)
+			out.Values[i] = ec._ItemsInPeriod_pageInfo(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "edges":
-			out.Values[i] = ec._ItemsByPeriod_edges(ctx, field, obj)
+			out.Values[i] = ec._ItemsInPeriod_edges(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3039,21 +3159,21 @@ func (ec *executionContext) _ItemsByPeriod(ctx context.Context, sel ast.Selectio
 	return out
 }
 
-var itemsByPeriodEdgeImplementors = []string{"ItemsByPeriodEdge"}
+var itemsInPeriodEdgeImplementors = []string{"ItemsInPeriodEdge"}
 
-func (ec *executionContext) _ItemsByPeriodEdge(ctx context.Context, sel ast.SelectionSet, obj *model.ItemsByPeriodEdge) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, itemsByPeriodEdgeImplementors)
+func (ec *executionContext) _ItemsInPeriodEdge(ctx context.Context, sel ast.SelectionSet, obj *model.ItemsInPeriodEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, itemsInPeriodEdgeImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("ItemsByPeriodEdge")
+			out.Values[i] = graphql.MarshalString("ItemsInPeriodEdge")
 		case "node":
-			out.Values[i] = ec._ItemsByPeriodEdge_node(ctx, field, obj)
+			out.Values[i] = ec._ItemsInPeriodEdge_node(ctx, field, obj)
 		case "cursor":
-			out.Values[i] = ec._ItemsByPeriodEdge_cursor(ctx, field, obj)
+			out.Values[i] = ec._ItemsInPeriodEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3197,7 +3317,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_itemsByDate(ctx, field)
 				return res
 			})
-		case "itemsByPeriod":
+		case "itemsInDate":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -3205,7 +3325,18 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_itemsByPeriod(ctx, field)
+				res = ec._Query_itemsInDate(ctx, field)
+				return res
+			})
+		case "itemsInPeriod":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_itemsInPeriod(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -3543,8 +3674,8 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) unmarshalNInputItemsByPeriod2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐInputItemsByPeriod(ctx context.Context, v interface{}) (model.InputItemsByPeriod, error) {
-	res, err := ec.unmarshalInputInputItemsByPeriod(ctx, v)
+func (ec *executionContext) unmarshalNInputItemsInPeriod2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐInputItemsInPeriod(ctx context.Context, v interface{}) (model.InputItemsInPeriod, error) {
+	res, err := ec.unmarshalInputInputItemsInPeriod(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -3577,21 +3708,21 @@ func (ec *executionContext) marshalNItem2ᚖgithubᚗcomᚋwheatandcatᚋmemoir�
 	return ec._Item(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNItemsByPeriod2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsByPeriod(ctx context.Context, sel ast.SelectionSet, v model.ItemsByPeriod) graphql.Marshaler {
-	return ec._ItemsByPeriod(ctx, sel, &v)
+func (ec *executionContext) marshalNItemsInPeriod2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsInPeriod(ctx context.Context, sel ast.SelectionSet, v model.ItemsInPeriod) graphql.Marshaler {
+	return ec._ItemsInPeriod(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNItemsByPeriod2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsByPeriod(ctx context.Context, sel ast.SelectionSet, v *model.ItemsByPeriod) graphql.Marshaler {
+func (ec *executionContext) marshalNItemsInPeriod2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsInPeriod(ctx context.Context, sel ast.SelectionSet, v *model.ItemsInPeriod) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._ItemsByPeriod(ctx, sel, v)
+	return ec._ItemsInPeriod(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNItemsByPeriodEdge2ᚕᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsByPeriodEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.ItemsByPeriodEdge) graphql.Marshaler {
+func (ec *executionContext) marshalNItemsInPeriodEdge2ᚕᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsInPeriodEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.ItemsInPeriodEdge) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3615,7 +3746,7 @@ func (ec *executionContext) marshalNItemsByPeriodEdge2ᚕᚖgithubᚗcomᚋwheat
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNItemsByPeriodEdge2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsByPeriodEdge(ctx, sel, v[i])
+			ret[i] = ec.marshalNItemsInPeriodEdge2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsInPeriodEdge(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3628,14 +3759,14 @@ func (ec *executionContext) marshalNItemsByPeriodEdge2ᚕᚖgithubᚗcomᚋwheat
 	return ret
 }
 
-func (ec *executionContext) marshalNItemsByPeriodEdge2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsByPeriodEdge(ctx context.Context, sel ast.SelectionSet, v *model.ItemsByPeriodEdge) graphql.Marshaler {
+func (ec *executionContext) marshalNItemsInPeriodEdge2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐItemsInPeriodEdge(ctx context.Context, sel ast.SelectionSet, v *model.ItemsInPeriodEdge) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._ItemsByPeriodEdge(ctx, sel, v)
+	return ec._ItemsInPeriodEdge(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNNewItem2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐNewItem(ctx context.Context, v interface{}) (model.NewItem, error) {

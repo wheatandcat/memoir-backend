@@ -19,6 +19,8 @@ type User {
 type Item {
   "アイテムID"
   id: ID!
+  "ユーザーID"
+  userID: String!
   "タイトル"
   title: String!
   "カテゴリーID"
@@ -33,17 +35,17 @@ type Item {
   updatedAt: Time!
 }
 
-type ItemsByPeriodEdge {
+type ItemsInPeriodEdge {
   node: Item
   cursor: String!
 }
 
-type ItemsByPeriod {
+type ItemsInPeriod {
   pageInfo: PageInfo!
-  edges: [ItemsByPeriodEdge!]!
+  edges: [ItemsInPeriodEdge!]!
 }
 
-input InputItemsByPeriod {
+input InputItemsInPeriod {
   after: String
   first: Int!
   startDate: Time!
@@ -57,8 +59,10 @@ type Query {
   item(id: ID!): Item
   "アイテムを日付で取得する"
   itemsByDate(date: Time!): [Item]
+  "アイテムを日付で取得する"
+  itemsInDate(date: Time!): [Item]
   "期間でアイテムを取得する"
-  itemsByPeriod(input: InputItemsByPeriod!): ItemsByPeriod!
+  itemsInPeriod(input: InputItemsInPeriod!): ItemsInPeriod!
 }
 
 input NewUser {

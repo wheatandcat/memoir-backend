@@ -13,6 +13,7 @@ import (
 func (g *Graph) CreateItem(ctx context.Context, input *model.NewItem) (*model.Item, error) {
 	i := &model.Item{
 		ID:         g.Client.UUID.Get(),
+		UserID:     g.UserID,
 		Title:      input.Title,
 		Date:       input.Date,
 		CategoryID: input.CategoryID,
@@ -33,6 +34,7 @@ func (g *Graph) CreateItem(ctx context.Context, input *model.NewItem) (*model.It
 func (g *Graph) UpdateItem(ctx context.Context, input *model.UpdateItem) (*model.Item, error) {
 	i := &model.Item{
 		ID:        input.ID,
+		UserID:    g.UserID,
 		UpdatedAt: g.Client.Time.Now(),
 	}
 
@@ -72,9 +74,9 @@ func (g *Graph) GetItem(ctx context.Context, id string) (*model.Item, error) {
 	return i, nil
 }
 
-// GetItemsByDate 日付でアイテムを取得
-func (g *Graph) GetItemsByDate(ctx context.Context, date time.Time) ([]*model.Item, error) {
-	items, err := g.App.ItemRepository.GetItemsByDate(ctx, g.FirestoreClient, g.UserID, date)
+// GetItemsInDate 日付でアイテムを取得
+func (g *Graph) GetItemsInDate(ctx context.Context, date time.Time) ([]*model.Item, error) {
+	items, err := g.App.ItemRepository.GetItemsInDate(ctx, g.FirestoreClient, g.UserID, date)
 	if err != nil {
 		return nil, err
 	}
@@ -90,36 +92,36 @@ func (g *Graph) GetItemsByDate(ctx context.Context, date time.Time) ([]*model.It
 	return items, nil
 }
 
-// GetItemsByPeriod 期間でアイテムを取得
-func (g *Graph) GetItemsByPeriod(ctx context.Context, input model.InputItemsByPeriod) (*model.ItemsByPeriod, error) {
+// GetItemsInPeriod 期間でアイテムを取得
+func (g *Graph) GetItemsInPeriod(ctx context.Context, input model.InputItemsInPeriod) (*model.ItemsInPeriod, error) {
 	t := g.Client.Time
 
-	cursor := repository.ItemsByPeriodCursor{
+	cursor := repository.ItemsInPeriodCursor{
 		Date:      time.Now(),
 		CreatedAt: time.Now(),
 		ID:        "",
 	}
 	cursorDate := strings.Split(*input.After, "/")
 	if len(cursorDate) > 1 {
-		cursor = repository.ItemsByPeriodCursor{
+		cursor = repository.ItemsInPeriodCursor{
 			Date:      t.ParseInLocationTimezone(cursorDate[0]),
 			CreatedAt: t.ParseInLocationTimezone(cursorDate[1]),
 			ID:        cursorDate[2],
 		}
 	}
 
-	items, err := g.App.ItemRepository.GetItemUserMultipleInPeriod(ctx, g.FirestoreClient, g.UserID, input.StartDate, input.EndDate, input.First, cursor)
+	items, err := g.App.ItemRepository.GetItemUserMultipleInPeriod(ctx, g.FirestoreClient, []string{g.UserID}, input.StartDate, input.EndDate, input.First, cursor)
 	if err != nil {
 		return nil, err
 	}
 
-	var ibpes []*model.ItemsByPeriodEdge
+	var ibpes []*model.ItemsInPeriodEdge
 	for index, i := range items {
 		items[index].Date = t.Location(i.Date)
 		items[index].CreatedAt = t.Location(i.CreatedAt)
 		items[index].UpdatedAt = t.Location(i.UpdatedAt)
 
-		ibpes = append(ibpes, &model.ItemsByPeriodEdge{
+		ibpes = append(ibpes, &model.ItemsInPeriodEdge{
 			Node:   items[index],
 			Cursor: i.Date.Format("2006-01-02T15:04:05+09:00") + "/" + i.CreatedAt.Format("2006-01-02T15:04:05+09:00") + "/" + i.ID,
 		})
@@ -133,7 +135,7 @@ func (g *Graph) GetItemsByPeriod(ctx context.Context, input model.InputItemsByPe
 		pi.HasNextPage = input.First == len(items)
 		pi.EndCursor = ibpes[len(items)-1].Cursor
 	}
-	ibp := &model.ItemsByPeriod{
+	ibp := &model.ItemsInPeriod{
 		Edges:    ibpes,
 		PageInfo: pi,
 	}
