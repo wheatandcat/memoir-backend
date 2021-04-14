@@ -98,7 +98,35 @@ func (r *queryResolver) ItemsByDate(ctx context.Context, date time.Time) ([]*mod
 		return nil, err
 	}
 
-	result, err := g.GetItemsByDate(ctx, date)
+	result, err := g.GetItemsInDate(ctx, date)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *queryResolver) ItemsInDate(ctx context.Context, date time.Time) ([]*model.Item, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.GetItemsInDate(ctx, date)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *queryResolver) ItemsInPeriod(ctx context.Context, input model.InputItemsInPeriod) (*model.ItemsInPeriod, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.GetItemsInPeriod(ctx, input)
 	if err != nil {
 		return nil, err
 	}

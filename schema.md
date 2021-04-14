@@ -9,9 +9,13 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
   * [Mutation](#mutation)
   * [Objects](#objects)
     * [Item](#item)
+    * [ItemsInPeriod](#itemsinperiod)
+    * [ItemsInPeriodEdge](#itemsinperiodedge)
+    * [PageInfo](#pageinfo)
     * [User](#user)
   * [Inputs](#inputs)
     * [DeleteItem](#deleteitem)
+    * [InputItemsInPeriod](#inputitemsinperiod)
     * [NewItem](#newitem)
     * [NewUser](#newuser)
     * [UpdateItem](#updateitem)
@@ -71,6 +75,34 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <tr>
 <td colspan="2" align="right" valign="top">date</td>
 <td valign="top"><a href="#time">Time</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>itemsInDate</strong></td>
+<td valign="top">[<a href="#item">Item</a>]</td>
+<td>
+
+アイテムを日付で取得する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">date</td>
+<td valign="top"><a href="#time">Time</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>itemsInPeriod</strong></td>
+<td valign="top"><a href="#itemsinperiod">ItemsInPeriod</a>!</td>
+<td>
+
+期間でアイテムを取得する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#inputitemsinperiod">InputItemsInPeriod</a>!</td>
 <td></td>
 </tr>
 </tbody>
@@ -170,6 +202,15 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 </td>
 </tr>
 <tr>
+<td colspan="2" valign="top"><strong>userID</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+ユーザーID
+
+</td>
+</tr>
+<tr>
 <td colspan="2" valign="top"><strong>title</strong></td>
 <td valign="top"><a href="#string">String</a>!</td>
 <td>
@@ -223,6 +264,81 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 更新日時
 
 </td>
+</tr>
+</tbody>
+</table>
+
+### ItemsInPeriod
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>pageInfo</strong></td>
+<td valign="top"><a href="#pageinfo">PageInfo</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>edges</strong></td>
+<td valign="top">[<a href="#itemsinperiodedge">ItemsInPeriodEdge</a>!]!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### ItemsInPeriodEdge
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>node</strong></td>
+<td valign="top"><a href="#item">Item</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>cursor</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### PageInfo
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>endCursor</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>hasNextPage</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a>!</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -290,6 +406,40 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 アイテムID
 
 </td>
+</tr>
+</tbody>
+</table>
+
+### InputItemsInPeriod
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>after</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>first</strong></td>
+<td valign="top"><a href="#int">Int</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>startDate</strong></td>
+<td valign="top"><a href="#time">Time</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>endDate</strong></td>
+<td valign="top"><a href="#time">Time</a>!</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -452,4 +602,4 @@ The `String`scalar type represents textual data, represented as UTF-8 character 
 
 ### Time
 
-Done in 2.63s.
+Done in 2.52s.
