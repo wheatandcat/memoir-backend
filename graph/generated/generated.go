@@ -80,7 +80,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Item          func(childComplexity int, id string) int
-		ItemsInDate   func(childComplexity int, date time.Time) int
+		ItemsByDate   func(childComplexity int, date time.Time) int
 		ItemsInDate   func(childComplexity int, date time.Time) int
 		ItemsInPeriod func(childComplexity int, input model.InputItemsInPeriod) int
 		User          func(childComplexity int) int
@@ -102,7 +102,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	User(ctx context.Context) (*model.User, error)
 	Item(ctx context.Context, id string) (*model.Item, error)
-	ItemsInDate(ctx context.Context, date time.Time) ([]*model.Item, error)
+	ItemsByDate(ctx context.Context, date time.Time) ([]*model.Item, error)
 	ItemsInDate(ctx context.Context, date time.Time) ([]*model.Item, error)
 	ItemsInPeriod(ctx context.Context, input model.InputItemsInPeriod) (*model.ItemsInPeriod, error)
 }
@@ -288,7 +288,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		return e.complexity.Query.Item(childComplexity, args["id"].(string)), true
 
 	case "Query.itemsByDate":
-		if e.complexity.Query.ItemsInDate == nil {
+		if e.complexity.Query.ItemsByDate == nil {
 			break
 		}
 
@@ -297,7 +297,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ItemsInDate(childComplexity, args["date"].(time.Time)), true
+		return e.complexity.Query.ItemsByDate(childComplexity, args["date"].(time.Time)), true
 
 	case "Query.itemsInDate":
 		if e.complexity.Query.ItemsInDate == nil {
@@ -1498,7 +1498,7 @@ func (ec *executionContext) _Query_itemsByDate(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ItemsInDate(rctx, args["date"].(time.Time))
+		return ec.resolvers.Query().ItemsByDate(rctx, args["date"].(time.Time))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

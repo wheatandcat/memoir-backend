@@ -68,3 +68,83 @@ func TestGetItemsInDate(t *testing.T) {
 		})
 	}
 }
+
+func TestGetItemsInPeriod(t *testing.T) {
+	ctx := context.Background()
+
+	client := &graph.Client{
+		UUID: &uuidgen.UUID{},
+		Time: &timegen.Time{},
+	}
+
+	date := client.Time.ParseInLocation("2019-01-01T00:00:00")
+
+	items := []*model.Item{{
+		ID:         "test1",
+		CategoryID: 1,
+		Title:      "test-title",
+		Date:       date,
+		CreatedAt:  date,
+		UpdatedAt:  date,
+	}}
+
+	g := newGraph()
+
+	itemRepositoryMock := &repository.ItemRepositoryInterfaceMock{
+		GetItemUserMultipleInPeriodFunc: func(ctx context.Context, f *firestore.Client, userID []string, startDate time.Time, endDate time.Time, first int, cursor repository.ItemsInPeriodCursor) ([]*model.Item, error) {
+			return items, nil
+		},
+	}
+
+	g.App.ItemRepository = itemRepositoryMock
+	after := ""
+
+	iipe := []*model.ItemsInPeriodEdge{{
+		Cursor: "2019-01-01T00:00:00+09:00/2019-01-01T00:00:00+09:00/test1",
+		Node: &model.Item{
+			ID:         "test1",
+			CategoryID: 1,
+			Title:      "test-title",
+			Date:       date,
+			CreatedAt:  date,
+			UpdatedAt:  date,
+		},
+	}}
+
+	result := &model.ItemsInPeriod{
+		PageInfo: &model.PageInfo{
+			EndCursor:   "2019-01-01T00:00:00+09:00/2019-01-01T00:00:00+09:00/test1",
+			HasNextPage: false,
+		},
+		Edges: iipe,
+	}
+
+	tests := []struct {
+		name   string
+		param  model.InputItemsInPeriod
+		result *model.ItemsInPeriod
+	}{
+		{
+			name: "日付でアイテムを取得する",
+			param: model.InputItemsInPeriod{
+				After:     &after,
+				First:     10,
+				StartDate: date,
+				EndDate:   date,
+			},
+			result: result,
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			r, _ := g.GetItemsInPeriod(ctx, td.param)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
+		})
+	}
+}
