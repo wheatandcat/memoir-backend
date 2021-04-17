@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -112,9 +111,8 @@ func (re *ItemRepository) GetItemsInDate(ctx context.Context, f *firestore.Clien
 }
 
 type ItemsInPeriodCursor struct {
-	Date      time.Time
-	CreatedAt time.Time
-	ID        string
+	ID     string
+	UserID string
 }
 
 // GetItemsInPeriod 期間でアイテムを取得する
@@ -122,9 +120,13 @@ func (re *ItemRepository) GetItemsInPeriod(ctx context.Context, f *firestore.Cli
 	var items []*model.Item
 	query := getItemCollection(f, userID).Where("Date", ">=", startDate).Where("Date", "<=", endDate).OrderBy("Date", firestore.Asc).OrderBy("CreatedAt", firestore.Asc).OrderBy("ID", firestore.Asc)
 
-	log.Println(cursor.ID)
 	if cursor.ID != "" {
-		query = query.StartAfter(cursor.Date, cursor.CreatedAt, cursor.ID)
+		ds, err := getItemCollection(f, cursor.UserID).Doc(cursor.ID).Get(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		query = query.StartAfter(ds)
 	}
 
 	matchItem := query.Limit(first).Documents(ctx)
@@ -147,10 +149,16 @@ func (re *ItemRepository) GetItemsInPeriod(ctx context.Context, f *firestore.Cli
 // GetItemUserMultipleInPeriod 期間でアイテムを取得する
 func (re *ItemRepository) GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, userID []string, startDate time.Time, endDate time.Time, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error) {
 	var items []*model.Item
-	query := f.CollectionGroup("items").Where("UserID", "in", userID).Where("Date", ">=", startDate).Where("Date", "<=", endDate).OrderBy("Date", firestore.Asc).OrderBy("CreatedAt", firestore.Asc).OrderBy("ID", firestore.Asc)
+
+	query := f.CollectionGroup("items").Where("UserID", "in", userID).Where("Date", ">=", startDate).Where("Date", "<=", endDate).OrderBy("Date", firestore.Asc).OrderBy("CreatedAt", firestore.Asc)
 
 	if cursor.ID != "" {
-		query = query.StartAfter(cursor.Date, cursor.CreatedAt, cursor.ID)
+		ds, err := getItemCollection(f, cursor.UserID).Doc(cursor.ID).Get(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		query = query.StartAfter(ds)
 	}
 
 	matchItem := query.Limit(first).Documents(ctx)

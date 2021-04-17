@@ -83,6 +83,7 @@ func TestGetItemsInPeriod(t *testing.T) {
 		ID:         "test1",
 		CategoryID: 1,
 		Title:      "test-title",
+		UserID:     "test-user",
 		Date:       date,
 		CreatedAt:  date,
 		UpdatedAt:  date,
@@ -100,11 +101,12 @@ func TestGetItemsInPeriod(t *testing.T) {
 	after := ""
 
 	iipe := []*model.ItemsInPeriodEdge{{
-		Cursor: "2019-01-01T00:00:00+09:00/2019-01-01T00:00:00+09:00/test1",
+		Cursor: "test-user/test1",
 		Node: &model.Item{
 			ID:         "test1",
 			CategoryID: 1,
 			Title:      "test-title",
+			UserID:     "test-user",
 			Date:       date,
 			CreatedAt:  date,
 			UpdatedAt:  date,
@@ -113,7 +115,7 @@ func TestGetItemsInPeriod(t *testing.T) {
 
 	result := &model.ItemsInPeriod{
 		PageInfo: &model.PageInfo{
-			EndCursor:   "2019-01-01T00:00:00+09:00/2019-01-01T00:00:00+09:00/test1",
+			EndCursor:   "test-user/test1",
 			HasNextPage: false,
 		},
 		Edges: iipe,
