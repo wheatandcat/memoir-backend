@@ -97,16 +97,14 @@ func (g *Graph) GetItemsInPeriod(ctx context.Context, input model.InputItemsInPe
 	t := g.Client.Time
 
 	cursor := repository.ItemsInPeriodCursor{
-		Date:      time.Now(),
-		CreatedAt: time.Now(),
-		ID:        "",
+		ID:     "",
+		UserID: "",
 	}
 	cursorDate := strings.Split(*input.After, "/")
 	if len(cursorDate) > 1 {
 		cursor = repository.ItemsInPeriodCursor{
-			Date:      t.ParseInLocationTimezone(cursorDate[0]),
-			CreatedAt: t.ParseInLocationTimezone(cursorDate[1]),
-			ID:        cursorDate[2],
+			UserID: cursorDate[0],
+			ID:     cursorDate[1],
 		}
 	}
 
@@ -123,7 +121,7 @@ func (g *Graph) GetItemsInPeriod(ctx context.Context, input model.InputItemsInPe
 
 		ibpes = append(ibpes, &model.ItemsInPeriodEdge{
 			Node:   items[index],
-			Cursor: i.Date.Format("2006-01-02T15:04:05+09:00") + "/" + i.CreatedAt.Format("2006-01-02T15:04:05+09:00") + "/" + i.ID,
+			Cursor: i.UserID + "/" + i.ID,
 		})
 	}
 
