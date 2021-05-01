@@ -3,7 +3,6 @@ package graph
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"cloud.google.com/go/firestore"
 	"github.com/wheatandcat/memoir-backend/auth"
@@ -40,8 +39,6 @@ func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Grap
 
 		user.ID = u.ID
 	}
-
-	log.Println("UserID:" + user.ID)
 
 	if user.ID == "" {
 		return nil, fmt.Errorf("UserID Invalid")
