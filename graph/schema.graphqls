@@ -102,6 +102,8 @@ input DeleteItem {
 type Mutation {
   "ユーザーを作成する"
   createUser(input: NewUser!): User!
+  "認証ユーザーを作成する"
+  createAuthUser(input: NewUser!): User!
   "アイテムを作成する"
   createItem(input: NewItem!): Item!
   "アイテムを更新する"

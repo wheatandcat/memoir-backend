@@ -22,6 +22,16 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	return result, nil
 }
 
+func (r *mutationResolver) CreateAuthUser(ctx context.Context, input model.NewUser) (*model.User, error) {
+	g := NewGraphWithSetUserID(r.App, r.FirestoreClient, "")
+	result, err := g.CreateAuthUser(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (r *mutationResolver) CreateItem(ctx context.Context, input model.NewItem) (*model.Item, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {

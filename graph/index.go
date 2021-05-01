@@ -13,6 +13,7 @@ import (
 // Graph Graph struct
 type Graph struct {
 	UserID          string
+	FirebaseUID     string
 	FirestoreClient *firestore.Client
 	App             *Application
 	Client          *Client
@@ -30,12 +31,34 @@ func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Grap
 		return nil, fmt.Errorf("Access denied")
 	}
 
+	if user.FirebaseUID == "" {
+		// Firebase認証無し
+		u, err := app.UserRepository.FindDatabaseDataByUID(ctx, f, user.ID)
+		if err != nil {
+			return nil, fmt.Errorf("User Invalid")
+		}
+		if u.FirebaseUID != "" {
+			return nil, fmt.Errorf("Need to Firebase Auth")
+		}
+	} else {
+		// Firebase認証有り
+		u, err := app.UserRepository.FindByFirebaseUID(ctx, f, user.FirebaseUID)
+		if err != nil {
+			return nil, fmt.Errorf("Firebase Auth Invalid")
+		}
+
+		user.ID = u.ID
+	}
+
+	if user.ID == "" {
+		return nil, fmt.Errorf("UserID Invalid")
+	}
+
 	return NewGraphWithSetUserID(app, f, user.ID), nil
 }
 
 // NewGraphWithSetUserID Graphを作成（ログイン前）
 func NewGraphWithSetUserID(app *Application, f *firestore.Client, uid string) *Graph {
-
 	client := &Client{
 		UUID: &uuidgen.UUID{},
 		Time: &timegen.Time{},

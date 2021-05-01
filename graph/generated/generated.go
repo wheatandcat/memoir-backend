@@ -67,10 +67,11 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateItem func(childComplexity int, input model.NewItem) int
-		CreateUser func(childComplexity int, input model.NewUser) int
-		DeleteItem func(childComplexity int, input model.DeleteItem) int
-		UpdateItem func(childComplexity int, input model.UpdateItem) int
+		CreateAuthUser func(childComplexity int, input model.NewUser) int
+		CreateItem     func(childComplexity int, input model.NewItem) int
+		CreateUser     func(childComplexity int, input model.NewUser) int
+		DeleteItem     func(childComplexity int, input model.DeleteItem) int
+		UpdateItem     func(childComplexity int, input model.UpdateItem) int
 	}
 
 	PageInfo struct {
@@ -95,6 +96,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateUser(ctx context.Context, input model.NewUser) (*model.User, error)
+	CreateAuthUser(ctx context.Context, input model.NewUser) (*model.User, error)
 	CreateItem(ctx context.Context, input model.NewItem) (*model.Item, error)
 	UpdateItem(ctx context.Context, input model.UpdateItem) (*model.Item, error)
 	DeleteItem(ctx context.Context, input model.DeleteItem) (*model.Item, error)
@@ -212,6 +214,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ItemsInPeriodEdge.Node(childComplexity), true
+
+	case "Mutation.createAuthUser":
+		if e.complexity.Mutation.CreateAuthUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createAuthUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateAuthUser(childComplexity, args["input"].(model.NewUser)), true
 
 	case "Mutation.createItem":
 		if e.complexity.Mutation.CreateItem == nil {
@@ -519,6 +533,8 @@ input DeleteItem {
 type Mutation {
   "ユーザーを作成する"
   createUser(input: NewUser!): User!
+  "認証ユーザーを作成する"
+  createAuthUser(input: NewUser!): User!
   "アイテムを作成する"
   createItem(input: NewItem!): Item!
   "アイテムを更新する"
@@ -535,6 +551,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_createAuthUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewUser
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewUser2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐNewUser(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createItem_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -1187,6 +1218,48 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CreateUser(rctx, args["input"].(model.NewUser))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createAuthUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createAuthUser_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateAuthUser(rctx, args["input"].(model.NewUser))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3205,6 +3278,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = graphql.MarshalString("Mutation")
 		case "createUser":
 			out.Values[i] = ec._Mutation_createUser(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createAuthUser":
+			out.Values[i] = ec._Mutation_createAuthUser(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

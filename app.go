@@ -24,13 +24,14 @@ func main() {
 
 	router := chi.NewRouter()
 
-	router.Use(auth.NotLoginMiddleware())
-
 	ctx := context.Background()
 	f, err := repository.FirebaseApp(ctx)
 	if err != nil {
 		panic(err)
 	}
+
+	router.Use(auth.NotLoginMiddleware())
+	router.Use(auth.FirebaseLoginMiddleware(f))
 
 	fc, err := f.Firestore(ctx)
 	if err != nil {
