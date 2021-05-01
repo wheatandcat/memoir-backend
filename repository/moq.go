@@ -515,8 +515,14 @@ var _ UserRepositoryInterface = &UserRepositoryInterfaceMock{}
 // 			CreateFunc: func(ctx context.Context, f *firestore.Client, u *model.User) error {
 // 				panic("mock out the Create method")
 // 			},
+// 			FindByFirebaseUIDFunc: func(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error) {
+// 				panic("mock out the FindByFirebaseUID method")
+// 			},
 // 			FindByUIDFunc: func(ctx context.Context, f *firestore.Client, uid string) (*model.User, error) {
 // 				panic("mock out the FindByUID method")
+// 			},
+// 			UpdateFirebaseUIDFunc: func(ctx context.Context, f *firestore.Client, user *User) error {
+// 				panic("mock out the UpdateFirebaseUID method")
 // 			},
 // 		}
 //
@@ -528,8 +534,14 @@ type UserRepositoryInterfaceMock struct {
 	// CreateFunc mocks the Create method.
 	CreateFunc func(ctx context.Context, f *firestore.Client, u *model.User) error
 
+	// FindByFirebaseUIDFunc mocks the FindByFirebaseUID method.
+	FindByFirebaseUIDFunc func(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error)
+
 	// FindByUIDFunc mocks the FindByUID method.
 	FindByUIDFunc func(ctx context.Context, f *firestore.Client, uid string) (*model.User, error)
+
+	// UpdateFirebaseUIDFunc mocks the UpdateFirebaseUID method.
+	UpdateFirebaseUIDFunc func(ctx context.Context, f *firestore.Client, user *User) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -542,6 +554,15 @@ type UserRepositoryInterfaceMock struct {
 			// U is the u argument value.
 			U *model.User
 		}
+		// FindByFirebaseUID holds details about calls to the FindByFirebaseUID method.
+		FindByFirebaseUID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// FUID is the fUID argument value.
+			FUID string
+		}
 		// FindByUID holds details about calls to the FindByUID method.
 		FindByUID []struct {
 			// Ctx is the ctx argument value.
@@ -551,9 +572,20 @@ type UserRepositoryInterfaceMock struct {
 			// UID is the uid argument value.
 			UID string
 		}
+		// UpdateFirebaseUID holds details about calls to the UpdateFirebaseUID method.
+		UpdateFirebaseUID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// User is the user argument value.
+			User *User
+		}
 	}
-	lockCreate    sync.RWMutex
-	lockFindByUID sync.RWMutex
+	lockCreate            sync.RWMutex
+	lockFindByFirebaseUID sync.RWMutex
+	lockFindByUID         sync.RWMutex
+	lockUpdateFirebaseUID sync.RWMutex
 }
 
 // Create calls CreateFunc.
@@ -595,6 +627,45 @@ func (mock *UserRepositoryInterfaceMock) CreateCalls() []struct {
 	return calls
 }
 
+// FindByFirebaseUID calls FindByFirebaseUIDFunc.
+func (mock *UserRepositoryInterfaceMock) FindByFirebaseUID(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error) {
+	if mock.FindByFirebaseUIDFunc == nil {
+		panic("UserRepositoryInterfaceMock.FindByFirebaseUIDFunc: method is nil but UserRepositoryInterface.FindByFirebaseUID was just called")
+	}
+	callInfo := struct {
+		Ctx  context.Context
+		F    *firestore.Client
+		FUID string
+	}{
+		Ctx:  ctx,
+		F:    f,
+		FUID: fUID,
+	}
+	mock.lockFindByFirebaseUID.Lock()
+	mock.calls.FindByFirebaseUID = append(mock.calls.FindByFirebaseUID, callInfo)
+	mock.lockFindByFirebaseUID.Unlock()
+	return mock.FindByFirebaseUIDFunc(ctx, f, fUID)
+}
+
+// FindByFirebaseUIDCalls gets all the calls that were made to FindByFirebaseUID.
+// Check the length with:
+//     len(mockedUserRepositoryInterface.FindByFirebaseUIDCalls())
+func (mock *UserRepositoryInterfaceMock) FindByFirebaseUIDCalls() []struct {
+	Ctx  context.Context
+	F    *firestore.Client
+	FUID string
+} {
+	var calls []struct {
+		Ctx  context.Context
+		F    *firestore.Client
+		FUID string
+	}
+	mock.lockFindByFirebaseUID.RLock()
+	calls = mock.calls.FindByFirebaseUID
+	mock.lockFindByFirebaseUID.RUnlock()
+	return calls
+}
+
 // FindByUID calls FindByUIDFunc.
 func (mock *UserRepositoryInterfaceMock) FindByUID(ctx context.Context, f *firestore.Client, uid string) (*model.User, error) {
 	if mock.FindByUIDFunc == nil {
@@ -631,5 +702,44 @@ func (mock *UserRepositoryInterfaceMock) FindByUIDCalls() []struct {
 	mock.lockFindByUID.RLock()
 	calls = mock.calls.FindByUID
 	mock.lockFindByUID.RUnlock()
+	return calls
+}
+
+// UpdateFirebaseUID calls UpdateFirebaseUIDFunc.
+func (mock *UserRepositoryInterfaceMock) UpdateFirebaseUID(ctx context.Context, f *firestore.Client, user *User) error {
+	if mock.UpdateFirebaseUIDFunc == nil {
+		panic("UserRepositoryInterfaceMock.UpdateFirebaseUIDFunc: method is nil but UserRepositoryInterface.UpdateFirebaseUID was just called")
+	}
+	callInfo := struct {
+		Ctx  context.Context
+		F    *firestore.Client
+		User *User
+	}{
+		Ctx:  ctx,
+		F:    f,
+		User: user,
+	}
+	mock.lockUpdateFirebaseUID.Lock()
+	mock.calls.UpdateFirebaseUID = append(mock.calls.UpdateFirebaseUID, callInfo)
+	mock.lockUpdateFirebaseUID.Unlock()
+	return mock.UpdateFirebaseUIDFunc(ctx, f, user)
+}
+
+// UpdateFirebaseUIDCalls gets all the calls that were made to UpdateFirebaseUID.
+// Check the length with:
+//     len(mockedUserRepositoryInterface.UpdateFirebaseUIDCalls())
+func (mock *UserRepositoryInterfaceMock) UpdateFirebaseUIDCalls() []struct {
+	Ctx  context.Context
+	F    *firestore.Client
+	User *User
+} {
+	var calls []struct {
+		Ctx  context.Context
+		F    *firestore.Client
+		User *User
+	}
+	mock.lockUpdateFirebaseUID.RLock()
+	calls = mock.calls.UpdateFirebaseUID
+	mock.lockUpdateFirebaseUID.RUnlock()
 	return calls
 }
