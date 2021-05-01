@@ -31,7 +31,17 @@ func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Grap
 		return nil, fmt.Errorf("Access denied")
 	}
 
-	if user.FirebaseUID != "" {
+	if user.FirebaseUID == "" {
+		// Firebase認証無し
+		u, err := app.UserRepository.FindDatabaseDataByUID(ctx, f, user.ID)
+		if err != nil {
+			return nil, fmt.Errorf("User Invalid")
+		}
+		if u.FirebaseUID != "" {
+			return nil, fmt.Errorf("Need to Firebase Auth")
+		}
+	} else {
+		// Firebase認証有り
 		u, err := app.UserRepository.FindByFirebaseUID(ctx, f, user.FirebaseUID)
 		if err != nil {
 			return nil, fmt.Errorf("Firebase Auth Invalid")

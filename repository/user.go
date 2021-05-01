@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -21,6 +22,7 @@ type UserRepositoryInterface interface {
 	Create(ctx context.Context, f *firestore.Client, u *model.User) error
 	UpdateFirebaseUID(ctx context.Context, f *firestore.Client, user *User) error
 	FindByUID(ctx context.Context, f *firestore.Client, uid string) (*model.User, error)
+	FindDatabaseDataByUID(ctx context.Context, f *firestore.Client, uid string) (*User, error)
 	FindByFirebaseUID(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error)
 }
 
@@ -64,6 +66,19 @@ func (re *UserRepository) FindByUID(ctx context.Context, f *firestore.Client, ui
 	return u, nil
 }
 
+// FindDatabaseDataByUID ユーザーIDからデータベースのデータを取得する
+func (re *UserRepository) FindDatabaseDataByUID(ctx context.Context, f *firestore.Client, uid string) (*User, error) {
+	var u *User
+	ds, err := f.Collection("users").Doc(uid).Get(ctx)
+	if err != nil {
+		return u, err
+	}
+
+	ds.DataTo(&u)
+
+	return u, nil
+}
+
 // FindByFirebaseUID FirebaseユーザーIDから取得する
 func (re *UserRepository) FindByFirebaseUID(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error) {
 	var u *model.User
@@ -71,6 +86,10 @@ func (re *UserRepository) FindByFirebaseUID(ctx context.Context, f *firestore.Cl
 	docs, err := matchItem.GetAll()
 	if err != nil {
 		return nil, err
+	}
+
+	if len(docs) == 0 {
+		return nil, fmt.Errorf("Not Found User")
 	}
 
 	docs[0].DataTo(&u)
