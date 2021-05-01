@@ -2,16 +2,26 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"cloud.google.com/go/firestore"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
 
+type User struct {
+	ID          string
+	FirebaseUID string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
 // UserRepositoryInterface is repository interface
 type UserRepositoryInterface interface {
 	Create(ctx context.Context, f *firestore.Client, u *model.User) error
+	UpdateFirebaseUID(ctx context.Context, f *firestore.Client, user *User) error
 	FindByUID(ctx context.Context, f *firestore.Client, uid string) (*model.User, error)
+	FindByFirebaseUID(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error)
 }
 
 // UserRepository is repository for user
@@ -30,6 +40,17 @@ func (re *UserRepository) Create(ctx context.Context, f *firestore.Client, u *mo
 	return err
 }
 
+// UpdateFirebaseUID ユーザーFirebaseUIを更新する
+func (re *UserRepository) UpdateFirebaseUID(ctx context.Context, f *firestore.Client, user *User) error {
+	var u []firestore.Update
+	u = append(u, firestore.Update{Path: "FirebaseUID", Value: user.FirebaseUID})
+	u = append(u, firestore.Update{Path: "UpdatedAt", Value: user.UpdatedAt})
+
+	_, err := f.Collection("users").Doc(user.ID).Update(ctx, u)
+
+	return err
+}
+
 // FindByUID ユーザーIDから取得する
 func (re *UserRepository) FindByUID(ctx context.Context, f *firestore.Client, uid string) (*model.User, error) {
 	var u *model.User
@@ -39,6 +60,20 @@ func (re *UserRepository) FindByUID(ctx context.Context, f *firestore.Client, ui
 	}
 
 	ds.DataTo(&u)
+
+	return u, nil
+}
+
+// FindByFirebaseUID FirebaseユーザーIDから取得する
+func (re *UserRepository) FindByFirebaseUID(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error) {
+	var u *model.User
+	matchItem := f.Collection("users").Where("FirebaseUID", "==", fUID).OrderBy("CreatedAt", firestore.Asc).Limit(1).Documents(ctx)
+	docs, err := matchItem.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	docs[0].DataTo(u)
 
 	return u, nil
 }
