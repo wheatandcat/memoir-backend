@@ -73,7 +73,7 @@ func (re *UserRepository) FindByFirebaseUID(ctx context.Context, f *firestore.Cl
 		return nil, err
 	}
 
-	docs[0].DataTo(u)
+	docs[0].DataTo(&u)
 
 	return u, nil
 }

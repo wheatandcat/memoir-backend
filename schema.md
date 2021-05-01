@@ -134,6 +134,20 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <td></td>
 </tr>
 <tr>
+<td colspan="2" valign="top"><strong>createAuthUser</strong></td>
+<td valign="top"><a href="#user">User</a>!</td>
+<td>
+
+認証ユーザーを作成する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#newuser">NewUser</a>!</td>
+<td></td>
+</tr>
+<tr>
 <td colspan="2" valign="top"><strong>createItem</strong></td>
 <td valign="top"><a href="#item">Item</a>!</td>
 <td>
@@ -602,4 +616,4 @@ The `String`scalar type represents textual data, represented as UTF-8 character 
 
 ### Time
 
-Done in 2.52s.
+Done in 1.54s.
