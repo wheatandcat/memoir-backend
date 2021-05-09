@@ -6,6 +6,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/wheatandcat/memoir-backend/auth"
+	"github.com/wheatandcat/memoir-backend/client/authToken"
 	"github.com/wheatandcat/memoir-backend/client/timegen"
 	"github.com/wheatandcat/memoir-backend/client/uuidgen"
 )
@@ -20,8 +21,9 @@ type Graph struct {
 }
 
 type Client struct {
-	UUID uuidgen.UUIDGenerator
-	Time timegen.TimeGenerator
+	UUID      uuidgen.UUIDGenerator
+	Time      timegen.TimeGenerator
+	AuthToken authToken.AuthTokenClient
 }
 
 // NewGraph Graphを作成
@@ -60,8 +62,9 @@ func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Grap
 // NewGraphWithSetUserID Graphを作成（ログイン前）
 func NewGraphWithSetUserID(app *Application, f *firestore.Client, uid string) *Graph {
 	client := &Client{
-		UUID: &uuidgen.UUID{},
-		Time: &timegen.Time{},
+		UUID:      &uuidgen.UUID{},
+		Time:      &timegen.Time{},
+		AuthToken: &authToken.AuthToken{},
 	}
 
 	return &Graph{
