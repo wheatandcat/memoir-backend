@@ -8,7 +8,7 @@ import (
 	firebase "firebase.google.com/go"
 )
 
-var userCtxKey = &contextKey{"user"}
+var UserCtxKey = &contextKey{"user"}
 
 type contextKey struct {
 	name string
@@ -34,7 +34,7 @@ func NotLoginMiddleware() func(http.Handler) http.Handler {
 				ID: uid,
 			}
 
-			ctx := context.WithValue(r.Context(), userCtxKey, u)
+			ctx := context.WithValue(r.Context(), UserCtxKey, u)
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})
@@ -68,7 +68,7 @@ func FirebaseLoginMiddleware(app *firebase.App) func(http.Handler) http.Handler 
 				FirebaseUID: token.UID,
 			}
 
-			ctx := context.WithValue(r.Context(), userCtxKey, u)
+			ctx := context.WithValue(r.Context(), UserCtxKey, u)
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})
@@ -77,6 +77,6 @@ func FirebaseLoginMiddleware(app *firebase.App) func(http.Handler) http.Handler 
 
 // ForContext finds the user from the context. REQUIRES Middleware to have run.
 func ForContext(ctx context.Context) *User {
-	raw, _ := ctx.Value(userCtxKey).(*User)
+	raw, _ := ctx.Value(UserCtxKey).(*User)
 	return raw
 }

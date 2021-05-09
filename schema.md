@@ -19,6 +19,7 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
     * [NewItem](#newitem)
     * [NewUser](#newuser)
     * [UpdateItem](#updateitem)
+    * [UpdateUser](#updateuser)
   * [Scalars](#scalars)
     * [Boolean](#boolean)
     * [Float](#float)
@@ -145,6 +146,20 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <tr>
 <td colspan="2" align="right" valign="top">input</td>
 <td valign="top"><a href="#newuser">NewUser</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>updateUser</strong></td>
+<td valign="top"><a href="#user">User</a>!</td>
+<td>
+
+ユーザーを更新する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#updateuser">UpdateUser</a>!</td>
 <td></td>
 </tr>
 <tr>
@@ -379,6 +394,15 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 </td>
 </tr>
 <tr>
+<td colspan="2" valign="top"><strong>displayName</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+表示名
+
+</td>
+</tr>
+<tr>
 <td colspan="2" valign="top"><strong>createdAt</strong></td>
 <td valign="top"><a href="#time">Time</a>!</td>
 <td>
@@ -592,6 +616,29 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 </tbody>
 </table>
 
+### UpdateUser
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>displayName</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+表示名
+
+</td>
+</tr>
+</tbody>
+</table>
+
 ## Scalars
 
 ### Boolean
@@ -616,4 +663,4 @@ The `String`scalar type represents textual data, represented as UTF-8 character 
 
 ### Time
 
-Done in 1.54s.
+Done in 1.69s.

@@ -20,6 +20,7 @@ type User struct {
 // UserRepositoryInterface is repository interface
 type UserRepositoryInterface interface {
 	Create(ctx context.Context, f *firestore.Client, u *model.User) error
+	Update(ctx context.Context, f *firestore.Client, u *model.User) error
 	UpdateFirebaseUID(ctx context.Context, f *firestore.Client, user *User) error
 	FindByUID(ctx context.Context, f *firestore.Client, uid string) (*model.User, error)
 	FindDatabaseDataByUID(ctx context.Context, f *firestore.Client, uid string) (*User, error)
@@ -39,6 +40,19 @@ func NewUserRepository() UserRepositoryInterface {
 // Create ユーザーを作成する
 func (re *UserRepository) Create(ctx context.Context, f *firestore.Client, u *model.User) error {
 	_, err := f.Collection("users").Doc(u.ID).Set(ctx, u)
+
+	return err
+}
+
+// Update ユーザーを更新する
+func (re *UserRepository) Update(ctx context.Context, f *firestore.Client, u *model.User) error {
+	var fu []firestore.Update
+	if u.DisplayName != "" {
+		fu = append(fu, firestore.Update{Path: "DisplayName", Value: u.DisplayName})
+	}
+	fu = append(fu, firestore.Update{Path: "UpdatedAt", Value: u.UpdatedAt})
+
+	_, err := f.Collection("users").Doc(u.ID).Update(ctx, fu)
 
 	return err
 }

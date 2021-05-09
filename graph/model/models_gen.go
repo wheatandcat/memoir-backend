@@ -81,9 +81,16 @@ type UpdateItem struct {
 	Dislike *bool      `json:"dislike"`
 }
 
+type UpdateUser struct {
+	// 表示名
+	DisplayName string `json:"displayName"`
+}
+
 type User struct {
 	// ユーザーID
 	ID string `json:"id"`
+	// 表示名
+	DisplayName string `json:"displayName"`
 	// 作成日時
 	CreatedAt time.Time `json:"createdAt"`
 	// 更新日時
