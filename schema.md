@@ -403,6 +403,15 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 </td>
 </tr>
 <tr>
+<td colspan="2" valign="top"><strong>image</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+画像URL
+
+</td>
+</tr>
+<tr>
 <td colspan="2" valign="top"><strong>createdAt</strong></td>
 <td valign="top"><a href="#time">Time</a>!</td>
 <td>
@@ -636,6 +645,15 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 
 </td>
 </tr>
+<tr>
+<td colspan="2" valign="top"><strong>image</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+画像URL
+
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -662,5 +680,3 @@ The `Int` scalar type represents non-fractional signed whole numeric values. Int
 The `String`scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
 
 ### Time
-
-Done in 1.69s.

@@ -50,6 +50,10 @@ func (re *UserRepository) Update(ctx context.Context, f *firestore.Client, u *mo
 	if u.DisplayName != "" {
 		fu = append(fu, firestore.Update{Path: "DisplayName", Value: u.DisplayName})
 	}
+	if u.Image != "" {
+		fu = append(fu, firestore.Update{Path: "Image", Value: u.Image})
+	}
+
 	fu = append(fu, firestore.Update{Path: "UpdatedAt", Value: u.UpdatedAt})
 
 	_, err := f.Collection("users").Doc(u.ID).Update(ctx, fu)
