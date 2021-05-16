@@ -77,6 +77,7 @@ func (g *Graph) UpdateUser(ctx context.Context, input *model.UpdateUser) (*model
 	u := &model.User{
 		ID:          g.UserID,
 		DisplayName: input.DisplayName,
+		Image:       input.Image,
 		UpdatedAt:   g.Client.Time.Now(),
 	}
 

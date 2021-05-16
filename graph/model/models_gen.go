@@ -84,6 +84,8 @@ type UpdateItem struct {
 type UpdateUser struct {
 	// 表示名
 	DisplayName string `json:"displayName"`
+	// 画像URL
+	Image string `json:"image"`
 }
 
 type User struct {
@@ -91,6 +93,8 @@ type User struct {
 	ID string `json:"id"`
 	// 表示名
 	DisplayName string `json:"displayName"`
+	// 画像URL
+	Image string `json:"image"`
 	// 作成日時
 	CreatedAt time.Time `json:"createdAt"`
 	// 更新日時
