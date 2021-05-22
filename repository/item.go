@@ -8,7 +8,6 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
 
-// UserRepositoryInterface is repository interface
 type ItemRepositoryInterface interface {
 	Create(ctx context.Context, f *firestore.Client, userID string, i *model.Item) error
 	Update(ctx context.Context, f *firestore.Client, userID string, i *model.UpdateItem, updatedAt time.Time) error

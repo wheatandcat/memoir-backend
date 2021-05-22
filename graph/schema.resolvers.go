@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/wheatandcat/memoir-backend/graph/generated"
@@ -88,6 +89,14 @@ func (r *mutationResolver) DeleteItem(ctx context.Context, input model.DeleteIte
 	return result, nil
 }
 
+func (r *mutationResolver) CreateInvite(ctx context.Context) (*model.Invite, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *mutationResolver) UpdateInvite(ctx context.Context) (*model.Invite, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -156,6 +165,10 @@ func (r *queryResolver) ItemsInPeriod(ctx context.Context, input model.InputItem
 	}
 
 	return result, nil
+}
+
+func (r *queryResolver) Invite(ctx context.Context) (*model.Invite, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 // Mutation returns generated.MutationResolver implementation.

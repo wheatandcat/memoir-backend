@@ -20,6 +20,17 @@ type User {
   updatedAt: Time!
 }
 
+type Invite {
+  "ユーザーID"
+  UserID: ID!
+  "招待コード"
+  code: String!
+  "作成日時"
+  createdAt: Time!
+  "更新日時"
+  updatedAt: Time!
+}
+
 type Item {
   "アイテムID"
   id: ID!
@@ -67,6 +78,8 @@ type Query {
   itemsInDate(date: Time!): [Item]
   "期間でアイテムを取得する"
   itemsInPeriod(input: InputItemsInPeriod!): ItemsInPeriod!
+  "招待コードを取得する"
+  invite: Invite!
 }
 
 input NewUser {
@@ -123,6 +136,10 @@ type Mutation {
   updateItem(input: UpdateItem!): Item!
   "アイテムを削除する"
   deleteItem(input: DeleteItem!): Item!
+  "招待コード作成する"
+  createInvite: Invite!
+  "招待コード更新する"
+  updateInvite: Invite!
 }
 
 scalar Time
