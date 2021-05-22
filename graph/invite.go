@@ -36,8 +36,14 @@ func (g *Graph) UpdateInvite(ctx context.Context) (*model.Invite, error) {
 		return nil, err
 	}
 
+	uuid := g.Client.UUID.Get()
+	code := uuid[0:6]
+
 	batch := g.FirestoreClient.Batch()
 	g.App.InviteRepository.Delete(ctx, g.FirestoreClient, batch, i.Code)
+
+	i.Code = code
+	i.UpdatedAt = g.Client.Time.Now()
 	g.App.InviteRepository.Create(ctx, g.FirestoreClient, batch, i)
 
 	if _, err := batch.Commit(ctx); err != nil {
