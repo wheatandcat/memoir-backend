@@ -3,6 +3,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
@@ -34,10 +35,11 @@ func (g *Graph) CreateInvite(ctx context.Context) (*model.Invite, error) {
 	batch := g.FirestoreClient.Batch()
 	g.App.InviteRepository.Create(ctx, g.FirestoreClient, batch, i)
 
-	if _, err := batch.Commit(ctx); err != nil {
+	if err := g.App.InviteRepository.Commit(ctx, batch); err != nil {
 		return nil, err
 	}
 
+	log.Println("OK")
 	return i, nil
 }
 
@@ -62,7 +64,7 @@ func (g *Graph) UpdateInvite(ctx context.Context) (*model.Invite, error) {
 	i.UpdatedAt = g.Client.Time.Now()
 	g.App.InviteRepository.Create(ctx, g.FirestoreClient, batch, i)
 
-	if _, err := batch.Commit(ctx); err != nil {
+	if err := g.App.InviteRepository.Commit(ctx, batch); err != nil {
 		return nil, err
 	}
 

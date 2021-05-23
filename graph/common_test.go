@@ -3,14 +3,14 @@ package graph_test
 import (
 	mock_authToken "github.com/wheatandcat/memoir-backend/client/authToken/mocks"
 	mock_timegen "github.com/wheatandcat/memoir-backend/client/timegen/mocks"
-	"github.com/wheatandcat/memoir-backend/client/uuidgen"
+	mock_uuidgen "github.com/wheatandcat/memoir-backend/client/uuidgen/mocks"
 	"github.com/wheatandcat/memoir-backend/graph"
 	"github.com/wheatandcat/memoir-backend/repository"
 )
 
 func newGraph() graph.Graph {
 	client := &graph.Client{
-		UUID:      &uuidgen.UUID{},
+		UUID:      &mock_uuidgen.UUID{},
 		Time:      &mock_timegen.Time{},
 		AuthToken: &mock_authToken.AuthToken{},
 	}
