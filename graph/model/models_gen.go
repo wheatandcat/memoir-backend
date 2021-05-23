@@ -20,7 +20,7 @@ type InputItemsInPeriod struct {
 
 type Invite struct {
 	// ユーザーID
-	UserID string `json:"UserID"`
+	UserID string `json:"userID"`
 	// 招待コード
 	Code string `json:"code"`
 	// 作成日時

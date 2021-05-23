@@ -22,7 +22,7 @@ type User {
 
 type Invite {
   "ユーザーID"
-  UserID: ID!
+  userID: ID!
   "招待コード"
   code: String!
   "作成日時"
@@ -80,6 +80,8 @@ type Query {
   itemsInPeriod(input: InputItemsInPeriod!): ItemsInPeriod!
   "招待コードを取得する"
   invite: Invite!
+  "招待コードからユーザーを取得する"
+  inviteByCode(code: String!): User!
 }
 
 input NewUser {

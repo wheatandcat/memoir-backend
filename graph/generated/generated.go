@@ -91,6 +91,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Invite        func(childComplexity int) int
+		InviteByCode  func(childComplexity int, code string) int
 		Item          func(childComplexity int, id string) int
 		ItemsByDate   func(childComplexity int, date time.Time) int
 		ItemsInDate   func(childComplexity int, date time.Time) int
@@ -124,6 +125,7 @@ type QueryResolver interface {
 	ItemsInDate(ctx context.Context, date time.Time) ([]*model.Item, error)
 	ItemsInPeriod(ctx context.Context, input model.InputItemsInPeriod) (*model.ItemsInPeriod, error)
 	Invite(ctx context.Context) (*model.Invite, error)
+	InviteByCode(ctx context.Context, code string) (*model.User, error)
 }
 
 type executableSchema struct {
@@ -162,7 +164,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Invite.UpdatedAt(childComplexity), true
 
-	case "Invite.UserID":
+	case "Invite.userID":
 		if e.complexity.Invite.UserID == nil {
 			break
 		}
@@ -367,6 +369,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Invite(childComplexity), true
 
+	case "Query.inviteByCode":
+		if e.complexity.Query.InviteByCode == nil {
+			break
+		}
+
+		args, err := ec.field_Query_inviteByCode_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.InviteByCode(childComplexity, args["code"].(string)), true
+
 	case "Query.item":
 		if e.complexity.Query.Item == nil {
 			break
@@ -545,7 +559,7 @@ type User {
 
 type Invite {
   "ユーザーID"
-  UserID: ID!
+  userID: ID!
   "招待コード"
   code: String!
   "作成日時"
@@ -603,6 +617,8 @@ type Query {
   itemsInPeriod(input: InputItemsInPeriod!): ItemsInPeriod!
   "招待コードを取得する"
   invite: Invite!
+  "招待コードからユーザーを取得する"
+  inviteByCode(code: String!): User!
 }
 
 input NewUser {
@@ -779,6 +795,21 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_inviteByCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["code"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["code"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_item_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -877,7 +908,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Invite_UserID(ctx context.Context, field graphql.CollectedField, obj *model.Invite) (ret graphql.Marshaler) {
+func (ec *executionContext) _Invite_userID(ctx context.Context, field graphql.CollectedField, obj *model.Invite) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2088,6 +2119,48 @@ func (ec *executionContext) _Query_invite(ctx context.Context, field graphql.Col
 	res := resTmp.(*model.Invite)
 	fc.Result = res
 	return ec.marshalNInvite2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐInvite(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_inviteByCode(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_inviteByCode_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().InviteByCode(rctx, args["code"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3666,8 +3739,8 @@ func (ec *executionContext) _Invite(ctx context.Context, sel ast.SelectionSet, o
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Invite")
-		case "UserID":
-			out.Values[i] = ec._Invite_UserID(ctx, field, obj)
+		case "userID":
+			out.Values[i] = ec._Invite_userID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -4008,6 +4081,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_invite(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "inviteByCode":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_inviteByCode(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}

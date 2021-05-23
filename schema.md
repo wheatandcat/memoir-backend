@@ -8,6 +8,7 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
   * [Query](#query)
   * [Mutation](#mutation)
   * [Objects](#objects)
+    * [Invite](#invite)
     * [Item](#item)
     * [ItemsInPeriod](#itemsinperiod)
     * [ItemsInPeriodEdge](#itemsinperiodedge)
@@ -104,6 +105,29 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <tr>
 <td colspan="2" align="right" valign="top">input</td>
 <td valign="top"><a href="#inputitemsinperiod">InputItemsInPeriod</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>invite</strong></td>
+<td valign="top"><a href="#invite">Invite</a>!</td>
+<td>
+
+招待コードを取得する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>inviteByCode</strong></td>
+<td valign="top"><a href="#user">User</a>!</td>
+<td>
+
+招待コードからユーザーを取得する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">code</td>
+<td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
 </tbody>
@@ -204,10 +228,79 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <td valign="top"><a href="#deleteitem">DeleteItem</a>!</td>
 <td></td>
 </tr>
+<tr>
+<td colspan="2" valign="top"><strong>createInvite</strong></td>
+<td valign="top"><a href="#invite">Invite</a>!</td>
+<td>
+
+招待コード作成する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>updateInvite</strong></td>
+<td valign="top"><a href="#invite">Invite</a>!</td>
+<td>
+
+招待コード更新する
+
+</td>
+</tr>
 </tbody>
 </table>
 
 ## Objects
+
+### Invite
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>userID</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
+<td>
+
+ユーザーID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>code</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+招待コード
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>createdAt</strong></td>
+<td valign="top"><a href="#time">Time</a>!</td>
+<td>
+
+作成日時
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>updatedAt</strong></td>
+<td valign="top"><a href="#time">Time</a>!</td>
+<td>
+
+更新日時
+
+</td>
+</tr>
+</tbody>
+</table>
 
 ### Item
 
@@ -680,3 +773,5 @@ The `Int` scalar type represents non-fractional signed whole numeric values. Int
 The `String`scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
 
 ### Time
+
+Done in 2.74s.

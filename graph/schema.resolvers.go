@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/wheatandcat/memoir-backend/graph/generated"
@@ -90,11 +89,31 @@ func (r *mutationResolver) DeleteItem(ctx context.Context, input model.DeleteIte
 }
 
 func (r *mutationResolver) CreateInvite(ctx context.Context) (*model.Invite, error) {
-	panic(fmt.Errorf("not implemented"))
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.CreateInvite(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (r *mutationResolver) UpdateInvite(ctx context.Context) (*model.Invite, error) {
-	panic(fmt.Errorf("not implemented"))
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.UpdateInvite(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
@@ -168,7 +187,31 @@ func (r *queryResolver) ItemsInPeriod(ctx context.Context, input model.InputItem
 }
 
 func (r *queryResolver) Invite(ctx context.Context) (*model.Invite, error) {
-	panic(fmt.Errorf("not implemented"))
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.GetInviteByUseID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *queryResolver) InviteByCode(ctx context.Context, code string) (*model.User, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.GetInviteByCode(ctx, code)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

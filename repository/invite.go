@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"log"
 
 	"cloud.google.com/go/firestore"
 	"github.com/wheatandcat/memoir-backend/graph/model"
@@ -42,15 +43,20 @@ func (re *InviteRepository) FindByUserID(ctx context.Context, f *firestore.Clien
 		return nil, err
 	}
 
+	if len(docs) == 0 {
+		return &model.Invite{}, nil
+	}
+
 	var invite *model.Invite
 	docs[0].DataTo(&invite)
 
-	return invite, err
+	return invite, nil
 }
 
 // Find 取得する
 func (re *InviteRepository) Find(ctx context.Context, f *firestore.Client, code string) (*model.Invite, error) {
 	var i *model.Invite
+	log.Println(code)
 	ds, err := f.Collection("invites").Doc(code).Get(ctx)
 	if err != nil {
 		return i, err
