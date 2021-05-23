@@ -18,6 +18,17 @@ type InputItemsInPeriod struct {
 	EndDate   time.Time `json:"endDate"`
 }
 
+type Invite struct {
+	// ユーザーID
+	UserID string `json:"userID"`
+	// 招待コード
+	Code string `json:"code"`
+	// 作成日時
+	CreatedAt time.Time `json:"createdAt"`
+	// 更新日時
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
 type Item struct {
 	// アイテムID
 	ID string `json:"id"`
