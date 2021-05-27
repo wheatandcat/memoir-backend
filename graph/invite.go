@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
@@ -23,7 +24,7 @@ func (g *Graph) CreateInvite(ctx context.Context) (*model.Invite, error) {
 	}
 
 	uuid := g.Client.UUID.Get()
-	code := uuid[0:8]
+	code := strings.ToUpper(uuid[0:8])
 
 	i = &model.Invite{
 		Code:      code,
@@ -55,7 +56,7 @@ func (g *Graph) UpdateInvite(ctx context.Context) (*model.Invite, error) {
 	}
 
 	uuid := g.Client.UUID.Get()
-	code := uuid[0:8]
+	code := strings.ToUpper(uuid[0:8])
 
 	batch := g.FirestoreClient.Batch()
 	g.App.InviteRepository.Delete(ctx, g.FirestoreClient, batch, i.Code)
