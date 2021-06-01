@@ -74,14 +74,15 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateAuthUser func(childComplexity int, input model.NewUser) int
-		CreateInvite   func(childComplexity int) int
-		CreateItem     func(childComplexity int, input model.NewItem) int
-		CreateUser     func(childComplexity int, input model.NewUser) int
-		DeleteItem     func(childComplexity int, input model.DeleteItem) int
-		UpdateInvite   func(childComplexity int) int
-		UpdateItem     func(childComplexity int, input model.UpdateItem) int
-		UpdateUser     func(childComplexity int, input model.UpdateUser) int
+		CreateAuthUser         func(childComplexity int, input model.NewUser) int
+		CreateInvite           func(childComplexity int) int
+		CreateItem             func(childComplexity int, input model.NewItem) int
+		CreateUser             func(childComplexity int, input model.NewUser) int
+		DeleteItem             func(childComplexity int, input model.DeleteItem) int
+		NewRelationshipRequest func(childComplexity int, input model.NewRelationshipRequest) int
+		UpdateInvite           func(childComplexity int) int
+		UpdateItem             func(childComplexity int, input model.UpdateItem) int
+		UpdateUser             func(childComplexity int, input model.UpdateUser) int
 	}
 
 	PageInfo struct {
@@ -90,13 +91,32 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Invite        func(childComplexity int) int
-		InviteByCode  func(childComplexity int, code string) int
-		Item          func(childComplexity int, id string) int
-		ItemsByDate   func(childComplexity int, date time.Time) int
-		ItemsInDate   func(childComplexity int, date time.Time) int
-		ItemsInPeriod func(childComplexity int, input model.InputItemsInPeriod) int
-		User          func(childComplexity int) int
+		Invite               func(childComplexity int) int
+		InviteByCode         func(childComplexity int, code string) int
+		Item                 func(childComplexity int, id string) int
+		ItemsByDate          func(childComplexity int, date time.Time) int
+		ItemsInDate          func(childComplexity int, date time.Time) int
+		ItemsInPeriod        func(childComplexity int, input model.InputItemsInPeriod) int
+		RelationshipRequests func(childComplexity int, input model.InputRelationshipRequests) int
+		User                 func(childComplexity int) int
+	}
+
+	RelationshipRequest struct {
+		CreatedAt  func(childComplexity int) int
+		FollowedID func(childComplexity int) int
+		FollowerID func(childComplexity int) int
+		Status     func(childComplexity int) int
+		UpdatedAt  func(childComplexity int) int
+	}
+
+	RelationshipRequestEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	RelationshipRequests struct {
+		Edges    func(childComplexity int) int
+		PageInfo func(childComplexity int) int
 	}
 
 	User struct {
@@ -117,6 +137,7 @@ type MutationResolver interface {
 	DeleteItem(ctx context.Context, input model.DeleteItem) (*model.Item, error)
 	CreateInvite(ctx context.Context) (*model.Invite, error)
 	UpdateInvite(ctx context.Context) (*model.Invite, error)
+	NewRelationshipRequest(ctx context.Context, input model.NewRelationshipRequest) (*model.RelationshipRequest, error)
 }
 type QueryResolver interface {
 	User(ctx context.Context) (*model.User, error)
@@ -126,6 +147,7 @@ type QueryResolver interface {
 	ItemsInPeriod(ctx context.Context, input model.InputItemsInPeriod) (*model.ItemsInPeriod, error)
 	Invite(ctx context.Context) (*model.Invite, error)
 	InviteByCode(ctx context.Context, code string) (*model.User, error)
+	RelationshipRequests(ctx context.Context, input model.InputRelationshipRequests) (*model.RelationshipRequests, error)
 }
 
 type executableSchema struct {
@@ -317,6 +339,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteItem(childComplexity, args["input"].(model.DeleteItem)), true
 
+	case "Mutation.newRelationshipRequest":
+		if e.complexity.Mutation.NewRelationshipRequest == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_newRelationshipRequest_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.NewRelationshipRequest(childComplexity, args["input"].(model.NewRelationshipRequest)), true
+
 	case "Mutation.updateInvite":
 		if e.complexity.Mutation.UpdateInvite == nil {
 			break
@@ -429,12 +463,87 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.ItemsInPeriod(childComplexity, args["input"].(model.InputItemsInPeriod)), true
 
+	case "Query.relationshipRequests":
+		if e.complexity.Query.RelationshipRequests == nil {
+			break
+		}
+
+		args, err := ec.field_Query_relationshipRequests_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.RelationshipRequests(childComplexity, args["input"].(model.InputRelationshipRequests)), true
+
 	case "Query.user":
 		if e.complexity.Query.User == nil {
 			break
 		}
 
 		return e.complexity.Query.User(childComplexity), true
+
+	case "RelationshipRequest.createdAt":
+		if e.complexity.RelationshipRequest.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.RelationshipRequest.CreatedAt(childComplexity), true
+
+	case "RelationshipRequest.followedId":
+		if e.complexity.RelationshipRequest.FollowedID == nil {
+			break
+		}
+
+		return e.complexity.RelationshipRequest.FollowedID(childComplexity), true
+
+	case "RelationshipRequest.followerId":
+		if e.complexity.RelationshipRequest.FollowerID == nil {
+			break
+		}
+
+		return e.complexity.RelationshipRequest.FollowerID(childComplexity), true
+
+	case "RelationshipRequest.status":
+		if e.complexity.RelationshipRequest.Status == nil {
+			break
+		}
+
+		return e.complexity.RelationshipRequest.Status(childComplexity), true
+
+	case "RelationshipRequest.updatedAt":
+		if e.complexity.RelationshipRequest.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.RelationshipRequest.UpdatedAt(childComplexity), true
+
+	case "RelationshipRequestEdge.cursor":
+		if e.complexity.RelationshipRequestEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.RelationshipRequestEdge.Cursor(childComplexity), true
+
+	case "RelationshipRequestEdge.node":
+		if e.complexity.RelationshipRequestEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.RelationshipRequestEdge.Node(childComplexity), true
+
+	case "RelationshipRequests.edges":
+		if e.complexity.RelationshipRequests.Edges == nil {
+			break
+		}
+
+		return e.complexity.RelationshipRequests.Edges(childComplexity), true
+
+	case "RelationshipRequests.pageInfo":
+		if e.complexity.RelationshipRequests.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.RelationshipRequests.PageInfo(childComplexity), true
 
 	case "User.createdAt":
 		if e.complexity.User.CreatedAt == nil {
@@ -604,6 +713,34 @@ input InputItemsInPeriod {
   endDate: Time!
 }
 
+type RelationshipRequest {
+  "フォローしたユーザーID"
+  followerId: String!
+  "フォローされたユーザーID"
+  followedId: String!
+  "1:申請中、2:拒否、3: 承認"
+  status: Int!
+  "作成日時"
+  createdAt: Time!
+  "更新日時"
+  updatedAt: Time!
+}
+
+type RelationshipRequestEdge {
+  node: RelationshipRequest
+  cursor: String!
+}
+
+type RelationshipRequests {
+  pageInfo: PageInfo!
+  edges: [RelationshipRequestEdge!]!
+}
+
+input InputRelationshipRequests {
+  after: String
+  first: Int!
+}
+
 type Query {
   "ユーザーを取得する"
   user: User!
@@ -619,6 +756,8 @@ type Query {
   invite: Invite!
   "招待コードからユーザーを取得する"
   inviteByCode(code: String!): User!
+  "招待コードからユーザーを取得する"
+  relationshipRequests(input: InputRelationshipRequests!): RelationshipRequests!
 }
 
 input NewUser {
@@ -662,6 +801,11 @@ input DeleteItem {
   id: ID!
 }
 
+input NewRelationshipRequest {
+  "招待コード"
+  code: String!
+}
+
 type Mutation {
   "ユーザーを作成する"
   createUser(input: NewUser!): User!
@@ -679,6 +823,8 @@ type Mutation {
   createInvite: Invite!
   "招待コード更新する"
   updateInvite: Invite!
+  "共有を招待をリクエストする"
+  newRelationshipRequest(input: NewRelationshipRequest!): RelationshipRequest!
 }
 
 scalar Time
@@ -742,6 +888,21 @@ func (ec *executionContext) field_Mutation_deleteItem_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNDeleteItem2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐDeleteItem(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_newRelationshipRequest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewRelationshipRequest
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewRelationshipRequest2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐNewRelationshipRequest(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -862,6 +1023,21 @@ func (ec *executionContext) field_Query_itemsInPeriod_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNInputItemsInPeriod2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐInputItemsInPeriod(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_relationshipRequests_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.InputRelationshipRequests
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNInputRelationshipRequests2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐInputRelationshipRequests(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1822,6 +1998,48 @@ func (ec *executionContext) _Mutation_updateInvite(ctx context.Context, field gr
 	return ec.marshalNInvite2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐInvite(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_newRelationshipRequest(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_newRelationshipRequest_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().NewRelationshipRequest(rctx, args["input"].(model.NewRelationshipRequest))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.RelationshipRequest)
+	fc.Result = res
+	return ec.marshalNRelationshipRequest2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationshipRequest(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2163,6 +2381,48 @@ func (ec *executionContext) _Query_inviteByCode(ctx context.Context, field graph
 	return ec.marshalNUser2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_relationshipRequests(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_relationshipRequests_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().RelationshipRequests(rctx, args["input"].(model.InputRelationshipRequests))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.RelationshipRequests)
+	fc.Result = res
+	return ec.marshalNRelationshipRequests2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationshipRequests(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2232,6 +2492,318 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RelationshipRequest_followerId(ctx context.Context, field graphql.CollectedField, obj *model.RelationshipRequest) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RelationshipRequest",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FollowerID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RelationshipRequest_followedId(ctx context.Context, field graphql.CollectedField, obj *model.RelationshipRequest) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RelationshipRequest",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FollowedID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RelationshipRequest_status(ctx context.Context, field graphql.CollectedField, obj *model.RelationshipRequest) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RelationshipRequest",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RelationshipRequest_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.RelationshipRequest) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RelationshipRequest",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RelationshipRequest_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.RelationshipRequest) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RelationshipRequest",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RelationshipRequestEdge_node(ctx context.Context, field graphql.CollectedField, obj *model.RelationshipRequestEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RelationshipRequestEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.RelationshipRequest)
+	fc.Result = res
+	return ec.marshalORelationshipRequest2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationshipRequest(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RelationshipRequestEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *model.RelationshipRequestEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RelationshipRequestEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RelationshipRequests_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.RelationshipRequests) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RelationshipRequests",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RelationshipRequests_edges(ctx context.Context, field graphql.CollectedField, obj *model.RelationshipRequests) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RelationshipRequests",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.RelationshipRequestEdge)
+	fc.Result = res
+	return ec.marshalNRelationshipRequestEdge2ᚕᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationshipRequestEdgeᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
@@ -3560,6 +4132,34 @@ func (ec *executionContext) unmarshalInputInputItemsInPeriod(ctx context.Context
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputInputRelationshipRequests(ctx context.Context, obj interface{}) (model.InputRelationshipRequests, error) {
+	var it model.InputRelationshipRequests
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "after":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+			it.After, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "first":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+			it.First, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewItem(ctx context.Context, obj interface{}) (model.NewItem, error) {
 	var it model.NewItem
 	var asMap = obj.(map[string]interface{})
@@ -3603,6 +4203,26 @@ func (ec *executionContext) unmarshalInputNewItem(ctx context.Context, obj inter
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dislike"))
 			it.Dislike, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputNewRelationshipRequest(ctx context.Context, obj interface{}) (model.NewRelationshipRequest, error) {
+	var it model.NewRelationshipRequest
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "code":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
+			it.Code, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3953,6 +4573,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "newRelationshipRequest":
+			out.Values[i] = ec._Mutation_newRelationshipRequest(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4100,10 +4725,132 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "relationshipRequests":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_relationshipRequests(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
 			out.Values[i] = ec._Query___schema(ctx, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var relationshipRequestImplementors = []string{"RelationshipRequest"}
+
+func (ec *executionContext) _RelationshipRequest(ctx context.Context, sel ast.SelectionSet, obj *model.RelationshipRequest) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, relationshipRequestImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RelationshipRequest")
+		case "followerId":
+			out.Values[i] = ec._RelationshipRequest_followerId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "followedId":
+			out.Values[i] = ec._RelationshipRequest_followedId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "status":
+			out.Values[i] = ec._RelationshipRequest_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._RelationshipRequest_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._RelationshipRequest_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var relationshipRequestEdgeImplementors = []string{"RelationshipRequestEdge"}
+
+func (ec *executionContext) _RelationshipRequestEdge(ctx context.Context, sel ast.SelectionSet, obj *model.RelationshipRequestEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, relationshipRequestEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RelationshipRequestEdge")
+		case "node":
+			out.Values[i] = ec._RelationshipRequestEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._RelationshipRequestEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var relationshipRequestsImplementors = []string{"RelationshipRequests"}
+
+func (ec *executionContext) _RelationshipRequests(ctx context.Context, sel ast.SelectionSet, obj *model.RelationshipRequests) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, relationshipRequestsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RelationshipRequests")
+		case "pageInfo":
+			out.Values[i] = ec._RelationshipRequests_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._RelationshipRequests_edges(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4447,6 +5194,11 @@ func (ec *executionContext) unmarshalNInputItemsInPeriod2githubᚗcomᚋwheatand
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNInputRelationshipRequests2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐInputRelationshipRequests(ctx context.Context, v interface{}) (model.InputRelationshipRequests, error) {
+	res, err := ec.unmarshalInputInputRelationshipRequests(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4556,6 +5308,11 @@ func (ec *executionContext) unmarshalNNewItem2githubᚗcomᚋwheatandcatᚋmemoi
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNNewRelationshipRequest2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐNewRelationshipRequest(ctx context.Context, v interface{}) (model.NewRelationshipRequest, error) {
+	res, err := ec.unmarshalInputNewRelationshipRequest(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNNewUser2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐNewUser(ctx context.Context, v interface{}) (model.NewUser, error) {
 	res, err := ec.unmarshalInputNewUser(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4569,6 +5326,81 @@ func (ec *executionContext) marshalNPageInfo2ᚖgithubᚗcomᚋwheatandcatᚋmem
 		return graphql.Null
 	}
 	return ec._PageInfo(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNRelationshipRequest2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationshipRequest(ctx context.Context, sel ast.SelectionSet, v model.RelationshipRequest) graphql.Marshaler {
+	return ec._RelationshipRequest(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRelationshipRequest2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationshipRequest(ctx context.Context, sel ast.SelectionSet, v *model.RelationshipRequest) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._RelationshipRequest(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNRelationshipRequestEdge2ᚕᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationshipRequestEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.RelationshipRequestEdge) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNRelationshipRequestEdge2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationshipRequestEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNRelationshipRequestEdge2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationshipRequestEdge(ctx context.Context, sel ast.SelectionSet, v *model.RelationshipRequestEdge) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._RelationshipRequestEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNRelationshipRequests2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationshipRequests(ctx context.Context, sel ast.SelectionSet, v model.RelationshipRequests) graphql.Marshaler {
+	return ec._RelationshipRequests(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRelationshipRequests2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationshipRequests(ctx context.Context, sel ast.SelectionSet, v *model.RelationshipRequests) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._RelationshipRequests(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -4938,6 +5770,13 @@ func (ec *executionContext) marshalOItem2ᚖgithubᚗcomᚋwheatandcatᚋmemoir�
 		return graphql.Null
 	}
 	return ec._Item(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalORelationshipRequest2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationshipRequest(ctx context.Context, sel ast.SelectionSet, v *model.RelationshipRequest) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._RelationshipRequest(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
