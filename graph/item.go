@@ -100,11 +100,11 @@ func (g *Graph) GetItemsInPeriod(ctx context.Context, input model.InputItemsInPe
 		ID:     "",
 		UserID: "",
 	}
-	cursorDate := strings.Split(*input.After, "/")
-	if len(cursorDate) > 1 {
+	cursorData := strings.Split(*input.After, "/")
+	if len(cursorData) > 1 {
 		cursor = repository.ItemsInPeriodCursor{
-			UserID: cursorDate[0],
-			ID:     cursorDate[1],
+			UserID: cursorData[0],
+			ID:     cursorData[1],
 		}
 	}
 

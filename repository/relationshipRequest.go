@@ -7,6 +7,12 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
 
+const (
+	RelationshipRequestStatusRequest = 1
+	RelationshipRequestStatusOK      = 2
+	RelationshipRequestStatusNG      = 3
+)
+
 type RelationshipRequestInterface interface {
 	Create(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) error
 	Update(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest)
@@ -58,10 +64,10 @@ func (re *RelationshipRequestRepository) Find(ctx context.Context, f *firestore.
 	return rr, err
 }
 
-// Finds ページングで取得する
+// FindByFollowedID ページングで取得する
 func (re *RelationshipRequestRepository) FindByFollowedID(ctx context.Context, f *firestore.Client, userID string, first int, cursor RelationshipRequestCursor) ([]*model.RelationshipRequest, error) {
 	var items []*model.RelationshipRequest
-	query := f.Collection("relationshipRequests").Where("FollowedID", "==", userID).OrderBy("CreatedAt", firestore.Asc)
+	query := f.Collection("relationshipRequests").Where("FollowedID", "==", userID).Where("Status", "==", RelationshipRequestStatusRequest).OrderBy("CreatedAt", firestore.Asc)
 
 	if cursor.FollowerID != "" {
 		ds, err := f.Collection("relationshipRequests").Doc(cursor.FollowerID + "_" + cursor.FollowedID).Get(ctx)
