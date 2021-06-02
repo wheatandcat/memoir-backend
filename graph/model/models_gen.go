@@ -90,6 +90,8 @@ type PageInfo struct {
 }
 
 type RelationshipRequest struct {
+	// ID
+	ID string `json:"id"`
 	// フォローしたユーザーID
 	FollowerID string `json:"followerId"`
 	// フォローされたユーザーID

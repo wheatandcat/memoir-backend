@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/wheatandcat/memoir-backend/graph/generated"
@@ -118,7 +117,17 @@ func (r *mutationResolver) UpdateInvite(ctx context.Context) (*model.Invite, err
 }
 
 func (r *mutationResolver) NewRelationshipRequest(ctx context.Context, input model.NewRelationshipRequest) (*model.RelationshipRequest, error) {
-	panic(fmt.Errorf("not implemented"))
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.CreateRelationshipRequest(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
@@ -220,7 +229,17 @@ func (r *queryResolver) InviteByCode(ctx context.Context, code string) (*model.U
 }
 
 func (r *queryResolver) RelationshipRequests(ctx context.Context, input model.InputRelationshipRequests) (*model.RelationshipRequests, error) {
-	panic(fmt.Errorf("not implemented"))
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.GetRelationshipRequests(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

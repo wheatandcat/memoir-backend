@@ -12,5 +12,6 @@ require (
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
 	github.com/vektah/gqlparser/v2 v2.1.0
 	google.golang.org/api v0.40.0
+	google.golang.org/grpc v1.35.0
 	gopkg.in/go-playground/assert.v1 v1.2.1
 )

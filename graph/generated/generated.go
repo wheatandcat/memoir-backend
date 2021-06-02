@@ -105,6 +105,7 @@ type ComplexityRoot struct {
 		CreatedAt  func(childComplexity int) int
 		FollowedID func(childComplexity int) int
 		FollowerID func(childComplexity int) int
+		ID         func(childComplexity int) int
 		Status     func(childComplexity int) int
 		UpdatedAt  func(childComplexity int) int
 	}
@@ -503,6 +504,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.RelationshipRequest.FollowerID(childComplexity), true
 
+	case "RelationshipRequest.id":
+		if e.complexity.RelationshipRequest.ID == nil {
+			break
+		}
+
+		return e.complexity.RelationshipRequest.ID(childComplexity), true
+
 	case "RelationshipRequest.status":
 		if e.complexity.RelationshipRequest.Status == nil {
 			break
@@ -714,6 +722,8 @@ input InputItemsInPeriod {
 }
 
 type RelationshipRequest {
+  "ID"
+  id: ID!
   "フォローしたユーザーID"
   followerId: String!
   "フォローされたユーザーID"
@@ -2492,6 +2502,41 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RelationshipRequest_id(ctx context.Context, field graphql.CollectedField, obj *model.RelationshipRequest) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RelationshipRequest",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _RelationshipRequest_followerId(ctx context.Context, field graphql.CollectedField, obj *model.RelationshipRequest) (ret graphql.Marshaler) {
@@ -4765,6 +4810,11 @@ func (ec *executionContext) _RelationshipRequest(ctx context.Context, sel ast.Se
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("RelationshipRequest")
+		case "id":
+			out.Values[i] = ec._RelationshipRequest_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "followerId":
 			out.Values[i] = ec._RelationshipRequest_followerId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

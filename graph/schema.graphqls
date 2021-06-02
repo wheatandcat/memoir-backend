@@ -68,6 +68,8 @@ input InputItemsInPeriod {
 }
 
 type RelationshipRequest {
+  "ID"
+  id: ID!
   "フォローしたユーザーID"
   followerId: String!
   "フォローされたユーザーID"
