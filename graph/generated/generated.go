@@ -781,7 +781,7 @@ type Query {
   invite: Invite!
   "招待コードからユーザーを取得する"
   inviteByCode(code: String!): User!
-  "招待コードからユーザーを取得する"
+  "招待の申請リクエストを取得する"
   relationshipRequests(input: InputRelationshipRequests!): RelationshipRequests!
 }
 
@@ -848,7 +848,7 @@ type Mutation {
   createInvite: Invite!
   "招待コード更新する"
   updateInvite: Invite!
-  "共有を招待をリクエストする"
+  "招待をリクエストする"
   newRelationshipRequest(input: NewRelationshipRequest!): RelationshipRequest!
 }
 

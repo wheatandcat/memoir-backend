@@ -140,7 +140,7 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <td valign="top"><a href="#relationshiprequests">RelationshipRequests</a>!</td>
 <td>
 
-招待コードからユーザーを取得する
+招待の申請リクエストを取得する
 
 </td>
 </tr>
@@ -270,7 +270,7 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <td valign="top"><a href="#relationshiprequest">RelationshipRequest</a>!</td>
 <td>
 
-共有を招待をリクエストする
+招待をリクエストする
 
 </td>
 </tr>
@@ -987,4 +987,4 @@ The `String`scalar type represents textual data, represented as UTF-8 character 
 
 ### Time
 
-Done in 2.74s.
+Done in 2.56s.
