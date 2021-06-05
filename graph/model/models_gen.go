@@ -102,6 +102,8 @@ type RelationshipRequest struct {
 	CreatedAt time.Time `json:"createdAt"`
 	// 更新日時
 	UpdatedAt time.Time `json:"updatedAt"`
+	// ユーザー情報
+	User *User `json:"user"`
 }
 
 type RelationshipRequestEdge struct {

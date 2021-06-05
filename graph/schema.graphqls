@@ -80,6 +80,8 @@ type RelationshipRequest {
   createdAt: Time!
   "更新日時"
   updatedAt: Time!
+  "ユーザー情報"
+  user(skip: Boolean): User
 }
 
 type RelationshipRequestEdge {

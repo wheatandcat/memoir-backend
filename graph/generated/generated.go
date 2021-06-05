@@ -108,6 +108,7 @@ type ComplexityRoot struct {
 		ID         func(childComplexity int) int
 		Status     func(childComplexity int) int
 		UpdatedAt  func(childComplexity int) int
+		User       func(childComplexity int, skip *bool) int
 	}
 
 	RelationshipRequestEdge struct {
@@ -525,6 +526,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.RelationshipRequest.UpdatedAt(childComplexity), true
 
+	case "RelationshipRequest.user":
+		if e.complexity.RelationshipRequest.User == nil {
+			break
+		}
+
+		args, err := ec.field_RelationshipRequest_user_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.RelationshipRequest.User(childComplexity, args["skip"].(*bool)), true
+
 	case "RelationshipRequestEdge.cursor":
 		if e.complexity.RelationshipRequestEdge.Cursor == nil {
 			break
@@ -734,6 +747,8 @@ type RelationshipRequest {
   createdAt: Time!
   "更新日時"
   updatedAt: Time!
+  "ユーザー情報"
+  user(skip: Boolean): User
 }
 
 type RelationshipRequestEdge {
@@ -1053,6 +1068,21 @@ func (ec *executionContext) field_Query_relationshipRequests_args(ctx context.Co
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_RelationshipRequest_user_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *bool
+	if tmp, ok := rawArgs["skip"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("skip"))
+		arg0, err = ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["skip"] = arg0
 	return args, nil
 }
 
@@ -2712,6 +2742,45 @@ func (ec *executionContext) _RelationshipRequest_updatedAt(ctx context.Context, 
 	res := resTmp.(time.Time)
 	fc.Result = res
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RelationshipRequest_user(ctx context.Context, field graphql.CollectedField, obj *model.RelationshipRequest) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RelationshipRequest",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_RelationshipRequest_user_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.User, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalOUser2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _RelationshipRequestEdge_node(ctx context.Context, field graphql.CollectedField, obj *model.RelationshipRequestEdge) (ret graphql.Marshaler) {
@@ -4840,6 +4909,8 @@ func (ec *executionContext) _RelationshipRequest(ctx context.Context, sel ast.Se
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "user":
+			out.Values[i] = ec._RelationshipRequest_user(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5866,6 +5937,13 @@ func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel
 		return graphql.Null
 	}
 	return graphql.MarshalTime(*v)
+}
+
+func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._User(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

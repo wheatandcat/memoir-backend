@@ -67,7 +67,7 @@ func (re *RelationshipRequestRepository) Find(ctx context.Context, f *firestore.
 // FindByFollowedID ページングで取得する
 func (re *RelationshipRequestRepository) FindByFollowedID(ctx context.Context, f *firestore.Client, userID string, first int, cursor RelationshipRequestCursor) ([]*model.RelationshipRequest, error) {
 	var items []*model.RelationshipRequest
-	query := f.Collection("relationshipRequests").Where("FollowedID", "==", userID).Where("Status", "==", RelationshipRequestStatusRequest).OrderBy("CreatedAt", firestore.Asc)
+	query := f.Collection("relationshipRequests").Where("FollowedID", "==", userID).Where("Status", "==", RelationshipRequestStatusRequest).OrderBy("CreatedAt", firestore.Desc)
 
 	if cursor.FollowerID != "" {
 		ds, err := f.Collection("relationshipRequests").Doc(cursor.FollowerID + "_" + cursor.FollowedID).Get(ctx)

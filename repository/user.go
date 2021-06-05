@@ -26,6 +26,7 @@ type UserRepositoryInterface interface {
 	FindDatabaseDataByUID(ctx context.Context, f *firestore.Client, uid string) (*User, error)
 	FindByFirebaseUID(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error)
 	ExistByFirebaseUID(ctx context.Context, f *firestore.Client, fUID string) (bool, error)
+	FindInUID(ctx context.Context, f *firestore.Client, uid []string) ([]*model.User, error)
 }
 
 // UserRepository is repository for user
@@ -126,4 +127,23 @@ func (re *UserRepository) ExistByFirebaseUID(ctx context.Context, f *firestore.C
 
 	return len(docs) > 0, nil
 
+}
+
+// FindInUID ユーザーIDリストから取得する
+func (re *UserRepository) FindInUID(ctx context.Context, f *firestore.Client, uid []string) ([]*model.User, error) {
+	var us []*model.User
+	matchItem := f.Collection("users").Where("ID", "in", uid).OrderBy("CreatedAt", firestore.Asc).Limit(10).Documents(ctx)
+	docs, err := matchItem.GetAll()
+	if err != nil {
+		return us, err
+	}
+
+	for _, doc := range docs {
+		var u *model.User
+		doc.DataTo(&u)
+
+		us = append(us, u)
+	}
+
+	return us, nil
 }

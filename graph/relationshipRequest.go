@@ -53,7 +53,7 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 }
 
 // GetRelationshipRequests 共有の招待リクエストを取得する
-func (g *Graph) GetRelationshipRequests(ctx context.Context, input model.InputRelationshipRequests) (*model.RelationshipRequests, error) {
+func (g *Graph) GetRelationshipRequests(ctx context.Context, input model.InputRelationshipRequests, userSkip bool) (*model.RelationshipRequests, error) {
 	t := g.Client.Time
 	if !g.Client.AuthToken.Valid(ctx) {
 		return nil, fmt.Errorf("Invalid Authorization")
@@ -77,15 +77,38 @@ func (g *Graph) GetRelationshipRequests(ctx context.Context, input model.InputRe
 		return nil, err
 	}
 
+	userID := []string{}
+	for _, i := range items {
+		userID = append(userID, i.FollowerID)
+	}
+	users := []*model.User{}
+
+	if !userSkip {
+		users, err = g.App.UserRepository.FindInUID(ctx, g.FirestoreClient, userID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	var rres []*model.RelationshipRequestEdge
+
 	for index, i := range items {
 		items[index].CreatedAt = t.Location(i.CreatedAt)
 		items[index].UpdatedAt = t.Location(i.UpdatedAt)
+
+		user := &model.User{}
+		for _, u := range users {
+			if u.ID == i.FollowerID {
+				user = u
+			}
+		}
+		items[index].User = user
 
 		rres = append(rres, &model.RelationshipRequestEdge{
 			Node:   items[index],
 			Cursor: i.FollowedID + "/" + i.FollowerID,
 		})
+
 	}
 
 	pi := &model.PageInfo{

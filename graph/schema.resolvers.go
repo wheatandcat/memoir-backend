@@ -7,6 +7,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
@@ -234,7 +235,18 @@ func (r *queryResolver) RelationshipRequests(ctx context.Context, input model.In
 		return nil, err
 	}
 
-	result, err := g.GetRelationshipRequests(ctx, input)
+	userSkip := true
+	fields := graphql.CollectFieldsCtx(ctx, nil)
+
+	edges := GetNestCollectFields(ctx, fields, "edges")
+	nodes := GetNestCollectFields(ctx, edges, "node")
+	value := GetNestCollectFieldArgumentValue(ctx, nodes, "user", "skip")
+
+	if value == "false" {
+		userSkip = false
+	}
+
+	result, err := g.GetRelationshipRequests(ctx, input, userSkip)
 	if err != nil {
 		return nil, err
 	}
