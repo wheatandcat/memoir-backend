@@ -88,6 +88,7 @@ func (g *Graph) GetRelationshipRequests(ctx context.Context, input model.InputRe
 		if err != nil {
 			return nil, err
 		}
+
 	}
 
 	var rres []*model.RelationshipRequestEdge
@@ -97,11 +98,15 @@ func (g *Graph) GetRelationshipRequests(ctx context.Context, input model.InputRe
 		items[index].UpdatedAt = t.Location(i.UpdatedAt)
 
 		user := &model.User{}
+
 		for _, u := range users {
+
 			if u.ID == i.FollowerID {
 				user = u
 			}
+
 		}
+
 		items[index].User = user
 
 		rres = append(rres, &model.RelationshipRequestEdge{
