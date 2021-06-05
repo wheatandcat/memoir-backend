@@ -7,6 +7,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
@@ -116,6 +117,20 @@ func (r *mutationResolver) UpdateInvite(ctx context.Context) (*model.Invite, err
 	return result, nil
 }
 
+func (r *mutationResolver) NewRelationshipRequest(ctx context.Context, input model.NewRelationshipRequest) (*model.RelationshipRequest, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.CreateRelationshipRequest(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -207,6 +222,31 @@ func (r *queryResolver) InviteByCode(ctx context.Context, code string) (*model.U
 	}
 
 	result, err := g.GetInviteByCode(ctx, code)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *queryResolver) RelationshipRequests(ctx context.Context, input model.InputRelationshipRequests) (*model.RelationshipRequests, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	userSkip := true
+	fields := graphql.CollectFieldsCtx(ctx, nil)
+
+	edges := GetNestCollectFields(ctx, fields, "edges")
+	nodes := GetNestCollectFields(ctx, edges, "node")
+	value := GetNestCollectFieldArgumentValue(ctx, nodes, "user", "skip")
+
+	if value == "false" {
+		userSkip = false
+	}
+
+	result, err := g.GetRelationshipRequests(ctx, input, userSkip)
 	if err != nil {
 		return nil, err
 	}

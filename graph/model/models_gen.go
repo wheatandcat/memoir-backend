@@ -18,6 +18,11 @@ type InputItemsInPeriod struct {
 	EndDate   time.Time `json:"endDate"`
 }
 
+type InputRelationshipRequests struct {
+	After *string `json:"after"`
+	First int     `json:"first"`
+}
+
 type Invite struct {
 	// ユーザーID
 	UserID string `json:"userID"`
@@ -69,6 +74,11 @@ type NewItem struct {
 	Dislike bool      `json:"dislike"`
 }
 
+type NewRelationshipRequest struct {
+	// 招待コード
+	Code string `json:"code"`
+}
+
 type NewUser struct {
 	// ユーザーID
 	ID string `json:"id"`
@@ -77,6 +87,33 @@ type NewUser struct {
 type PageInfo struct {
 	EndCursor   string `json:"endCursor"`
 	HasNextPage bool   `json:"hasNextPage"`
+}
+
+type RelationshipRequest struct {
+	// ID
+	ID string `json:"id"`
+	// フォローしたユーザーID
+	FollowerID string `json:"followerId"`
+	// フォローされたユーザーID
+	FollowedID string `json:"followedId"`
+	// 1:申請中、2:拒否、3: 承認
+	Status int `json:"status"`
+	// 作成日時
+	CreatedAt time.Time `json:"createdAt"`
+	// 更新日時
+	UpdatedAt time.Time `json:"updatedAt"`
+	// ユーザー情報
+	User *User `json:"user"`
+}
+
+type RelationshipRequestEdge struct {
+	Node   *RelationshipRequest `json:"node"`
+	Cursor string               `json:"cursor"`
+}
+
+type RelationshipRequests struct {
+	PageInfo *PageInfo                  `json:"pageInfo"`
+	Edges    []*RelationshipRequestEdge `json:"edges"`
 }
 
 type UpdateItem struct {

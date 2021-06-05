@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/firestore"
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/wheatandcat/memoir-backend/auth"
 	"github.com/wheatandcat/memoir-backend/client/authToken"
 	"github.com/wheatandcat/memoir-backend/client/timegen"
@@ -73,4 +74,29 @@ func NewGraphWithSetUserID(app *Application, f *firestore.Client, uid string) *G
 		App:             app,
 		Client:          client,
 	}
+}
+
+func GetNestCollectFields(ctx context.Context, cfs []graphql.CollectedField, columnName string) []graphql.CollectedField {
+	for _, cf := range cfs {
+		if cf.Name == columnName {
+			return graphql.CollectFields(graphql.GetOperationContext(ctx), cf.Selections, nil)
+		}
+	}
+
+	return []graphql.CollectedField{}
+}
+
+func GetNestCollectFieldArgumentValue(ctx context.Context, cfs []graphql.CollectedField, columnName string, argumentName string) string {
+	for _, cf := range cfs {
+		if cf.Name == columnName {
+			for _, arg := range cf.Arguments {
+				if arg.Name == argumentName {
+					return arg.Value.String()
+				}
+			}
+
+		}
+	}
+
+	return ""
 }

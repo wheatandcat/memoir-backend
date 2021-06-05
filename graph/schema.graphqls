@@ -67,6 +67,38 @@ input InputItemsInPeriod {
   endDate: Time!
 }
 
+type RelationshipRequest {
+  "ID"
+  id: ID!
+  "フォローしたユーザーID"
+  followerId: String!
+  "フォローされたユーザーID"
+  followedId: String!
+  "1:申請中、2:拒否、3: 承認"
+  status: Int!
+  "作成日時"
+  createdAt: Time!
+  "更新日時"
+  updatedAt: Time!
+  "ユーザー情報"
+  user(skip: Boolean): User
+}
+
+type RelationshipRequestEdge {
+  node: RelationshipRequest
+  cursor: String!
+}
+
+type RelationshipRequests {
+  pageInfo: PageInfo!
+  edges: [RelationshipRequestEdge!]!
+}
+
+input InputRelationshipRequests {
+  after: String
+  first: Int!
+}
+
 type Query {
   "ユーザーを取得する"
   user: User!
@@ -82,6 +114,8 @@ type Query {
   invite: Invite!
   "招待コードからユーザーを取得する"
   inviteByCode(code: String!): User!
+  "招待の申請リクエストを取得する"
+  relationshipRequests(input: InputRelationshipRequests!): RelationshipRequests!
 }
 
 input NewUser {
@@ -125,6 +159,11 @@ input DeleteItem {
   id: ID!
 }
 
+input NewRelationshipRequest {
+  "招待コード"
+  code: String!
+}
+
 type Mutation {
   "ユーザーを作成する"
   createUser(input: NewUser!): User!
@@ -142,6 +181,8 @@ type Mutation {
   createInvite: Invite!
   "招待コード更新する"
   updateInvite: Invite!
+  "招待をリクエストする"
+  newRelationshipRequest(input: NewRelationshipRequest!): RelationshipRequest!
 }
 
 scalar Time

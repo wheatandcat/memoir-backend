@@ -527,6 +527,9 @@ var _ UserRepositoryInterface = &UserRepositoryInterfaceMock{}
 // 			FindDatabaseDataByUIDFunc: func(ctx context.Context, f *firestore.Client, uid string) (*User, error) {
 // 				panic("mock out the FindDatabaseDataByUID method")
 // 			},
+// 			FindInUIDFunc: func(ctx context.Context, f *firestore.Client, uid []string) ([]*model.User, error) {
+// 				panic("mock out the FindInUID method")
+// 			},
 // 			UpdateFunc: func(ctx context.Context, f *firestore.Client, u *model.User) error {
 // 				panic("mock out the Update method")
 // 			},
@@ -554,6 +557,9 @@ type UserRepositoryInterfaceMock struct {
 
 	// FindDatabaseDataByUIDFunc mocks the FindDatabaseDataByUID method.
 	FindDatabaseDataByUIDFunc func(ctx context.Context, f *firestore.Client, uid string) (*User, error)
+
+	// FindInUIDFunc mocks the FindInUID method.
+	FindInUIDFunc func(ctx context.Context, f *firestore.Client, uid []string) ([]*model.User, error)
 
 	// UpdateFunc mocks the Update method.
 	UpdateFunc func(ctx context.Context, f *firestore.Client, u *model.User) error
@@ -608,6 +614,15 @@ type UserRepositoryInterfaceMock struct {
 			// UID is the uid argument value.
 			UID string
 		}
+		// FindInUID holds details about calls to the FindInUID method.
+		FindInUID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// UID is the uid argument value.
+			UID []string
+		}
 		// Update holds details about calls to the Update method.
 		Update []struct {
 			// Ctx is the ctx argument value.
@@ -632,6 +647,7 @@ type UserRepositoryInterfaceMock struct {
 	lockFindByFirebaseUID     sync.RWMutex
 	lockFindByUID             sync.RWMutex
 	lockFindDatabaseDataByUID sync.RWMutex
+	lockFindInUID             sync.RWMutex
 	lockUpdate                sync.RWMutex
 	lockUpdateFirebaseUID     sync.RWMutex
 }
@@ -828,6 +844,45 @@ func (mock *UserRepositoryInterfaceMock) FindDatabaseDataByUIDCalls() []struct {
 	mock.lockFindDatabaseDataByUID.RLock()
 	calls = mock.calls.FindDatabaseDataByUID
 	mock.lockFindDatabaseDataByUID.RUnlock()
+	return calls
+}
+
+// FindInUID calls FindInUIDFunc.
+func (mock *UserRepositoryInterfaceMock) FindInUID(ctx context.Context, f *firestore.Client, uid []string) ([]*model.User, error) {
+	if mock.FindInUIDFunc == nil {
+		panic("UserRepositoryInterfaceMock.FindInUIDFunc: method is nil but UserRepositoryInterface.FindInUID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		F   *firestore.Client
+		UID []string
+	}{
+		Ctx: ctx,
+		F:   f,
+		UID: uid,
+	}
+	mock.lockFindInUID.Lock()
+	mock.calls.FindInUID = append(mock.calls.FindInUID, callInfo)
+	mock.lockFindInUID.Unlock()
+	return mock.FindInUIDFunc(ctx, f, uid)
+}
+
+// FindInUIDCalls gets all the calls that were made to FindInUID.
+// Check the length with:
+//     len(mockedUserRepositoryInterface.FindInUIDCalls())
+func (mock *UserRepositoryInterfaceMock) FindInUIDCalls() []struct {
+	Ctx context.Context
+	F   *firestore.Client
+	UID []string
+} {
+	var calls []struct {
+		Ctx context.Context
+		F   *firestore.Client
+		UID []string
+	}
+	mock.lockFindInUID.RLock()
+	calls = mock.calls.FindInUID
+	mock.lockFindInUID.RUnlock()
 	return calls
 }
 
@@ -1209,5 +1264,265 @@ func (mock *InviteRepositoryInterfaceMock) FindByUserIDCalls() []struct {
 	mock.lockFindByUserID.RLock()
 	calls = mock.calls.FindByUserID
 	mock.lockFindByUserID.RUnlock()
+	return calls
+}
+
+// Ensure, that RelationshipRequestInterfaceMock does implement RelationshipRequestInterface.
+// If this is not the case, regenerate this file with moq.
+var _ RelationshipRequestInterface = &RelationshipRequestInterfaceMock{}
+
+// RelationshipRequestInterfaceMock is a mock implementation of RelationshipRequestInterface.
+//
+// 	func TestSomethingThatUsesRelationshipRequestInterface(t *testing.T) {
+//
+// 		// make and configure a mocked RelationshipRequestInterface
+// 		mockedRelationshipRequestInterface := &RelationshipRequestInterfaceMock{
+// 			CreateFunc: func(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) error {
+// 				panic("mock out the Create method")
+// 			},
+// 			FindFunc: func(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) (*model.RelationshipRequest, error) {
+// 				panic("mock out the Find method")
+// 			},
+// 			FindByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string, first int, cursor RelationshipRequestCursor) ([]*model.RelationshipRequest, error) {
+// 				panic("mock out the FindByFollowedID method")
+// 			},
+// 			UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest)  {
+// 				panic("mock out the Update method")
+// 			},
+// 		}
+//
+// 		// use mockedRelationshipRequestInterface in code that requires RelationshipRequestInterface
+// 		// and then make assertions.
+//
+// 	}
+type RelationshipRequestInterfaceMock struct {
+	// CreateFunc mocks the Create method.
+	CreateFunc func(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) error
+
+	// FindFunc mocks the Find method.
+	FindFunc func(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) (*model.RelationshipRequest, error)
+
+	// FindByFollowedIDFunc mocks the FindByFollowedID method.
+	FindByFollowedIDFunc func(ctx context.Context, f *firestore.Client, userID string, first int, cursor RelationshipRequestCursor) ([]*model.RelationshipRequest, error)
+
+	// UpdateFunc mocks the Update method.
+	UpdateFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest)
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// Create holds details about calls to the Create method.
+		Create []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// I is the i argument value.
+			I *model.RelationshipRequest
+		}
+		// Find holds details about calls to the Find method.
+		Find []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// I is the i argument value.
+			I *model.RelationshipRequest
+		}
+		// FindByFollowedID holds details about calls to the FindByFollowedID method.
+		FindByFollowedID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// UserID is the userID argument value.
+			UserID string
+			// First is the first argument value.
+			First int
+			// Cursor is the cursor argument value.
+			Cursor RelationshipRequestCursor
+		}
+		// Update holds details about calls to the Update method.
+		Update []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// Batch is the batch argument value.
+			Batch *firestore.WriteBatch
+			// I is the i argument value.
+			I *model.RelationshipRequest
+		}
+	}
+	lockCreate           sync.RWMutex
+	lockFind             sync.RWMutex
+	lockFindByFollowedID sync.RWMutex
+	lockUpdate           sync.RWMutex
+}
+
+// Create calls CreateFunc.
+func (mock *RelationshipRequestInterfaceMock) Create(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) error {
+	if mock.CreateFunc == nil {
+		panic("RelationshipRequestInterfaceMock.CreateFunc: method is nil but RelationshipRequestInterface.Create was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		F   *firestore.Client
+		I   *model.RelationshipRequest
+	}{
+		Ctx: ctx,
+		F:   f,
+		I:   i,
+	}
+	mock.lockCreate.Lock()
+	mock.calls.Create = append(mock.calls.Create, callInfo)
+	mock.lockCreate.Unlock()
+	return mock.CreateFunc(ctx, f, i)
+}
+
+// CreateCalls gets all the calls that were made to Create.
+// Check the length with:
+//     len(mockedRelationshipRequestInterface.CreateCalls())
+func (mock *RelationshipRequestInterfaceMock) CreateCalls() []struct {
+	Ctx context.Context
+	F   *firestore.Client
+	I   *model.RelationshipRequest
+} {
+	var calls []struct {
+		Ctx context.Context
+		F   *firestore.Client
+		I   *model.RelationshipRequest
+	}
+	mock.lockCreate.RLock()
+	calls = mock.calls.Create
+	mock.lockCreate.RUnlock()
+	return calls
+}
+
+// Find calls FindFunc.
+func (mock *RelationshipRequestInterfaceMock) Find(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) (*model.RelationshipRequest, error) {
+	if mock.FindFunc == nil {
+		panic("RelationshipRequestInterfaceMock.FindFunc: method is nil but RelationshipRequestInterface.Find was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		F   *firestore.Client
+		I   *model.RelationshipRequest
+	}{
+		Ctx: ctx,
+		F:   f,
+		I:   i,
+	}
+	mock.lockFind.Lock()
+	mock.calls.Find = append(mock.calls.Find, callInfo)
+	mock.lockFind.Unlock()
+	return mock.FindFunc(ctx, f, i)
+}
+
+// FindCalls gets all the calls that were made to Find.
+// Check the length with:
+//     len(mockedRelationshipRequestInterface.FindCalls())
+func (mock *RelationshipRequestInterfaceMock) FindCalls() []struct {
+	Ctx context.Context
+	F   *firestore.Client
+	I   *model.RelationshipRequest
+} {
+	var calls []struct {
+		Ctx context.Context
+		F   *firestore.Client
+		I   *model.RelationshipRequest
+	}
+	mock.lockFind.RLock()
+	calls = mock.calls.Find
+	mock.lockFind.RUnlock()
+	return calls
+}
+
+// FindByFollowedID calls FindByFollowedIDFunc.
+func (mock *RelationshipRequestInterfaceMock) FindByFollowedID(ctx context.Context, f *firestore.Client, userID string, first int, cursor RelationshipRequestCursor) ([]*model.RelationshipRequest, error) {
+	if mock.FindByFollowedIDFunc == nil {
+		panic("RelationshipRequestInterfaceMock.FindByFollowedIDFunc: method is nil but RelationshipRequestInterface.FindByFollowedID was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		UserID string
+		First  int
+		Cursor RelationshipRequestCursor
+	}{
+		Ctx:    ctx,
+		F:      f,
+		UserID: userID,
+		First:  first,
+		Cursor: cursor,
+	}
+	mock.lockFindByFollowedID.Lock()
+	mock.calls.FindByFollowedID = append(mock.calls.FindByFollowedID, callInfo)
+	mock.lockFindByFollowedID.Unlock()
+	return mock.FindByFollowedIDFunc(ctx, f, userID, first, cursor)
+}
+
+// FindByFollowedIDCalls gets all the calls that were made to FindByFollowedID.
+// Check the length with:
+//     len(mockedRelationshipRequestInterface.FindByFollowedIDCalls())
+func (mock *RelationshipRequestInterfaceMock) FindByFollowedIDCalls() []struct {
+	Ctx    context.Context
+	F      *firestore.Client
+	UserID string
+	First  int
+	Cursor RelationshipRequestCursor
+} {
+	var calls []struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		UserID string
+		First  int
+		Cursor RelationshipRequestCursor
+	}
+	mock.lockFindByFollowedID.RLock()
+	calls = mock.calls.FindByFollowedID
+	mock.lockFindByFollowedID.RUnlock()
+	return calls
+}
+
+// Update calls UpdateFunc.
+func (mock *RelationshipRequestInterfaceMock) Update(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest) {
+	if mock.UpdateFunc == nil {
+		panic("RelationshipRequestInterfaceMock.UpdateFunc: method is nil but RelationshipRequestInterface.Update was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		F     *firestore.Client
+		Batch *firestore.WriteBatch
+		I     *model.RelationshipRequest
+	}{
+		Ctx:   ctx,
+		F:     f,
+		Batch: batch,
+		I:     i,
+	}
+	mock.lockUpdate.Lock()
+	mock.calls.Update = append(mock.calls.Update, callInfo)
+	mock.lockUpdate.Unlock()
+	mock.UpdateFunc(ctx, f, batch, i)
+}
+
+// UpdateCalls gets all the calls that were made to Update.
+// Check the length with:
+//     len(mockedRelationshipRequestInterface.UpdateCalls())
+func (mock *RelationshipRequestInterfaceMock) UpdateCalls() []struct {
+	Ctx   context.Context
+	F     *firestore.Client
+	Batch *firestore.WriteBatch
+	I     *model.RelationshipRequest
+} {
+	var calls []struct {
+		Ctx   context.Context
+		F     *firestore.Client
+		Batch *firestore.WriteBatch
+		I     *model.RelationshipRequest
+	}
+	mock.lockUpdate.RLock()
+	calls = mock.calls.Update
+	mock.lockUpdate.RUnlock()
 	return calls
 }

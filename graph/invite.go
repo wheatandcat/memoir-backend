@@ -19,8 +19,9 @@ func (g *Graph) CreateInvite(ctx context.Context) (*model.Invite, error) {
 	if err != nil {
 		return nil, err
 	}
-	if i.Code != "" {
-		return nil, fmt.Errorf("既に招待コードは作成済みです")
+
+	if i.UserID == g.UserID {
+		return nil, fmt.Errorf("自身の招待コードです")
 	}
 
 	uuid := g.Client.UUID.Get()

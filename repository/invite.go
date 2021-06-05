@@ -2,10 +2,11 @@ package repository
 
 import (
 	"context"
-	"log"
 
 	"cloud.google.com/go/firestore"
 	"github.com/wheatandcat/memoir-backend/graph/model"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type InviteRepositoryInterface interface {
@@ -64,9 +65,13 @@ func (re *InviteRepository) FindByUserID(ctx context.Context, f *firestore.Clien
 // Find 取得する
 func (re *InviteRepository) Find(ctx context.Context, f *firestore.Client, code string) (*model.Invite, error) {
 	var i *model.Invite
-	log.Println(code)
 	ds, err := f.Collection("invites").Doc(code).Get(ctx)
+
 	if err != nil {
+		if status.Code(err) == codes.InvalidArgument || status.Code(err) == codes.NotFound {
+			return &model.Invite{}, nil
+		}
+
 		return i, err
 	}
 
