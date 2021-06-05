@@ -13,11 +13,16 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
     * [ItemsInPeriod](#itemsinperiod)
     * [ItemsInPeriodEdge](#itemsinperiodedge)
     * [PageInfo](#pageinfo)
+    * [RelationshipRequest](#relationshiprequest)
+    * [RelationshipRequestEdge](#relationshiprequestedge)
+    * [RelationshipRequests](#relationshiprequests)
     * [User](#user)
   * [Inputs](#inputs)
     * [DeleteItem](#deleteitem)
     * [InputItemsInPeriod](#inputitemsinperiod)
+    * [InputRelationshipRequests](#inputrelationshiprequests)
     * [NewItem](#newitem)
+    * [NewRelationshipRequest](#newrelationshiprequest)
     * [NewUser](#newuser)
     * [UpdateItem](#updateitem)
     * [UpdateUser](#updateuser)
@@ -128,6 +133,20 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <tr>
 <td colspan="2" align="right" valign="top">code</td>
 <td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>relationshipRequests</strong></td>
+<td valign="top"><a href="#relationshiprequests">RelationshipRequests</a>!</td>
+<td>
+
+招待コードからユーザーを取得する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#inputrelationshiprequests">InputRelationshipRequests</a>!</td>
 <td></td>
 </tr>
 </tbody>
@@ -245,6 +264,20 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 招待コード更新する
 
 </td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>newRelationshipRequest</strong></td>
+<td valign="top"><a href="#relationshiprequest">RelationshipRequest</a>!</td>
+<td>
+
+共有を招待をリクエストする
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#newrelationshiprequest">NewRelationshipRequest</a>!</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -465,6 +498,139 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 </tbody>
 </table>
 
+### RelationshipRequest
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
+<td>
+
+ID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>followerId</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+フォローしたユーザーID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>followedId</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+フォローされたユーザーID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>status</strong></td>
+<td valign="top"><a href="#int">Int</a>!</td>
+<td>
+
+1:申請中、2:拒否、3: 承認
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>createdAt</strong></td>
+<td valign="top"><a href="#time">Time</a>!</td>
+<td>
+
+作成日時
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>updatedAt</strong></td>
+<td valign="top"><a href="#time">Time</a>!</td>
+<td>
+
+更新日時
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>user</strong></td>
+<td valign="top"><a href="#user">User</a></td>
+<td>
+
+ユーザー情報
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">skip</td>
+<td valign="top"><a href="#boolean">Boolean</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### RelationshipRequestEdge
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>node</strong></td>
+<td valign="top"><a href="#relationshiprequest">RelationshipRequest</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>cursor</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### RelationshipRequests
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>pageInfo</strong></td>
+<td valign="top"><a href="#pageinfo">PageInfo</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>edges</strong></td>
+<td valign="top">[<a href="#relationshiprequestedge">RelationshipRequestEdge</a>!]!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
 ### User
 
 <table>
@@ -584,6 +750,30 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 </tbody>
 </table>
 
+### InputRelationshipRequests
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>after</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>first</strong></td>
+<td valign="top"><a href="#int">Int</a>!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
 ### NewItem
 
 <table>
@@ -631,6 +821,29 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <td colspan="2" valign="top"><strong>dislike</strong></td>
 <td valign="top"><a href="#boolean">Boolean</a>!</td>
 <td></td>
+</tr>
+</tbody>
+</table>
+
+### NewRelationshipRequest
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>code</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+招待コード
+
+</td>
 </tr>
 </tbody>
 </table>
