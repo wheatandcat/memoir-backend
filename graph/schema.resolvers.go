@@ -117,7 +117,7 @@ func (r *mutationResolver) UpdateInvite(ctx context.Context) (*model.Invite, err
 	return result, nil
 }
 
-func (r *mutationResolver) NewRelationshipRequest(ctx context.Context, input model.NewRelationshipRequest) (*model.RelationshipRequest, error) {
+func (r *mutationResolver) CreateRelationshipRequest(ctx context.Context, input model.NewRelationshipRequest) (*model.RelationshipRequest, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
 		return nil, err

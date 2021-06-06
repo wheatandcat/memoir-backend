@@ -74,15 +74,15 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateAuthUser         func(childComplexity int, input model.NewUser) int
-		CreateInvite           func(childComplexity int) int
-		CreateItem             func(childComplexity int, input model.NewItem) int
-		CreateUser             func(childComplexity int, input model.NewUser) int
-		DeleteItem             func(childComplexity int, input model.DeleteItem) int
-		NewRelationshipRequest func(childComplexity int, input model.NewRelationshipRequest) int
-		UpdateInvite           func(childComplexity int) int
-		UpdateItem             func(childComplexity int, input model.UpdateItem) int
-		UpdateUser             func(childComplexity int, input model.UpdateUser) int
+		CreateAuthUser            func(childComplexity int, input model.NewUser) int
+		CreateInvite              func(childComplexity int) int
+		CreateItem                func(childComplexity int, input model.NewItem) int
+		CreateRelationshipRequest func(childComplexity int, input model.NewRelationshipRequest) int
+		CreateUser                func(childComplexity int, input model.NewUser) int
+		DeleteItem                func(childComplexity int, input model.DeleteItem) int
+		UpdateInvite              func(childComplexity int) int
+		UpdateItem                func(childComplexity int, input model.UpdateItem) int
+		UpdateUser                func(childComplexity int, input model.UpdateUser) int
 	}
 
 	PageInfo struct {
@@ -139,7 +139,7 @@ type MutationResolver interface {
 	DeleteItem(ctx context.Context, input model.DeleteItem) (*model.Item, error)
 	CreateInvite(ctx context.Context) (*model.Invite, error)
 	UpdateInvite(ctx context.Context) (*model.Invite, error)
-	NewRelationshipRequest(ctx context.Context, input model.NewRelationshipRequest) (*model.RelationshipRequest, error)
+	CreateRelationshipRequest(ctx context.Context, input model.NewRelationshipRequest) (*model.RelationshipRequest, error)
 }
 type QueryResolver interface {
 	User(ctx context.Context) (*model.User, error)
@@ -317,6 +317,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateItem(childComplexity, args["input"].(model.NewItem)), true
 
+	case "Mutation.createRelationshipRequest":
+		if e.complexity.Mutation.CreateRelationshipRequest == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createRelationshipRequest_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateRelationshipRequest(childComplexity, args["input"].(model.NewRelationshipRequest)), true
+
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
 			break
@@ -340,18 +352,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteItem(childComplexity, args["input"].(model.DeleteItem)), true
-
-	case "Mutation.newRelationshipRequest":
-		if e.complexity.Mutation.NewRelationshipRequest == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_newRelationshipRequest_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.NewRelationshipRequest(childComplexity, args["input"].(model.NewRelationshipRequest)), true
 
 	case "Mutation.updateInvite":
 		if e.complexity.Mutation.UpdateInvite == nil {
@@ -849,7 +849,9 @@ type Mutation {
   "招待コード更新する"
   updateInvite: Invite!
   "招待をリクエストする"
-  newRelationshipRequest(input: NewRelationshipRequest!): RelationshipRequest!
+  createRelationshipRequest(
+    input: NewRelationshipRequest!
+  ): RelationshipRequest!
 }
 
 scalar Time
@@ -891,6 +893,21 @@ func (ec *executionContext) field_Mutation_createItem_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createRelationshipRequest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewRelationshipRequest
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewRelationshipRequest2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐNewRelationshipRequest(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -913,21 +930,6 @@ func (ec *executionContext) field_Mutation_deleteItem_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNDeleteItem2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐDeleteItem(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_newRelationshipRequest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.NewRelationshipRequest
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewRelationshipRequest2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐNewRelationshipRequest(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2038,7 +2040,7 @@ func (ec *executionContext) _Mutation_updateInvite(ctx context.Context, field gr
 	return ec.marshalNInvite2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐInvite(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_newRelationshipRequest(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createRelationshipRequest(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2055,7 +2057,7 @@ func (ec *executionContext) _Mutation_newRelationshipRequest(ctx context.Context
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_newRelationshipRequest_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createRelationshipRequest_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -2063,7 +2065,7 @@ func (ec *executionContext) _Mutation_newRelationshipRequest(ctx context.Context
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().NewRelationshipRequest(rctx, args["input"].(model.NewRelationshipRequest))
+		return ec.resolvers.Mutation().CreateRelationshipRequest(rctx, args["input"].(model.NewRelationshipRequest))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4687,8 +4689,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "newRelationshipRequest":
-			out.Values[i] = ec._Mutation_newRelationshipRequest(ctx, field)
+		case "createRelationshipRequest":
+			out.Values[i] = ec._Mutation_createRelationshipRequest(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
