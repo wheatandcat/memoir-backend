@@ -182,7 +182,9 @@ type Mutation {
   "招待コード更新する"
   updateInvite: Invite!
   "招待をリクエストする"
-  newRelationshipRequest(input: NewRelationshipRequest!): RelationshipRequest!
+  createRelationshipRequest(
+    input: NewRelationshipRequest!
+  ): RelationshipRequest!
 }
 
 scalar Time
