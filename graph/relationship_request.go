@@ -25,6 +25,10 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 		return nil, fmt.Errorf("招待コードが見つかりません")
 	}
 
+	if i.UserID == g.UserID {
+		return nil, fmt.Errorf("自身の招待コードです")
+	}
+
 	uuid := g.Client.UUID.Get()
 
 	rr := &model.RelationshipRequest{
