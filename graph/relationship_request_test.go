@@ -26,6 +26,13 @@ func TestCreateRelationshipRequest(t *testing.T) {
 
 	date := client.Time.ParseInLocation("2020-01-01T00:00:00")
 
+	u := &model.User{
+		ID:          "test",
+		DisplayName: "test",
+		CreatedAt:   date,
+		UpdatedAt:   date,
+	}
+
 	rr := &model.RelationshipRequest{
 		ID:         "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 		FollowerID: "test",
@@ -33,6 +40,7 @@ func TestCreateRelationshipRequest(t *testing.T) {
 		Status:     repository.RelationshipRequestStatusRequest,
 		CreatedAt:  date,
 		UpdatedAt:  date,
+		User:       u,
 	}
 
 	invite := &model.Invite{
@@ -59,8 +67,15 @@ func TestCreateRelationshipRequest(t *testing.T) {
 		},
 	}
 
+	userRepositoryMock := &repository.UserRepositoryInterfaceMock{
+		FindByUIDFunc: func(ctx context.Context, f *firestore.Client, uid string) (*model.User, error) {
+			return u, nil
+		},
+	}
+
 	g.App.InviteRepository = inviteRepositoryMock
 	g.App.RelationshipRequestRepository = relationshipRequestRepositoryMock
+	g.App.UserRepository = userRepositoryMock
 
 	tests := []struct {
 		name   string

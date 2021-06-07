@@ -22,7 +22,7 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 		return nil, err
 	}
 	if i.UserID == "" {
-		return nil, fmt.Errorf("存在しない招待コードです")
+		return nil, fmt.Errorf("招待コードが見つかりません")
 	}
 
 	uuid := g.Client.UUID.Get()
@@ -48,6 +48,13 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 	if err = g.App.RelationshipRequestRepository.Create(ctx, g.FirestoreClient, rr); err != nil {
 		return nil, err
 	}
+
+	u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, i.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	rr.User = u
 
 	return rr, nil
 }
