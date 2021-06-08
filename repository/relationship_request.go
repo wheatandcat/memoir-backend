@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/wheatandcat/memoir-backend/graph/model"
@@ -32,9 +33,27 @@ type RelationshipRequestCursor struct {
 	FollowedID string
 }
 
+type RelationshipRequestData struct {
+	ID         string
+	FollowerID string
+	FollowedID string
+	Status     int
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+}
+
 // Create 作成する
 func (re *RelationshipRequestRepository) Create(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) error {
-	_, err := f.Collection("relationshipRequests").Doc(i.FollowerID+"_"+i.FollowedID).Set(ctx, i)
+	rrd := RelationshipRequestData{
+		ID:         i.ID,
+		FollowerID: i.FollowerID,
+		FollowedID: i.FollowedID,
+		Status:     i.Status,
+		CreatedAt:  i.CreatedAt,
+		UpdatedAt:  i.UpdatedAt,
+	}
+
+	_, err := f.Collection("relationshipRequests").Doc(i.FollowerID+"_"+i.FollowedID).Set(ctx, rrd)
 	return err
 }
 
