@@ -23,6 +23,11 @@ type InputRelationshipRequests struct {
 	First int     `json:"first"`
 }
 
+type InputRelationships struct {
+	After *string `json:"after"`
+	First int     `json:"first"`
+}
+
 type Invite struct {
 	// ユーザーID
 	UserID string `json:"userID"`
@@ -89,6 +94,26 @@ type PageInfo struct {
 	HasNextPage bool   `json:"hasNextPage"`
 }
 
+type Relationship struct {
+	// ID
+	ID string `json:"id"`
+	// フォローしたユーザーID
+	FollowerID string `json:"followerId"`
+	// フォローされたユーザーID
+	FollowedID string `json:"followedId"`
+	// 作成日時
+	CreatedAt time.Time `json:"createdAt"`
+	// 更新日時
+	UpdatedAt time.Time `json:"updatedAt"`
+	// ユーザー情報
+	User *User `json:"user"`
+}
+
+type RelationshipEdge struct {
+	Node   *Relationship `json:"node"`
+	Cursor string        `json:"cursor"`
+}
+
 type RelationshipRequest struct {
 	// ID
 	ID string `json:"id"`
@@ -114,6 +139,11 @@ type RelationshipRequestEdge struct {
 type RelationshipRequests struct {
 	PageInfo *PageInfo                  `json:"pageInfo"`
 	Edges    []*RelationshipRequestEdge `json:"edges"`
+}
+
+type Relationships struct {
+	PageInfo *PageInfo           `json:"pageInfo"`
+	Edges    []*RelationshipEdge `json:"edges"`
 }
 
 type UpdateItem struct {

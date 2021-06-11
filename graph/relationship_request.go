@@ -63,6 +63,65 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 	return rr, nil
 }
 
+// AcceptRelationshipRequest 招待リクエストを承諾する
+func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
+	if !g.Client.AuthToken.Valid(ctx) {
+		return nil, fmt.Errorf("Invalid Authorization")
+	}
+	rr := &model.RelationshipRequest{
+		FollowerID: g.UserID,
+		FollowedID: followedID,
+		Status:     repository.RelationshipRequestStatusOK,
+		UpdatedAt:  g.Client.Time.Now(),
+	}
+
+	batch := g.FirestoreClient.Batch()
+	g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr)
+
+	r1 := &model.Relationship{
+		FollowerID: g.UserID,
+		FollowedID: followedID,
+		CreatedAt:  g.Client.Time.Now(),
+		UpdatedAt:  g.Client.Time.Now(),
+	}
+	r2 := &model.Relationship{
+		FollowerID: followedID,
+		FollowedID: g.UserID,
+		CreatedAt:  g.Client.Time.Now(),
+		UpdatedAt:  g.Client.Time.Now(),
+	}
+	g.App.RelationshipRepository.Create(ctx, g.FirestoreClient, batch, r1)
+	g.App.RelationshipRepository.Create(ctx, g.FirestoreClient, batch, r2)
+
+	if _, err := batch.Commit(ctx); err != nil {
+		return nil, err
+	}
+
+	return rr, nil
+}
+
+// ngRelationshipRequest 招待リクエストを拒否する
+func (g *Graph) ngRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
+	if !g.Client.AuthToken.Valid(ctx) {
+		return nil, fmt.Errorf("Invalid Authorization")
+	}
+	rr := &model.RelationshipRequest{
+		FollowerID: g.UserID,
+		FollowedID: followedID,
+		Status:     repository.RelationshipRequestStatusNG,
+		UpdatedAt:  g.Client.Time.Now(),
+	}
+
+	batch := g.FirestoreClient.Batch()
+	g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr)
+
+	if _, err := batch.Commit(ctx); err != nil {
+		return nil, err
+	}
+
+	return rr, nil
+}
+
 // GetRelationshipRequests 共有の招待リクエストを取得する
 func (g *Graph) GetRelationshipRequests(ctx context.Context, input model.InputRelationshipRequests, userSkip bool) (*model.RelationshipRequests, error) {
 	t := g.Client.Time

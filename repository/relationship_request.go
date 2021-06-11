@@ -6,6 +6,8 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/wheatandcat/memoir-backend/graph/model"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -57,7 +59,7 @@ func (re *RelationshipRequestRepository) Create(ctx context.Context, f *firestor
 	return err
 }
 
-// Create 更新する
+// Update 更新する
 func (re *RelationshipRequestRepository) Update(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest) {
 	var u []firestore.Update
 	if i.Status != 0 {
@@ -67,7 +69,6 @@ func (re *RelationshipRequestRepository) Update(ctx context.Context, f *firestor
 
 	ref := f.Collection("invites").Doc(i.FollowerID + "_" + i.FollowedID)
 	batch.Update(ref, u)
-
 }
 
 // Find 取得する
@@ -75,6 +76,10 @@ func (re *RelationshipRequestRepository) Find(ctx context.Context, f *firestore.
 	var rr *model.RelationshipRequest
 	ds, err := f.Collection("relationshipRequests").Doc(i.FollowerID + "_" + i.FollowedID).Get(ctx)
 	if err != nil {
+		if status.Code(err) == codes.InvalidArgument || status.Code(err) == codes.NotFound {
+			return &model.RelationshipRequest{}, nil
+		}
+
 		return i, err
 	}
 
