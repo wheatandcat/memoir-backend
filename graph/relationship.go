@@ -29,7 +29,7 @@ func (g *Graph) DeleteRelationship(ctx context.Context, followedID string) (*mod
 	g.App.RelationshipRepository.Delete(ctx, g.FirestoreClient, batch, r1)
 	g.App.RelationshipRepository.Delete(ctx, g.FirestoreClient, batch, r2)
 
-	if _, err := batch.Commit(ctx); err != nil {
+	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
 		return nil, err
 	}
 

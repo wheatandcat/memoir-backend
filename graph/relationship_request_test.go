@@ -27,7 +27,7 @@ func TestCreateRelationshipRequest(t *testing.T) {
 	date := client.Time.ParseInLocation("2020-01-01T00:00:00")
 
 	u := &model.User{
-		ID:          "test",
+		ID:          "test2",
 		DisplayName: "test",
 		CreatedAt:   date,
 		UpdatedAt:   date,
@@ -36,7 +36,7 @@ func TestCreateRelationshipRequest(t *testing.T) {
 	rr := &model.RelationshipRequest{
 		ID:         "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 		FollowerID: "test",
-		FollowedID: "test",
+		FollowedID: "test2",
 		Status:     repository.RelationshipRequestStatusRequest,
 		CreatedAt:  date,
 		UpdatedAt:  date,
@@ -44,7 +44,7 @@ func TestCreateRelationshipRequest(t *testing.T) {
 	}
 
 	invite := &model.Invite{
-		UserID:    "test",
+		UserID:    "test2",
 		Code:      "ABCDEFGH",
 		CreatedAt: date,
 		UpdatedAt: date,
@@ -94,6 +94,125 @@ func TestCreateRelationshipRequest(t *testing.T) {
 	for _, td := range tests {
 		t.Run(td.name, func(t *testing.T) {
 			r, _ := g.CreateRelationshipRequest(ctx, td.param)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
+		})
+	}
+}
+
+func TestAcceptRelationshipRequest(t *testing.T) {
+	ctx := context.Background()
+
+	client := &graph.Client{
+		UUID: &uuidgen.UUID{},
+		Time: &timegen.Time{},
+	}
+
+	date := client.Time.ParseInLocation("2020-01-01T00:00:00")
+
+	rr := &model.RelationshipRequest{
+		FollowerID: "test",
+		FollowedID: "test",
+		Status:     repository.RelationshipRequestStatusOK,
+		UpdatedAt:  date,
+	}
+
+	g := newGraph()
+
+	relationshipRequestRepositoryMock := &repository.RelationshipRequestInterfaceMock{
+		UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest) {
+		},
+	}
+	relationshipRepositoryMock := &repository.RelationshipInterfaceMock{
+		CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship) {
+		},
+	}
+	commonRepositoryMock := &repository.CommonRepositoryInterfaceMock{
+		CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
+			return nil
+		},
+	}
+
+	g.App.RelationshipRequestRepository = relationshipRequestRepositoryMock
+	g.App.RelationshipRepository = relationshipRepositoryMock
+	g.App.CommonRepository = commonRepositoryMock
+
+	tests := []struct {
+		name   string
+		param  string
+		result *model.RelationshipRequest
+	}{
+		{
+			name:   "招待リクエストを承諾する",
+			param:  "test",
+			result: rr,
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			r, _ := g.AcceptRelationshipRequest(ctx, td.param)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
+		})
+	}
+}
+
+func TestNgRelationshipRequest(t *testing.T) {
+	ctx := context.Background()
+
+	client := &graph.Client{
+		UUID: &uuidgen.UUID{},
+		Time: &timegen.Time{},
+	}
+
+	date := client.Time.ParseInLocation("2020-01-01T00:00:00")
+
+	rr := &model.RelationshipRequest{
+		FollowerID: "test",
+		FollowedID: "test",
+		Status:     repository.RelationshipRequestStatusNG,
+		UpdatedAt:  date,
+	}
+
+	g := newGraph()
+
+	relationshipRequestRepositoryMock := &repository.RelationshipRequestInterfaceMock{
+		UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest) {
+		},
+	}
+	commonRepositoryMock := &repository.CommonRepositoryInterfaceMock{
+		CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
+			return nil
+		},
+	}
+
+	g.App.RelationshipRequestRepository = relationshipRequestRepositoryMock
+	g.App.CommonRepository = commonRepositoryMock
+
+	tests := []struct {
+		name   string
+		param  string
+		result *model.RelationshipRequest
+	}{
+		{
+			name:   "招待リクエストを拒否する",
+			param:  "test",
+			result: rr,
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			r, _ := g.NgRelationshipRequest(ctx, td.param)
 			diff := cmp.Diff(r, td.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)

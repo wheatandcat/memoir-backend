@@ -16,8 +16,12 @@ func newGraph() graph.Graph {
 	}
 
 	app := &graph.Application{
-		UserRepository: &repository.UserRepositoryInterfaceMock{},
-		ItemRepository: &repository.ItemRepositoryInterfaceMock{},
+		UserRepository:                &repository.UserRepositoryInterfaceMock{},
+		ItemRepository:                &repository.ItemRepositoryInterfaceMock{},
+		InviteRepository:              &repository.InviteRepositoryInterfaceMock{},
+		RelationshipRequestRepository: &repository.RelationshipRequestInterfaceMock{},
+		RelationshipRepository:        &repository.RelationshipInterfaceMock{},
+		CommonRepository:              &repository.CommonRepositoryInterfaceMock{},
 	}
 
 	g := graph.Graph{

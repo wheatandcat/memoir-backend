@@ -40,12 +40,15 @@ func TestCreateInvite(t *testing.T) {
 		FindByUserIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (*model.Invite, error) {
 			return &model.Invite{}, nil
 		},
+	}
+	commonRepositoryMock := &repository.CommonRepositoryInterfaceMock{
 		CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
 			return nil
 		},
 	}
 
 	g.App.InviteRepository = inviteRepositoryMock
+	g.App.CommonRepository = commonRepositoryMock
 
 	tests := []struct {
 		name   string
@@ -102,12 +105,16 @@ func TestUpdateInvite(t *testing.T) {
 				CreatedAt: date,
 			}, nil
 		},
+	}
+
+	commonRepositoryMock := &repository.CommonRepositoryInterfaceMock{
 		CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
 			return nil
 		},
 	}
 
 	g.App.InviteRepository = inviteRepositoryMock
+	g.App.CommonRepository = commonRepositoryMock
 
 	tests := []struct {
 		name   string

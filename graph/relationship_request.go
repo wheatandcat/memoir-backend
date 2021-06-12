@@ -79,12 +79,14 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 	g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr)
 
 	r1 := &model.Relationship{
+		ID:         g.Client.UUID.Get(),
 		FollowerID: g.UserID,
 		FollowedID: followedID,
 		CreatedAt:  g.Client.Time.Now(),
 		UpdatedAt:  g.Client.Time.Now(),
 	}
 	r2 := &model.Relationship{
+		ID:         g.Client.UUID.Get(),
 		FollowerID: followedID,
 		FollowedID: g.UserID,
 		CreatedAt:  g.Client.Time.Now(),
@@ -93,7 +95,7 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 	g.App.RelationshipRepository.Create(ctx, g.FirestoreClient, batch, r1)
 	g.App.RelationshipRepository.Create(ctx, g.FirestoreClient, batch, r2)
 
-	if _, err := batch.Commit(ctx); err != nil {
+	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
 		return nil, err
 	}
 
@@ -101,7 +103,7 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 }
 
 // ngRelationshipRequest 招待リクエストを拒否する
-func (g *Graph) ngRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
+func (g *Graph) NgRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
 		return nil, fmt.Errorf("Invalid Authorization")
 	}
@@ -115,7 +117,7 @@ func (g *Graph) ngRelationshipRequest(ctx context.Context, followedID string) (*
 	batch := g.FirestoreClient.Batch()
 	g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr)
 
-	if _, err := batch.Commit(ctx); err != nil {
+	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
 		return nil, err
 	}
 

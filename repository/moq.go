@@ -974,9 +974,6 @@ var _ InviteRepositoryInterface = &InviteRepositoryInterfaceMock{}
 //
 // 		// make and configure a mocked InviteRepositoryInterface
 // 		mockedInviteRepositoryInterface := &InviteRepositoryInterfaceMock{
-// 			CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
-// 				panic("mock out the Commit method")
-// 			},
 // 			CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Invite)  {
 // 				panic("mock out the Create method")
 // 			},
@@ -996,9 +993,6 @@ var _ InviteRepositoryInterface = &InviteRepositoryInterfaceMock{}
 //
 // 	}
 type InviteRepositoryInterfaceMock struct {
-	// CommitFunc mocks the Commit method.
-	CommitFunc func(ctx context.Context, batch *firestore.WriteBatch) error
-
 	// CreateFunc mocks the Create method.
 	CreateFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Invite)
 
@@ -1013,13 +1007,6 @@ type InviteRepositoryInterfaceMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// Commit holds details about calls to the Commit method.
-		Commit []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// Batch is the batch argument value.
-			Batch *firestore.WriteBatch
-		}
 		// Create holds details about calls to the Create method.
 		Create []struct {
 			// Ctx is the ctx argument value.
@@ -1061,46 +1048,10 @@ type InviteRepositoryInterfaceMock struct {
 			UserID string
 		}
 	}
-	lockCommit       sync.RWMutex
 	lockCreate       sync.RWMutex
 	lockDelete       sync.RWMutex
 	lockFind         sync.RWMutex
 	lockFindByUserID sync.RWMutex
-}
-
-// Commit calls CommitFunc.
-func (mock *InviteRepositoryInterfaceMock) Commit(ctx context.Context, batch *firestore.WriteBatch) error {
-	if mock.CommitFunc == nil {
-		panic("InviteRepositoryInterfaceMock.CommitFunc: method is nil but InviteRepositoryInterface.Commit was just called")
-	}
-	callInfo := struct {
-		Ctx   context.Context
-		Batch *firestore.WriteBatch
-	}{
-		Ctx:   ctx,
-		Batch: batch,
-	}
-	mock.lockCommit.Lock()
-	mock.calls.Commit = append(mock.calls.Commit, callInfo)
-	mock.lockCommit.Unlock()
-	return mock.CommitFunc(ctx, batch)
-}
-
-// CommitCalls gets all the calls that were made to Commit.
-// Check the length with:
-//     len(mockedInviteRepositoryInterface.CommitCalls())
-func (mock *InviteRepositoryInterfaceMock) CommitCalls() []struct {
-	Ctx   context.Context
-	Batch *firestore.WriteBatch
-} {
-	var calls []struct {
-		Ctx   context.Context
-		Batch *firestore.WriteBatch
-	}
-	mock.lockCommit.RLock()
-	calls = mock.calls.Commit
-	mock.lockCommit.RUnlock()
-	return calls
 }
 
 // Create calls CreateFunc.
@@ -1524,5 +1475,287 @@ func (mock *RelationshipRequestInterfaceMock) UpdateCalls() []struct {
 	mock.lockUpdate.RLock()
 	calls = mock.calls.Update
 	mock.lockUpdate.RUnlock()
+	return calls
+}
+
+// Ensure, that RelationshipInterfaceMock does implement RelationshipInterface.
+// If this is not the case, regenerate this file with moq.
+var _ RelationshipInterface = &RelationshipInterfaceMock{}
+
+// RelationshipInterfaceMock is a mock implementation of RelationshipInterface.
+//
+// 	func TestSomethingThatUsesRelationshipInterface(t *testing.T) {
+//
+// 		// make and configure a mocked RelationshipInterface
+// 		mockedRelationshipInterface := &RelationshipInterfaceMock{
+// 			CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)  {
+// 				panic("mock out the Create method")
+// 			},
+// 			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)  {
+// 				panic("mock out the Delete method")
+// 			},
+// 			FindByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string, first int, cursor RelationshipCursor) ([]*model.Relationship, error) {
+// 				panic("mock out the FindByFollowedID method")
+// 			},
+// 		}
+//
+// 		// use mockedRelationshipInterface in code that requires RelationshipInterface
+// 		// and then make assertions.
+//
+// 	}
+type RelationshipInterfaceMock struct {
+	// CreateFunc mocks the Create method.
+	CreateFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)
+
+	// DeleteFunc mocks the Delete method.
+	DeleteFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)
+
+	// FindByFollowedIDFunc mocks the FindByFollowedID method.
+	FindByFollowedIDFunc func(ctx context.Context, f *firestore.Client, userID string, first int, cursor RelationshipCursor) ([]*model.Relationship, error)
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// Create holds details about calls to the Create method.
+		Create []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// Batch is the batch argument value.
+			Batch *firestore.WriteBatch
+			// I is the i argument value.
+			I *model.Relationship
+		}
+		// Delete holds details about calls to the Delete method.
+		Delete []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// Batch is the batch argument value.
+			Batch *firestore.WriteBatch
+			// I is the i argument value.
+			I *model.Relationship
+		}
+		// FindByFollowedID holds details about calls to the FindByFollowedID method.
+		FindByFollowedID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// UserID is the userID argument value.
+			UserID string
+			// First is the first argument value.
+			First int
+			// Cursor is the cursor argument value.
+			Cursor RelationshipCursor
+		}
+	}
+	lockCreate           sync.RWMutex
+	lockDelete           sync.RWMutex
+	lockFindByFollowedID sync.RWMutex
+}
+
+// Create calls CreateFunc.
+func (mock *RelationshipInterfaceMock) Create(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship) {
+	if mock.CreateFunc == nil {
+		panic("RelationshipInterfaceMock.CreateFunc: method is nil but RelationshipInterface.Create was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		F     *firestore.Client
+		Batch *firestore.WriteBatch
+		I     *model.Relationship
+	}{
+		Ctx:   ctx,
+		F:     f,
+		Batch: batch,
+		I:     i,
+	}
+	mock.lockCreate.Lock()
+	mock.calls.Create = append(mock.calls.Create, callInfo)
+	mock.lockCreate.Unlock()
+	mock.CreateFunc(ctx, f, batch, i)
+}
+
+// CreateCalls gets all the calls that were made to Create.
+// Check the length with:
+//     len(mockedRelationshipInterface.CreateCalls())
+func (mock *RelationshipInterfaceMock) CreateCalls() []struct {
+	Ctx   context.Context
+	F     *firestore.Client
+	Batch *firestore.WriteBatch
+	I     *model.Relationship
+} {
+	var calls []struct {
+		Ctx   context.Context
+		F     *firestore.Client
+		Batch *firestore.WriteBatch
+		I     *model.Relationship
+	}
+	mock.lockCreate.RLock()
+	calls = mock.calls.Create
+	mock.lockCreate.RUnlock()
+	return calls
+}
+
+// Delete calls DeleteFunc.
+func (mock *RelationshipInterfaceMock) Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship) {
+	if mock.DeleteFunc == nil {
+		panic("RelationshipInterfaceMock.DeleteFunc: method is nil but RelationshipInterface.Delete was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		F     *firestore.Client
+		Batch *firestore.WriteBatch
+		I     *model.Relationship
+	}{
+		Ctx:   ctx,
+		F:     f,
+		Batch: batch,
+		I:     i,
+	}
+	mock.lockDelete.Lock()
+	mock.calls.Delete = append(mock.calls.Delete, callInfo)
+	mock.lockDelete.Unlock()
+	mock.DeleteFunc(ctx, f, batch, i)
+}
+
+// DeleteCalls gets all the calls that were made to Delete.
+// Check the length with:
+//     len(mockedRelationshipInterface.DeleteCalls())
+func (mock *RelationshipInterfaceMock) DeleteCalls() []struct {
+	Ctx   context.Context
+	F     *firestore.Client
+	Batch *firestore.WriteBatch
+	I     *model.Relationship
+} {
+	var calls []struct {
+		Ctx   context.Context
+		F     *firestore.Client
+		Batch *firestore.WriteBatch
+		I     *model.Relationship
+	}
+	mock.lockDelete.RLock()
+	calls = mock.calls.Delete
+	mock.lockDelete.RUnlock()
+	return calls
+}
+
+// FindByFollowedID calls FindByFollowedIDFunc.
+func (mock *RelationshipInterfaceMock) FindByFollowedID(ctx context.Context, f *firestore.Client, userID string, first int, cursor RelationshipCursor) ([]*model.Relationship, error) {
+	if mock.FindByFollowedIDFunc == nil {
+		panic("RelationshipInterfaceMock.FindByFollowedIDFunc: method is nil but RelationshipInterface.FindByFollowedID was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		UserID string
+		First  int
+		Cursor RelationshipCursor
+	}{
+		Ctx:    ctx,
+		F:      f,
+		UserID: userID,
+		First:  first,
+		Cursor: cursor,
+	}
+	mock.lockFindByFollowedID.Lock()
+	mock.calls.FindByFollowedID = append(mock.calls.FindByFollowedID, callInfo)
+	mock.lockFindByFollowedID.Unlock()
+	return mock.FindByFollowedIDFunc(ctx, f, userID, first, cursor)
+}
+
+// FindByFollowedIDCalls gets all the calls that were made to FindByFollowedID.
+// Check the length with:
+//     len(mockedRelationshipInterface.FindByFollowedIDCalls())
+func (mock *RelationshipInterfaceMock) FindByFollowedIDCalls() []struct {
+	Ctx    context.Context
+	F      *firestore.Client
+	UserID string
+	First  int
+	Cursor RelationshipCursor
+} {
+	var calls []struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		UserID string
+		First  int
+		Cursor RelationshipCursor
+	}
+	mock.lockFindByFollowedID.RLock()
+	calls = mock.calls.FindByFollowedID
+	mock.lockFindByFollowedID.RUnlock()
+	return calls
+}
+
+// Ensure, that CommonRepositoryInterfaceMock does implement CommonRepositoryInterface.
+// If this is not the case, regenerate this file with moq.
+var _ CommonRepositoryInterface = &CommonRepositoryInterfaceMock{}
+
+// CommonRepositoryInterfaceMock is a mock implementation of CommonRepositoryInterface.
+//
+// 	func TestSomethingThatUsesCommonRepositoryInterface(t *testing.T) {
+//
+// 		// make and configure a mocked CommonRepositoryInterface
+// 		mockedCommonRepositoryInterface := &CommonRepositoryInterfaceMock{
+// 			CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
+// 				panic("mock out the Commit method")
+// 			},
+// 		}
+//
+// 		// use mockedCommonRepositoryInterface in code that requires CommonRepositoryInterface
+// 		// and then make assertions.
+//
+// 	}
+type CommonRepositoryInterfaceMock struct {
+	// CommitFunc mocks the Commit method.
+	CommitFunc func(ctx context.Context, batch *firestore.WriteBatch) error
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// Commit holds details about calls to the Commit method.
+		Commit []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Batch is the batch argument value.
+			Batch *firestore.WriteBatch
+		}
+	}
+	lockCommit sync.RWMutex
+}
+
+// Commit calls CommitFunc.
+func (mock *CommonRepositoryInterfaceMock) Commit(ctx context.Context, batch *firestore.WriteBatch) error {
+	if mock.CommitFunc == nil {
+		panic("CommonRepositoryInterfaceMock.CommitFunc: method is nil but CommonRepositoryInterface.Commit was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Batch *firestore.WriteBatch
+	}{
+		Ctx:   ctx,
+		Batch: batch,
+	}
+	mock.lockCommit.Lock()
+	mock.calls.Commit = append(mock.calls.Commit, callInfo)
+	mock.lockCommit.Unlock()
+	return mock.CommitFunc(ctx, batch)
+}
+
+// CommitCalls gets all the calls that were made to Commit.
+// Check the length with:
+//     len(mockedCommonRepositoryInterface.CommitCalls())
+func (mock *CommonRepositoryInterfaceMock) CommitCalls() []struct {
+	Ctx   context.Context
+	Batch *firestore.WriteBatch
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Batch *firestore.WriteBatch
+	}
+	mock.lockCommit.RLock()
+	calls = mock.calls.Commit
+	mock.lockCommit.RUnlock()
 	return calls
 }

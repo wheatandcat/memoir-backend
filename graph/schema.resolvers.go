@@ -152,7 +152,7 @@ func (r *mutationResolver) NgRelationshipRequest(ctx context.Context, followedID
 		return nil, err
 	}
 
-	result, err := g.ngRelationshipRequest(ctx, followedID)
+	result, err := g.NgRelationshipRequest(ctx, followedID)
 	if err != nil {
 		return nil, err
 	}

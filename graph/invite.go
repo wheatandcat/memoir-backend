@@ -37,7 +37,7 @@ func (g *Graph) CreateInvite(ctx context.Context) (*model.Invite, error) {
 	batch := g.FirestoreClient.Batch()
 	g.App.InviteRepository.Create(ctx, g.FirestoreClient, batch, i)
 
-	if err := g.App.InviteRepository.Commit(ctx, batch); err != nil {
+	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
 		return nil, err
 	}
 
@@ -66,7 +66,7 @@ func (g *Graph) UpdateInvite(ctx context.Context) (*model.Invite, error) {
 	i.UpdatedAt = g.Client.Time.Now()
 	g.App.InviteRepository.Create(ctx, g.FirestoreClient, batch, i)
 
-	if err := g.App.InviteRepository.Commit(ctx, batch); err != nil {
+	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
 		return nil, err
 	}
 
