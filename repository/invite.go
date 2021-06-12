@@ -12,7 +12,6 @@ import (
 type InviteRepositoryInterface interface {
 	Create(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Invite)
 	Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, code string)
-	Commit(ctx context.Context, batch *firestore.WriteBatch) error
 	Find(ctx context.Context, f *firestore.Client, code string) (*model.Invite, error)
 	FindByUserID(ctx context.Context, f *firestore.Client, userID string) (*model.Invite, error)
 }
@@ -34,13 +33,6 @@ func (re *InviteRepository) Create(ctx context.Context, f *firestore.Client, bat
 func (re *InviteRepository) Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, code string) {
 	ref := f.Collection("invites").Doc(code)
 	batch.Delete(ref)
-}
-
-// Commit コミットする
-func (re *InviteRepository) Commit(ctx context.Context, batch *firestore.WriteBatch) error {
-	_, err := batch.Commit(ctx)
-
-	return err
 }
 
 // FindByUserID ユーザーIDから取得する

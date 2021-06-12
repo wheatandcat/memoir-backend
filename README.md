@@ -22,7 +22,7 @@ $ go run github.com/99designs/gqlgen generate
 
 ```
 $ rm -rf ./repository/moq.go
-$ moq -out=repository/moq.go ./repository ItemRepositoryInterface UserRepositoryInterface InviteRepositoryInterface RelationshipRequestInterface
+$ moq -out=repository/moq.go ./repository ItemRepositoryInterface UserRepositoryInterface InviteRepositoryInterface RelationshipRequestInterface RelationshipInterface CommonRepositoryInterface
 ```
 
 テストを実行

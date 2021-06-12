@@ -1,4 +1,4 @@
-yarn run v1.22.4
+yarn run v1.22.10
 $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.bin/graphql-markdown http://localhost:8080/query
 # Schema Types
 
@@ -13,14 +13,18 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
     * [ItemsInPeriod](#itemsinperiod)
     * [ItemsInPeriodEdge](#itemsinperiodedge)
     * [PageInfo](#pageinfo)
+    * [Relationship](#relationship)
+    * [RelationshipEdge](#relationshipedge)
     * [RelationshipRequest](#relationshiprequest)
     * [RelationshipRequestEdge](#relationshiprequestedge)
     * [RelationshipRequests](#relationshiprequests)
+    * [Relationships](#relationships)
     * [User](#user)
   * [Inputs](#inputs)
     * [DeleteItem](#deleteitem)
     * [InputItemsInPeriod](#inputitemsinperiod)
     * [InputRelationshipRequests](#inputrelationshiprequests)
+    * [InputRelationships](#inputrelationships)
     * [NewItem](#newitem)
     * [NewRelationshipRequest](#newrelationshiprequest)
     * [NewUser](#newuser)
@@ -149,6 +153,20 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <td valign="top"><a href="#inputrelationshiprequests">InputRelationshipRequests</a>!</td>
 <td></td>
 </tr>
+<tr>
+<td colspan="2" valign="top"><strong>relationships</strong></td>
+<td valign="top"><a href="#relationships">Relationships</a>!</td>
+<td>
+
+共有ユーザーを取得する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#inputrelationships">InputRelationships</a>!</td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
@@ -266,7 +284,7 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 </td>
 </tr>
 <tr>
-<td colspan="2" valign="top"><strong>newRelationshipRequest</strong></td>
+<td colspan="2" valign="top"><strong>createRelationshipRequest</strong></td>
 <td valign="top"><a href="#relationshiprequest">RelationshipRequest</a>!</td>
 <td>
 
@@ -277,6 +295,48 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <tr>
 <td colspan="2" align="right" valign="top">input</td>
 <td valign="top"><a href="#newrelationshiprequest">NewRelationshipRequest</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>acceptRelationshipRequest</strong></td>
+<td valign="top"><a href="#relationshiprequest">RelationshipRequest</a>!</td>
+<td>
+
+招待リクエストを承諾する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">followedID</td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>ngRelationshipRequest</strong></td>
+<td valign="top"><a href="#relationshiprequest">RelationshipRequest</a>!</td>
+<td>
+
+招待リクエストを拒否する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">followedID</td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>deleteRelationship</strong></td>
+<td valign="top"><a href="#relationship">Relationship</a>!</td>
+<td>
+
+共有メンバーを解除する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">followedID</td>
+<td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
 </tbody>
@@ -498,6 +558,105 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 </tbody>
 </table>
 
+### Relationship
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
+<td>
+
+ID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>followerId</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+フォローしたユーザーID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>followedId</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+フォローされたユーザーID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>createdAt</strong></td>
+<td valign="top"><a href="#time">Time</a>!</td>
+<td>
+
+作成日時
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>updatedAt</strong></td>
+<td valign="top"><a href="#time">Time</a>!</td>
+<td>
+
+更新日時
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>user</strong></td>
+<td valign="top"><a href="#user">User</a></td>
+<td>
+
+ユーザー情報
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">skip</td>
+<td valign="top"><a href="#boolean">Boolean</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### RelationshipEdge
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>node</strong></td>
+<td valign="top"><a href="#relationship">Relationship</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>cursor</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
 ### RelationshipRequest
 
 <table>
@@ -631,6 +790,31 @@ ID
 </tbody>
 </table>
 
+### Relationships
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>pageInfo</strong></td>
+<td valign="top"><a href="#pageinfo">PageInfo</a>!</td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>edges</strong></td>
+<td valign="top">[<a href="#relationshipedge">RelationshipEdge</a>!]!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
 ### User
 
 <table>
@@ -751,6 +935,30 @@ ID
 </table>
 
 ### InputRelationshipRequests
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>after</strong></td>
+<td valign="top"><a href="#string">String</a></td>
+<td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>first</strong></td>
+<td valign="top"><a href="#int">Int</a>!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+### InputRelationships
 
 <table>
 <thead>
@@ -986,5 +1194,3 @@ The `Int` scalar type represents non-fractional signed whole numeric values. Int
 The `String`scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
 
 ### Time
-
-Done in 2.56s.

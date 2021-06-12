@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -124,6 +125,48 @@ func (r *mutationResolver) CreateRelationshipRequest(ctx context.Context, input 
 	}
 
 	result, err := g.CreateRelationshipRequest(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *mutationResolver) AcceptRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.AcceptRelationshipRequest(ctx, followedID)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *mutationResolver) NgRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.NgRelationshipRequest(ctx, followedID)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *mutationResolver) DeleteRelationship(ctx context.Context, followedID string) (*model.Relationship, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.DeleteRelationship(ctx, followedID)
 	if err != nil {
 		return nil, err
 	}
@@ -254,6 +297,31 @@ func (r *queryResolver) RelationshipRequests(ctx context.Context, input model.In
 	return result, nil
 }
 
+func (r *queryResolver) Relationships(ctx context.Context, input model.InputRelationships) (*model.Relationships, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	userSkip := true
+	fields := graphql.CollectFieldsCtx(ctx, nil)
+
+	edges := GetNestCollectFields(ctx, fields, "edges")
+	nodes := GetNestCollectFields(ctx, edges, "node")
+	value := GetNestCollectFieldArgumentValue(ctx, nodes, "user", "skip")
+
+	if value == "false" {
+		userSkip = false
+	}
+
+	result, err := g.GetRelationships(ctx, input, userSkip)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
@@ -262,3 +330,16 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *mutationResolver) AcceptRelationship(ctx context.Context, id string) (*model.Relationship, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+func (r *mutationResolver) NgRelationship(ctx context.Context, id string) (*model.Relationship, error) {
+	panic(fmt.Errorf("not implemented"))
+}

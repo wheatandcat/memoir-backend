@@ -99,6 +99,36 @@ input InputRelationshipRequests {
   first: Int!
 }
 
+type Relationship {
+  "ID"
+  id: ID!
+  "フォローしたユーザーID"
+  followerId: String!
+  "フォローされたユーザーID"
+  followedId: String!
+  "作成日時"
+  createdAt: Time!
+  "更新日時"
+  updatedAt: Time!
+  "ユーザー情報"
+  user(skip: Boolean): User
+}
+
+type RelationshipEdge {
+  node: Relationship
+  cursor: String!
+}
+
+type Relationships {
+  pageInfo: PageInfo!
+  edges: [RelationshipEdge!]!
+}
+
+input InputRelationships {
+  after: String
+  first: Int!
+}
+
 type Query {
   "ユーザーを取得する"
   user: User!
@@ -116,6 +146,8 @@ type Query {
   inviteByCode(code: String!): User!
   "招待の申請リクエストを取得する"
   relationshipRequests(input: InputRelationshipRequests!): RelationshipRequests!
+  "共有ユーザーを取得する"
+  relationships(input: InputRelationships!): Relationships!
 }
 
 input NewUser {
@@ -185,6 +217,12 @@ type Mutation {
   createRelationshipRequest(
     input: NewRelationshipRequest!
   ): RelationshipRequest!
+  "招待リクエストを承諾する"
+  acceptRelationshipRequest(followedID: String!): RelationshipRequest!
+  "招待リクエストを拒否する"
+  ngRelationshipRequest(followedID: String!): RelationshipRequest!
+  "共有メンバーを解除する"
+  deleteRelationship(followedID: String!): Relationship!
 }
 
 scalar Time
