@@ -3,7 +3,6 @@ package graph
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
@@ -41,7 +40,6 @@ func (g *Graph) CreateInvite(ctx context.Context) (*model.Invite, error) {
 		return nil, err
 	}
 
-	log.Println("OK")
 	return i, nil
 }
 

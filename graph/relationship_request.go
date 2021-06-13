@@ -3,7 +3,6 @@ package graph
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
@@ -155,8 +154,6 @@ func (g *Graph) GetRelationshipRequests(ctx context.Context, input model.InputRe
 		userID = append(userID, i.FollowerID)
 	}
 	users := []*model.User{}
-
-	log.Println("skip:", userSkip)
 
 	if !userSkip {
 		users, err = g.App.UserRepository.FindInUID(ctx, g.FirestoreClient, userID)
