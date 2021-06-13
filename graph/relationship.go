@@ -12,7 +12,7 @@ import (
 // DeleteRelationship 共有ユーザーを解除する
 func (g *Graph) DeleteRelationship(ctx context.Context, followedID string) (*model.Relationship, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("Invalid Authorization")
+		return nil, fmt.Errorf("invalid authorization")
 	}
 
 	batch := g.FirestoreClient.Batch()
@@ -40,7 +40,7 @@ func (g *Graph) DeleteRelationship(ctx context.Context, followedID string) (*mod
 func (g *Graph) GetRelationships(ctx context.Context, input model.InputRelationships, userSkip bool) (*model.Relationships, error) {
 	t := g.Client.Time
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("Invalid Authorization")
+		return nil, fmt.Errorf("invalid authorization")
 	}
 
 	cursor := repository.RelationshipCursor{

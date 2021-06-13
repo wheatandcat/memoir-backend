@@ -35,7 +35,6 @@ func TestCreateInvite(t *testing.T) {
 
 	inviteRepositoryMock := &repository.InviteRepositoryInterfaceMock{
 		CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Invite) {
-			return
 		},
 		FindByUserIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (*model.Invite, error) {
 			return &model.Invite{}, nil
@@ -94,10 +93,8 @@ func TestUpdateInvite(t *testing.T) {
 
 	inviteRepositoryMock := &repository.InviteRepositoryInterfaceMock{
 		CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Invite) {
-			return
 		},
 		DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, code string) {
-			return
 		},
 		FindByUserIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (*model.Invite, error) {
 			return &model.Invite{

@@ -14,7 +14,7 @@ import (
 // CreateRelationshipRequest 共有の招待リクエストを作成する
 func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRelationshipRequest) (*model.RelationshipRequest, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("Invalid Authorization")
+		return nil, fmt.Errorf("invalid authorization")
 	}
 
 	i, err := g.App.InviteRepository.Find(ctx, g.FirestoreClient, input.Code)
@@ -66,17 +66,24 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 // AcceptRelationshipRequest 招待リクエストを承諾する
 func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("Invalid Authorization")
+		return nil, fmt.Errorf("invalid authorization")
 	}
-	rr := &model.RelationshipRequest{
+	rr1 := &model.RelationshipRequest{
 		FollowerID: followedID,
 		FollowedID: g.UserID,
 		Status:     repository.RelationshipRequestStatusOK,
 		UpdatedAt:  g.Client.Time.Now(),
 	}
+	rr2 := &model.RelationshipRequest{
+		FollowerID: g.UserID,
+		FollowedID: followedID,
+		Status:     repository.RelationshipRequestStatusOK,
+		UpdatedAt:  g.Client.Time.Now(),
+	}
 
 	batch := g.FirestoreClient.Batch()
-	g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr)
+	g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr1)
+	g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr2)
 
 	r1 := &model.Relationship{
 		ID:         g.Client.UUID.Get(),
@@ -99,13 +106,13 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 		return nil, err
 	}
 
-	return rr, nil
+	return rr1, nil
 }
 
 // ngRelationshipRequest 招待リクエストを拒否する
 func (g *Graph) NgRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("Invalid Authorization")
+		return nil, fmt.Errorf("invalid authorization")
 	}
 	rr := &model.RelationshipRequest{
 		FollowerID: g.UserID,
@@ -128,7 +135,7 @@ func (g *Graph) NgRelationshipRequest(ctx context.Context, followedID string) (*
 func (g *Graph) GetRelationshipRequests(ctx context.Context, input model.InputRelationshipRequests, userSkip bool) (*model.RelationshipRequests, error) {
 	t := g.Client.Time
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("Invalid Authorization")
+		return nil, fmt.Errorf("invalid authorization")
 	}
 
 	cursor := repository.RelationshipRequestCursor{
