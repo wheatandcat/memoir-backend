@@ -69,8 +69,8 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 		return nil, fmt.Errorf("Invalid Authorization")
 	}
 	rr := &model.RelationshipRequest{
-		FollowerID: g.UserID,
-		FollowedID: followedID,
+		FollowerID: followedID,
+		FollowedID: g.UserID,
 		Status:     repository.RelationshipRequestStatusOK,
 		UpdatedAt:  g.Client.Time.Now(),
 	}
