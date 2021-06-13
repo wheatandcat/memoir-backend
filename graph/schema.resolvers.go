@@ -279,14 +279,11 @@ func (r *queryResolver) RelationshipRequests(ctx context.Context, input model.In
 	}
 
 	userSkip := true
-	fields := graphql.CollectFieldsCtx(ctx, nil)
 
-	edges := GetNestCollectFields(ctx, fields, "edges")
-	nodes := GetNestCollectFields(ctx, edges, "node")
-	value := GetNestCollectFieldArgumentValue(ctx, nodes, "user", "skip")
-
-	if value == "false" {
-		userSkip = false
+	octx := graphql.GetOperationContext(ctx)
+	switch skip := octx.Variables["skip"].(type) {
+	case bool:
+		userSkip = skip
 	}
 
 	result, err := g.GetRelationshipRequests(ctx, input, userSkip)
@@ -304,14 +301,11 @@ func (r *queryResolver) Relationships(ctx context.Context, input model.InputRela
 	}
 
 	userSkip := true
-	fields := graphql.CollectFieldsCtx(ctx, nil)
 
-	edges := GetNestCollectFields(ctx, fields, "edges")
-	nodes := GetNestCollectFields(ctx, edges, "node")
-	value := GetNestCollectFieldArgumentValue(ctx, nodes, "user", "skip")
-
-	if value == "false" {
-		userSkip = false
+	octx := graphql.GetOperationContext(ctx)
+	switch skip := octx.Variables["skip"].(type) {
+	case bool:
+		userSkip = skip
 	}
 
 	result, err := g.GetRelationships(ctx, input, userSkip)
