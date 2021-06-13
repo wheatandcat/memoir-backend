@@ -67,7 +67,7 @@ func (re *RelationshipRequestRepository) Update(ctx context.Context, f *firestor
 	}
 	u = append(u, firestore.Update{Path: "UpdatedAt", Value: i.UpdatedAt})
 
-	ref := f.Collection("invites").Doc(i.FollowerID + "_" + i.FollowedID)
+	ref := f.Collection("relationshipRequests").Doc(i.FollowerID + "_" + i.FollowedID)
 	batch.Update(ref, u)
 }
 
