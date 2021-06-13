@@ -67,7 +67,7 @@ func (g *Graph) GetRelationships(ctx context.Context, input model.InputRelations
 	}
 	users := []*model.User{}
 
-	if !userSkip {
+	if !userSkip && len(userID) > 0 {
 		users, err = g.App.UserRepository.FindInUID(ctx, g.FirestoreClient, userID)
 		if err != nil {
 			return nil, err
