@@ -26,7 +26,7 @@ func (g *Graph) CreateUser(ctx context.Context, input *model.NewUser) (*model.Us
 // CreateAuthUser 認証済みユーザーを作成
 func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewUser) (*model.User, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("Invalid Authorization")
+		return nil, fmt.Errorf("invalid authorization")
 	}
 
 	u := &repository.User{
@@ -44,7 +44,7 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewUser) (*mode
 		return nil, err
 	}
 
-	if exist == true {
+	if exist {
 		// 既にユーザー作成済みの場合は更新しないで完了
 		return mu, nil
 	}
@@ -70,7 +70,7 @@ func (g *Graph) GetUser(ctx context.Context) (*model.User, error) {
 // UpdateUser ユーザーを更新
 func (g *Graph) UpdateUser(ctx context.Context, input *model.UpdateUser) (*model.User, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("Invalid Authorization")
+		return nil, fmt.Errorf("invalid authorization")
 	}
 
 	u := &model.User{

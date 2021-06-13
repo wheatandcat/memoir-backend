@@ -31,7 +31,7 @@ type Client struct {
 func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Graph, error) {
 	user := auth.ForContext(ctx)
 	if user == nil {
-		return nil, fmt.Errorf("Access denied")
+		return nil, fmt.Errorf("access denied")
 	}
 
 	if user.FirebaseUID == "" {
@@ -41,13 +41,13 @@ func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Grap
 			return nil, fmt.Errorf("User Invalid")
 		}
 		if u.FirebaseUID != "" {
-			return nil, fmt.Errorf("Need to Firebase Auth")
+			return nil, fmt.Errorf("need to firebase auth")
 		}
 	} else {
 		// Firebase認証有り
 		u, err := app.UserRepository.FindByFirebaseUID(ctx, f, user.FirebaseUID)
 		if err != nil {
-			return nil, fmt.Errorf("Firebase Auth Invalid")
+			return nil, fmt.Errorf("firebase auth invalid")
 		}
 
 		user.ID = u.ID
