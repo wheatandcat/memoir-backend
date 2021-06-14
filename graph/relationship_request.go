@@ -79,9 +79,18 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 		UpdatedAt:  g.Client.Time.Now(),
 	}
 
+	isFollowedRequest := false
+	rr2Data, _ := g.App.RelationshipRequestRepository.Find(ctx, g.FirestoreClient, rr2)
+	if rr2Data.ID != "" {
+		isFollowedRequest = true
+	}
+
 	batch := g.FirestoreClient.Batch()
 	g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr1)
-	g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr2)
+	if isFollowedRequest {
+		// 相手側もリクエストしていた場合はstatusを更新
+		g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr2)
+	}
 
 	r1 := &model.Relationship{
 		ID:         g.Client.UUID.Get(),
