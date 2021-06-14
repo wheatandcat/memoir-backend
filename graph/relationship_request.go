@@ -3,7 +3,6 @@ package graph
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
@@ -49,13 +48,11 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 	}
 
 	if err = g.App.RelationshipRequestRepository.Create(ctx, g.FirestoreClient, rr); err != nil {
-		log.Println("NG002")
 		return nil, err
 	}
 
 	u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, i.UserID)
 	if err != nil {
-		log.Println("NG003")
 		return nil, err
 	}
 
