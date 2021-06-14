@@ -45,8 +45,6 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 		if data.Status == repository.RelationshipRequestStatusRequest {
 			return nil, fmt.Errorf("既に招待リクエスト済みです")
 		}
-
-		return nil, err
 	}
 
 	if err = g.App.RelationshipRequestRepository.Create(ctx, g.FirestoreClient, rr); err != nil {
