@@ -115,8 +115,8 @@ func (g *Graph) NgRelationshipRequest(ctx context.Context, followedID string) (*
 		return nil, fmt.Errorf("invalid authorization")
 	}
 	rr := &model.RelationshipRequest{
-		FollowerID: g.UserID,
-		FollowedID: followedID,
+		FollowerID: followedID,
+		FollowedID: g.UserID,
 		Status:     repository.RelationshipRequestStatusNG,
 		UpdatedAt:  g.Client.Time.Now(),
 	}
@@ -125,6 +125,7 @@ func (g *Graph) NgRelationshipRequest(ctx context.Context, followedID string) (*
 	g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr)
 
 	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
+
 		return nil, err
 	}
 
