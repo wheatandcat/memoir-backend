@@ -126,6 +126,9 @@ func TestAcceptRelationshipRequest(t *testing.T) {
 	relationshipRequestRepositoryMock := &repository.RelationshipRequestInterfaceMock{
 		UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest) {
 		},
+		FindFunc: func(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) (*model.RelationshipRequest, error) {
+			return &model.RelationshipRequest{}, nil
+		},
 	}
 	relationshipRepositoryMock := &repository.RelationshipInterfaceMock{
 		CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship) {
