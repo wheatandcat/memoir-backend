@@ -89,6 +89,14 @@ func TestGetItemsInPeriod(t *testing.T) {
 		UpdatedAt:  date,
 	}}
 
+	rr := []*model.Relationship{{
+		ID:         "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+		FollowerID: "test",
+		FollowedID: "test",
+		CreatedAt:  date,
+		UpdatedAt:  date,
+	}}
+
 	g := newGraph()
 
 	itemRepositoryMock := &repository.ItemRepositoryInterfaceMock{
@@ -97,7 +105,14 @@ func TestGetItemsInPeriod(t *testing.T) {
 		},
 	}
 
+	relationshipRepositoryMock := &repository.RelationshipInterfaceMock{
+		FindByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string, first int, cursor repository.RelationshipCursor) ([]*model.Relationship, error) {
+			return rr, nil
+		},
+	}
+
 	g.App.ItemRepository = itemRepositoryMock
+	g.App.RelationshipRepository = relationshipRepositoryMock
 	after := ""
 
 	iipe := []*model.ItemsInPeriodEdge{{
