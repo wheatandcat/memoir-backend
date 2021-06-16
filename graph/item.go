@@ -7,6 +7,8 @@ import (
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // CreateItem アイテム作成
@@ -95,6 +97,21 @@ func (g *Graph) GetItemsInDate(ctx context.Context, date time.Time) ([]*model.It
 // GetItemsInPeriod 期間でアイテムを取得
 func (g *Graph) GetItemsInPeriod(ctx context.Context, input model.InputItemsInPeriod) (*model.ItemsInPeriod, error) {
 	t := g.Client.Time
+	userID := []string{g.UserID}
+
+	rrs, err := g.App.RelationshipRepository.FindByFollowedID(ctx, g.FirestoreClient, g.UserID, 5, repository.RelationshipCursor{
+		FollowerID: "",
+		FollowedID: "",
+	})
+	if err == nil {
+		for _, rr := range rrs {
+			userID = append(userID, rr.FollowerID)
+		}
+	} else {
+		if status.Code(err) != codes.NotFound {
+			return nil, err
+		}
+	}
 
 	cursor := repository.ItemsInPeriodCursor{
 		ID:     "",
@@ -108,7 +125,7 @@ func (g *Graph) GetItemsInPeriod(ctx context.Context, input model.InputItemsInPe
 		}
 	}
 
-	items, err := g.App.ItemRepository.GetItemUserMultipleInPeriod(ctx, g.FirestoreClient, []string{g.UserID}, input.StartDate, input.EndDate, input.First, cursor)
+	items, err := g.App.ItemRepository.GetItemUserMultipleInPeriod(ctx, g.FirestoreClient, userID, input.StartDate, input.EndDate, input.First, cursor)
 	if err != nil {
 		return nil, err
 	}
