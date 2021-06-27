@@ -13,6 +13,7 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
     * [ItemsInPeriod](#itemsinperiod)
     * [ItemsInPeriodEdge](#itemsinperiodedge)
     * [PageInfo](#pageinfo)
+    * [PushToken](#pushtoken)
     * [Relationship](#relationship)
     * [RelationshipEdge](#relationshipedge)
     * [RelationshipRequest](#relationshiprequest)
@@ -26,6 +27,7 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
     * [InputRelationshipRequests](#inputrelationshiprequests)
     * [InputRelationships](#inputrelationships)
     * [NewItem](#newitem)
+    * [NewPushToken](#newpushtoken)
     * [NewRelationshipRequest](#newrelationshiprequest)
     * [NewUser](#newuser)
     * [UpdateItem](#updateitem)
@@ -339,6 +341,20 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <td valign="top"><a href="#string">String</a>!</td>
 <td></td>
 </tr>
+<tr>
+<td colspan="2" valign="top"><strong>createPushToken</strong></td>
+<td valign="top"><a href="#pushtoken">PushToken</a>!</td>
+<td>
+
+Push通知のトークンを作成する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="right" valign="top">input</td>
+<td valign="top"><a href="#newpushtoken">NewPushToken</a>!</td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
@@ -554,6 +570,66 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <td colspan="2" valign="top"><strong>hasNextPage</strong></td>
 <td valign="top"><a href="#boolean">Boolean</a>!</td>
 <td></td>
+</tr>
+</tbody>
+</table>
+
+### PushToken
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>userID</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
+<td>
+
+ユーザーID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>token</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+Push通知トークン
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>deviceID</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+デバイスID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>createdAt</strong></td>
+<td valign="top"><a href="#time">Time</a>!</td>
+<td>
+
+作成日時
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>updatedAt</strong></td>
+<td valign="top"><a href="#time">Time</a>!</td>
+<td>
+
+更新日時
+
+</td>
 </tr>
 </tbody>
 </table>
@@ -1033,6 +1109,38 @@ ID
 </tbody>
 </table>
 
+### NewPushToken
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>token</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+Push通知トークン
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>deviceID</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+デバイスID
+
+</td>
+</tr>
+</tbody>
+</table>
+
 ### NewRelationshipRequest
 
 <table>
@@ -1194,3 +1302,5 @@ The `Int` scalar type represents non-fractional signed whole numeric values. Int
 The `String`scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
 
 ### Time
+
+Done in 2.56s.

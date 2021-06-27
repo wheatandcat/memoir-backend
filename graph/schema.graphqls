@@ -129,6 +129,19 @@ input InputRelationships {
   first: Int!
 }
 
+type PushToken {
+  "ユーザーID"
+  userID: ID!
+  "Push通知トークン"
+  token: String!
+  "デバイスID"
+  deviceID: String!
+  "作成日時"
+  createdAt: Time!
+  "更新日時"
+  updatedAt: Time!
+}
+
 type Query {
   "ユーザーを取得する"
   user: User!
@@ -196,6 +209,13 @@ input NewRelationshipRequest {
   code: String!
 }
 
+input NewPushToken {
+  "Push通知トークン"
+  token: String!
+  "デバイスID"
+  deviceID: String!
+}
+
 type Mutation {
   "ユーザーを作成する"
   createUser(input: NewUser!): User!
@@ -223,6 +243,8 @@ type Mutation {
   ngRelationshipRequest(followedID: String!): RelationshipRequest!
   "共有メンバーを解除する"
   deleteRelationship(followedID: String!): Relationship!
+  "Push通知のトークンを作成する"
+  createPushToken(input: NewPushToken!): PushToken!
 }
 
 scalar Time

@@ -78,6 +78,7 @@ type ComplexityRoot struct {
 		CreateAuthUser            func(childComplexity int, input model.NewUser) int
 		CreateInvite              func(childComplexity int) int
 		CreateItem                func(childComplexity int, input model.NewItem) int
+		CreatePushToken           func(childComplexity int, input model.NewPushToken) int
 		CreateRelationshipRequest func(childComplexity int, input model.NewRelationshipRequest) int
 		CreateUser                func(childComplexity int, input model.NewUser) int
 		DeleteItem                func(childComplexity int, input model.DeleteItem) int
@@ -91,6 +92,14 @@ type ComplexityRoot struct {
 	PageInfo struct {
 		EndCursor   func(childComplexity int) int
 		HasNextPage func(childComplexity int) int
+	}
+
+	PushToken struct {
+		CreatedAt func(childComplexity int) int
+		DeviceID  func(childComplexity int) int
+		Token     func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		UserID    func(childComplexity int) int
 	}
 
 	Query struct {
@@ -166,6 +175,7 @@ type MutationResolver interface {
 	AcceptRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error)
 	NgRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error)
 	DeleteRelationship(ctx context.Context, followedID string) (*model.Relationship, error)
+	CreatePushToken(ctx context.Context, input model.NewPushToken) (*model.PushToken, error)
 }
 type QueryResolver interface {
 	User(ctx context.Context) (*model.User, error)
@@ -356,6 +366,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateItem(childComplexity, args["input"].(model.NewItem)), true
 
+	case "Mutation.createPushToken":
+		if e.complexity.Mutation.CreatePushToken == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createPushToken_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreatePushToken(childComplexity, args["input"].(model.NewPushToken)), true
+
 	case "Mutation.createRelationshipRequest":
 		if e.complexity.Mutation.CreateRelationshipRequest == nil {
 			break
@@ -460,6 +482,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PageInfo.HasNextPage(childComplexity), true
+
+	case "PushToken.createdAt":
+		if e.complexity.PushToken.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.PushToken.CreatedAt(childComplexity), true
+
+	case "PushToken.deviceID":
+		if e.complexity.PushToken.DeviceID == nil {
+			break
+		}
+
+		return e.complexity.PushToken.DeviceID(childComplexity), true
+
+	case "PushToken.token":
+		if e.complexity.PushToken.Token == nil {
+			break
+		}
+
+		return e.complexity.PushToken.Token(childComplexity), true
+
+	case "PushToken.updatedAt":
+		if e.complexity.PushToken.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.PushToken.UpdatedAt(childComplexity), true
+
+	case "PushToken.userID":
+		if e.complexity.PushToken.UserID == nil {
+			break
+		}
+
+		return e.complexity.PushToken.UserID(childComplexity), true
 
 	case "Query.invite":
 		if e.complexity.Query.Invite == nil {
@@ -946,6 +1003,19 @@ input InputRelationships {
   first: Int!
 }
 
+type PushToken {
+  "ユーザーID"
+  userID: ID!
+  "Push通知トークン"
+  token: String!
+  "デバイスID"
+  deviceID: String!
+  "作成日時"
+  createdAt: Time!
+  "更新日時"
+  updatedAt: Time!
+}
+
 type Query {
   "ユーザーを取得する"
   user: User!
@@ -1013,6 +1083,13 @@ input NewRelationshipRequest {
   code: String!
 }
 
+input NewPushToken {
+  "Push通知トークン"
+  token: String!
+  "デバイスID"
+  deviceID: String!
+}
+
 type Mutation {
   "ユーザーを作成する"
   createUser(input: NewUser!): User!
@@ -1040,6 +1117,8 @@ type Mutation {
   ngRelationshipRequest(followedID: String!): RelationshipRequest!
   "共有メンバーを解除する"
   deleteRelationship(followedID: String!): Relationship!
+  "Push通知のトークンを作成する"
+  createPushToken(input: NewPushToken!): PushToken!
 }
 
 scalar Time
@@ -1088,6 +1167,21 @@ func (ec *executionContext) field_Mutation_createItem_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNNewItem2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐNewItem(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createPushToken_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewPushToken
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewPushToken2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐNewPushToken(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2471,6 +2565,48 @@ func (ec *executionContext) _Mutation_deleteRelationship(ctx context.Context, fi
 	return ec.marshalNRelationship2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationship(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_createPushToken(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createPushToken_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreatePushToken(rctx, args["input"].(model.NewPushToken))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.PushToken)
+	fc.Result = res
+	return ec.marshalNPushToken2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐPushToken(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2539,6 +2675,181 @@ func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field gra
 	res := resTmp.(bool)
 	fc.Result = res
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PushToken_userID(ctx context.Context, field graphql.CollectedField, obj *model.PushToken) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PushToken",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PushToken_token(ctx context.Context, field graphql.CollectedField, obj *model.PushToken) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PushToken",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Token, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PushToken_deviceID(ctx context.Context, field graphql.CollectedField, obj *model.PushToken) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PushToken",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeviceID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PushToken_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.PushToken) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PushToken",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PushToken_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.PushToken) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PushToken",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_user(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -5138,6 +5449,34 @@ func (ec *executionContext) unmarshalInputNewItem(ctx context.Context, obj inter
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputNewPushToken(ctx context.Context, obj interface{}) (model.NewPushToken, error) {
+	var it model.NewPushToken
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "token":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+			it.Token, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "deviceID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deviceID"))
+			it.DeviceID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewRelationshipRequest(ctx context.Context, obj interface{}) (model.NewRelationshipRequest, error) {
 	var it model.NewRelationshipRequest
 	var asMap = obj.(map[string]interface{})
@@ -5519,6 +5858,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "createPushToken":
+			out.Values[i] = ec._Mutation_createPushToken(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5548,6 +5892,53 @@ func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "hasNextPage":
 			out.Values[i] = ec._PageInfo_hasNextPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var pushTokenImplementors = []string{"PushToken"}
+
+func (ec *executionContext) _PushToken(ctx context.Context, sel ast.SelectionSet, obj *model.PushToken) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, pushTokenImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PushToken")
+		case "userID":
+			out.Values[i] = ec._PushToken_userID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "token":
+			out.Values[i] = ec._PushToken_token(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deviceID":
+			out.Values[i] = ec._PushToken_deviceID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._PushToken_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._PushToken_updatedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -6385,6 +6776,11 @@ func (ec *executionContext) unmarshalNNewItem2githubᚗcomᚋwheatandcatᚋmemoi
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNNewPushToken2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐNewPushToken(ctx context.Context, v interface{}) (model.NewPushToken, error) {
+	res, err := ec.unmarshalInputNewPushToken(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNNewRelationshipRequest2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐNewRelationshipRequest(ctx context.Context, v interface{}) (model.NewRelationshipRequest, error) {
 	res, err := ec.unmarshalInputNewRelationshipRequest(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -6403,6 +6799,20 @@ func (ec *executionContext) marshalNPageInfo2ᚖgithubᚗcomᚋwheatandcatᚋmem
 		return graphql.Null
 	}
 	return ec._PageInfo(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNPushToken2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐPushToken(ctx context.Context, sel ast.SelectionSet, v model.PushToken) graphql.Marshaler {
+	return ec._PushToken(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPushToken2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐPushToken(ctx context.Context, sel ast.SelectionSet, v *model.PushToken) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._PushToken(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNRelationship2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐRelationship(ctx context.Context, sel ast.SelectionSet, v model.Relationship) graphql.Marshaler {
