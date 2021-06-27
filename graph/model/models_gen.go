@@ -79,6 +79,13 @@ type NewItem struct {
 	Dislike bool      `json:"dislike"`
 }
 
+type NewPushToken struct {
+	// Push通知トークン
+	Token string `json:"token"`
+	// デバイスID
+	DeviceID string `json:"deviceID"`
+}
+
 type NewRelationshipRequest struct {
 	// 招待コード
 	Code string `json:"code"`
@@ -92,6 +99,19 @@ type NewUser struct {
 type PageInfo struct {
 	EndCursor   string `json:"endCursor"`
 	HasNextPage bool   `json:"hasNextPage"`
+}
+
+type PushToken struct {
+	// ユーザーID
+	UserID string `json:"userID"`
+	// Push通知トークン
+	Token string `json:"token"`
+	// デバイスID
+	DeviceID string `json:"deviceID"`
+	// 作成日時
+	CreatedAt time.Time `json:"createdAt"`
+	// 更新日時
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 type Relationship struct {

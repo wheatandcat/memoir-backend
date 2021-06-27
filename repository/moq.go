@@ -1689,6 +1689,89 @@ func (mock *RelationshipInterfaceMock) FindByFollowedIDCalls() []struct {
 	return calls
 }
 
+// Ensure, that PushTokenRepositoryInterfaceMock does implement PushTokenRepositoryInterface.
+// If this is not the case, regenerate this file with moq.
+var _ PushTokenRepositoryInterface = &PushTokenRepositoryInterfaceMock{}
+
+// PushTokenRepositoryInterfaceMock is a mock implementation of PushTokenRepositoryInterface.
+//
+// 	func TestSomethingThatUsesPushTokenRepositoryInterface(t *testing.T) {
+//
+// 		// make and configure a mocked PushTokenRepositoryInterface
+// 		mockedPushTokenRepositoryInterface := &PushTokenRepositoryInterfaceMock{
+// 			CreateFunc: func(ctx context.Context, f *firestore.Client, userID string, i *model.PushToken) error {
+// 				panic("mock out the Create method")
+// 			},
+// 		}
+//
+// 		// use mockedPushTokenRepositoryInterface in code that requires PushTokenRepositoryInterface
+// 		// and then make assertions.
+//
+// 	}
+type PushTokenRepositoryInterfaceMock struct {
+	// CreateFunc mocks the Create method.
+	CreateFunc func(ctx context.Context, f *firestore.Client, userID string, i *model.PushToken) error
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// Create holds details about calls to the Create method.
+		Create []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// UserID is the userID argument value.
+			UserID string
+			// I is the i argument value.
+			I *model.PushToken
+		}
+	}
+	lockCreate sync.RWMutex
+}
+
+// Create calls CreateFunc.
+func (mock *PushTokenRepositoryInterfaceMock) Create(ctx context.Context, f *firestore.Client, userID string, i *model.PushToken) error {
+	if mock.CreateFunc == nil {
+		panic("PushTokenRepositoryInterfaceMock.CreateFunc: method is nil but PushTokenRepositoryInterface.Create was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		UserID string
+		I      *model.PushToken
+	}{
+		Ctx:    ctx,
+		F:      f,
+		UserID: userID,
+		I:      i,
+	}
+	mock.lockCreate.Lock()
+	mock.calls.Create = append(mock.calls.Create, callInfo)
+	mock.lockCreate.Unlock()
+	return mock.CreateFunc(ctx, f, userID, i)
+}
+
+// CreateCalls gets all the calls that were made to Create.
+// Check the length with:
+//     len(mockedPushTokenRepositoryInterface.CreateCalls())
+func (mock *PushTokenRepositoryInterfaceMock) CreateCalls() []struct {
+	Ctx    context.Context
+	F      *firestore.Client
+	UserID string
+	I      *model.PushToken
+} {
+	var calls []struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		UserID string
+		I      *model.PushToken
+	}
+	mock.lockCreate.RLock()
+	calls = mock.calls.Create
+	mock.lockCreate.RUnlock()
+	return calls
+}
+
 // Ensure, that CommonRepositoryInterfaceMock does implement CommonRepositoryInterface.
 // If this is not the case, regenerate this file with moq.
 var _ CommonRepositoryInterface = &CommonRepositoryInterfaceMock{}

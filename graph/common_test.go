@@ -21,6 +21,7 @@ func newGraph() graph.Graph {
 		InviteRepository:              &repository.InviteRepositoryInterfaceMock{},
 		RelationshipRequestRepository: &repository.RelationshipRequestInterfaceMock{},
 		RelationshipRepository:        &repository.RelationshipInterfaceMock{},
+		PushTokenRepository:           &repository.PushTokenRepositoryInterfaceMock{},
 		CommonRepository:              &repository.CommonRepositoryInterfaceMock{},
 	}
 

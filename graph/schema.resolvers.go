@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -174,6 +173,21 @@ func (r *mutationResolver) DeleteRelationship(ctx context.Context, followedID st
 	return result, nil
 }
 
+func (r *mutationResolver) CreatePushToken(ctx context.Context, input model.NewPushToken) (*model.PushToken, error) {
+	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := g.CreatePushToken(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+
+}
+
 func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -324,16 +338,3 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *mutationResolver) AcceptRelationship(ctx context.Context, id string) (*model.Relationship, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *mutationResolver) NgRelationship(ctx context.Context, id string) (*model.Relationship, error) {
-	panic(fmt.Errorf("not implemented"))
-}

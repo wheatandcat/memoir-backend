@@ -9,6 +9,7 @@ type Application struct {
 	InviteRepository              repository.InviteRepositoryInterface
 	RelationshipRequestRepository repository.RelationshipRequestInterface
 	RelationshipRepository        repository.RelationshipInterface
+	PushTokenRepository           repository.PushTokenRepositoryInterface
 	CommonRepository              repository.CommonRepositoryInterface
 }
 
@@ -20,6 +21,7 @@ func NewApplication() *Application {
 		InviteRepository:              repository.NewInviteRepository(),
 		RelationshipRequestRepository: repository.NewRelationshipRequestRepository(),
 		RelationshipRepository:        repository.NewRelationshipRepository(),
+		PushTokenRepository:           repository.NewPushTokenRepository(),
 		CommonRepository:              repository.NewCommonRepository(),
 	}
 }
