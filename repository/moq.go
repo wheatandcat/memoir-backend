@@ -1702,6 +1702,12 @@ var _ PushTokenRepositoryInterface = &PushTokenRepositoryInterfaceMock{}
 // 			CreateFunc: func(ctx context.Context, f *firestore.Client, userID string, i *model.PushToken) error {
 // 				panic("mock out the Create method")
 // 			},
+// 			GetItemsFunc: func(ctx context.Context, f *firestore.Client, userID string) ([]*model.PushToken, error) {
+// 				panic("mock out the GetItems method")
+// 			},
+// 			GetTokensFunc: func(ctx context.Context, f *firestore.Client, userID string) []string {
+// 				panic("mock out the GetTokens method")
+// 			},
 // 		}
 //
 // 		// use mockedPushTokenRepositoryInterface in code that requires PushTokenRepositoryInterface
@@ -1711,6 +1717,12 @@ var _ PushTokenRepositoryInterface = &PushTokenRepositoryInterfaceMock{}
 type PushTokenRepositoryInterfaceMock struct {
 	// CreateFunc mocks the Create method.
 	CreateFunc func(ctx context.Context, f *firestore.Client, userID string, i *model.PushToken) error
+
+	// GetItemsFunc mocks the GetItems method.
+	GetItemsFunc func(ctx context.Context, f *firestore.Client, userID string) ([]*model.PushToken, error)
+
+	// GetTokensFunc mocks the GetTokens method.
+	GetTokensFunc func(ctx context.Context, f *firestore.Client, userID string) []string
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -1725,8 +1737,28 @@ type PushTokenRepositoryInterfaceMock struct {
 			// I is the i argument value.
 			I *model.PushToken
 		}
+		// GetItems holds details about calls to the GetItems method.
+		GetItems []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// UserID is the userID argument value.
+			UserID string
+		}
+		// GetTokens holds details about calls to the GetTokens method.
+		GetTokens []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// UserID is the userID argument value.
+			UserID string
+		}
 	}
-	lockCreate sync.RWMutex
+	lockCreate    sync.RWMutex
+	lockGetItems  sync.RWMutex
+	lockGetTokens sync.RWMutex
 }
 
 // Create calls CreateFunc.
@@ -1769,6 +1801,84 @@ func (mock *PushTokenRepositoryInterfaceMock) CreateCalls() []struct {
 	mock.lockCreate.RLock()
 	calls = mock.calls.Create
 	mock.lockCreate.RUnlock()
+	return calls
+}
+
+// GetItems calls GetItemsFunc.
+func (mock *PushTokenRepositoryInterfaceMock) GetItems(ctx context.Context, f *firestore.Client, userID string) ([]*model.PushToken, error) {
+	if mock.GetItemsFunc == nil {
+		panic("PushTokenRepositoryInterfaceMock.GetItemsFunc: method is nil but PushTokenRepositoryInterface.GetItems was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		UserID string
+	}{
+		Ctx:    ctx,
+		F:      f,
+		UserID: userID,
+	}
+	mock.lockGetItems.Lock()
+	mock.calls.GetItems = append(mock.calls.GetItems, callInfo)
+	mock.lockGetItems.Unlock()
+	return mock.GetItemsFunc(ctx, f, userID)
+}
+
+// GetItemsCalls gets all the calls that were made to GetItems.
+// Check the length with:
+//     len(mockedPushTokenRepositoryInterface.GetItemsCalls())
+func (mock *PushTokenRepositoryInterfaceMock) GetItemsCalls() []struct {
+	Ctx    context.Context
+	F      *firestore.Client
+	UserID string
+} {
+	var calls []struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		UserID string
+	}
+	mock.lockGetItems.RLock()
+	calls = mock.calls.GetItems
+	mock.lockGetItems.RUnlock()
+	return calls
+}
+
+// GetTokens calls GetTokensFunc.
+func (mock *PushTokenRepositoryInterfaceMock) GetTokens(ctx context.Context, f *firestore.Client, userID string) []string {
+	if mock.GetTokensFunc == nil {
+		panic("PushTokenRepositoryInterfaceMock.GetTokensFunc: method is nil but PushTokenRepositoryInterface.GetTokens was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		UserID string
+	}{
+		Ctx:    ctx,
+		F:      f,
+		UserID: userID,
+	}
+	mock.lockGetTokens.Lock()
+	mock.calls.GetTokens = append(mock.calls.GetTokens, callInfo)
+	mock.lockGetTokens.Unlock()
+	return mock.GetTokensFunc(ctx, f, userID)
+}
+
+// GetTokensCalls gets all the calls that were made to GetTokens.
+// Check the length with:
+//     len(mockedPushTokenRepositoryInterface.GetTokensCalls())
+func (mock *PushTokenRepositoryInterfaceMock) GetTokensCalls() []struct {
+	Ctx    context.Context
+	F      *firestore.Client
+	UserID string
+} {
+	var calls []struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		UserID string
+	}
+	mock.lockGetTokens.RLock()
+	calls = mock.calls.GetTokens
+	mock.lockGetTokens.RUnlock()
 	return calls
 }
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/wheatandcat/memoir-backend/client/task"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
 	"google.golang.org/grpc/codes"
@@ -54,6 +55,21 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 	u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, i.UserID)
 	if err != nil {
 		return nil, err
+	}
+
+	tokens := g.App.PushTokenRepository.GetTokens(ctx, g.FirestoreClient, i.UserID)
+
+	if len(tokens) > 0 {
+		r := task.NotificationRequest{
+			Token:     tokens,
+			Title:     u.DisplayName + "さんから共有メンバーの申請が届いています",
+			Body:      u.DisplayName + "さんから共有メンバーの申請が届いています",
+			URLScheme: "MyPage",
+		}
+
+		if _, err = g.Client.Task.PushNotification(r); err != nil {
+			return nil, err
+		}
 	}
 
 	rr.User = u
@@ -111,6 +127,26 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 
 	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
 		return nil, err
+	}
+
+	tokens := g.App.PushTokenRepository.GetTokens(ctx, g.FirestoreClient, followedID)
+
+	if len(tokens) > 0 {
+		u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, followedID)
+		if err != nil {
+			return nil, err
+		}
+
+		r := task.NotificationRequest{
+			Token:     tokens,
+			Title:     u.DisplayName + "さんと共有メンバーになりました",
+			Body:      u.DisplayName + "さんと共有メンバーになりました",
+			URLScheme: "MyPage",
+		}
+
+		if _, err = g.Client.Task.PushNotification(r); err != nil {
+			return nil, err
+		}
 	}
 
 	return rr1, nil

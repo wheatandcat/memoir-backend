@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	task "github.com/wheatandcat/memoir-backend/client/task"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
 )
@@ -59,6 +60,20 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewUser) (*mode
 // GetUser ユーザー取得
 func (g *Graph) GetUser(ctx context.Context) (*model.User, error) {
 	u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, g.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	r := task.NotificationRequest{
+		Token:     []string{"ExponentPushToken[s296URAUFpxLXIOZWGwSK0]"},
+		Title:     "test",
+		Body:      "test",
+		URLScheme: "test",
+	}
+
+	nt := task.NewNotificationTask()
+
+	_, err = nt.PushNotification(r)
 	if err != nil {
 		return nil, err
 	}
