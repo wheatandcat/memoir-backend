@@ -73,9 +73,16 @@ func TestCreateRelationshipRequest(t *testing.T) {
 		},
 	}
 
+	pushTokenRepositoryMock := &repository.PushTokenRepositoryInterfaceMock{
+		GetTokensFunc: func(ctx context.Context, f *firestore.Client, uid string) []string {
+			return []string{}
+		},
+	}
+
 	g.App.InviteRepository = inviteRepositoryMock
 	g.App.RelationshipRequestRepository = relationshipRequestRepositoryMock
 	g.App.UserRepository = userRepositoryMock
+	g.App.PushTokenRepository = pushTokenRepositoryMock
 
 	tests := []struct {
 		name   string
@@ -120,6 +127,12 @@ func TestAcceptRelationshipRequest(t *testing.T) {
 		Status:     repository.RelationshipRequestStatusOK,
 		UpdatedAt:  date,
 	}
+	u := &model.User{
+		ID:          "test2",
+		DisplayName: "test",
+		CreatedAt:   date,
+		UpdatedAt:   date,
+	}
 
 	g := newGraph()
 
@@ -139,10 +152,22 @@ func TestAcceptRelationshipRequest(t *testing.T) {
 			return nil
 		},
 	}
+	pushTokenRepositoryMock := &repository.PushTokenRepositoryInterfaceMock{
+		GetTokensFunc: func(ctx context.Context, f *firestore.Client, uid string) []string {
+			return []string{}
+		},
+	}
+	userRepositoryMock := &repository.UserRepositoryInterfaceMock{
+		FindByUIDFunc: func(ctx context.Context, f *firestore.Client, uid string) (*model.User, error) {
+			return u, nil
+		},
+	}
 
 	g.App.RelationshipRequestRepository = relationshipRequestRepositoryMock
 	g.App.RelationshipRepository = relationshipRepositoryMock
 	g.App.CommonRepository = commonRepositoryMock
+	g.App.UserRepository = userRepositoryMock
+	g.App.PushTokenRepository = pushTokenRepositoryMock
 
 	tests := []struct {
 		name   string

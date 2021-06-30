@@ -36,3 +36,19 @@ $ go test -race ./...
 ```
 $ gcloud app deploy
 ```
+
+
+## CI環境
+
+```
+$ base64 -i serviceAccount.json | pbcopy
+```
+
+```
+$ base64 -i memoir-review.json | pbcopy
+```
+
+```
+$ base64 -i app.yaml | pbcopy
+```
+

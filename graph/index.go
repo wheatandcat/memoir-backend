@@ -8,6 +8,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/wheatandcat/memoir-backend/auth"
 	"github.com/wheatandcat/memoir-backend/client/authToken"
+	"github.com/wheatandcat/memoir-backend/client/task"
 	"github.com/wheatandcat/memoir-backend/client/timegen"
 	"github.com/wheatandcat/memoir-backend/client/uuidgen"
 )
@@ -25,6 +26,7 @@ type Client struct {
 	UUID      uuidgen.UUIDGenerator
 	Time      timegen.TimeGenerator
 	AuthToken authToken.AuthTokenClient
+	Task      task.HTTPTaskInterface
 }
 
 // NewGraph Graphを作成
@@ -66,6 +68,7 @@ func NewGraphWithSetUserID(app *Application, f *firestore.Client, uid string) *G
 		UUID:      &uuidgen.UUID{},
 		Time:      &timegen.Time{},
 		AuthToken: &authToken.AuthToken{},
+		Task:      task.NewNotificationTask(),
 	}
 
 	return &Graph{
