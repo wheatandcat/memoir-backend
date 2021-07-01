@@ -45,7 +45,7 @@ $ base64 -i serviceAccount.json | pbcopy
 ```
 
 ```
-$ base64 -i memoir-review.json | pbcopy
+$ base64 -i gcpServiceAccount.json | pbcopy
 ```
 
 ```
