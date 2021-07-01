@@ -48,10 +48,6 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 		}
 	}
 
-	if err = g.App.RelationshipRequestRepository.Create(ctx, g.FirestoreClient, rr); err != nil {
-		return nil, err
-	}
-
 	u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, i.UserID)
 	if err != nil {
 		return nil, err
@@ -60,16 +56,25 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 	tokens := g.App.PushTokenRepository.GetTokens(ctx, g.FirestoreClient, i.UserID)
 
 	if len(tokens) > 0 {
+		me, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, g.UserID)
+		if err != nil {
+			return nil, err
+		}
+
 		r := task.NotificationRequest{
 			Token:     tokens,
-			Title:     u.DisplayName + "さんから共有メンバーの申請が届いています",
-			Body:      u.DisplayName + "さんから共有メンバーの申請が届いています",
+			Title:     me.DisplayName + "さんから共有メンバーの申請が届いています",
+			Body:      me.DisplayName + "さんから共有メンバーの申請が届いています",
 			URLScheme: "MyPage",
 		}
 
 		if _, err = g.Client.Task.PushNotification(r); err != nil {
 			return nil, err
 		}
+	}
+
+	if err = g.App.RelationshipRequestRepository.Create(ctx, g.FirestoreClient, rr); err != nil {
+		return nil, err
 	}
 
 	rr.User = u
@@ -132,7 +137,7 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 	tokens := g.App.PushTokenRepository.GetTokens(ctx, g.FirestoreClient, followedID)
 
 	if len(tokens) > 0 {
-		u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, followedID)
+		u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, g.UserID)
 		if err != nil {
 			return nil, err
 		}
