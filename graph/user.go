@@ -24,7 +24,7 @@ func (g *Graph) CreateUser(ctx context.Context, input *model.NewUser) (*model.Us
 }
 
 // CreateAuthUser 認証済みユーザーを作成
-func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewUser) (*model.User, error) {
+func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewUser) (*model.NewAuthUser, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
 		return nil, fmt.Errorf("invalid authorization")
 	}
@@ -35,7 +35,7 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewUser) (*mode
 		UpdatedAt:   g.Client.Time.Now(),
 	}
 
-	mu := &model.User{
+	mu := &model.NewAuthUser{
 		ID: input.ID,
 	}
 

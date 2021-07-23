@@ -20,6 +20,21 @@ type User {
   updatedAt: Time!
 }
 
+type NewAuthUser {
+  "ユーザーID"
+  id: ID!
+  "表示名"
+  displayName: String!
+  "画像URL"
+  image: String!
+  "新規作成"
+  new: Boolean!
+  "作成日時"
+  createdAt: Time!
+  "更新日時"
+  updatedAt: Time!
+}
+
 type Invite {
   "ユーザーID"
   userID: ID!
@@ -220,7 +235,7 @@ type Mutation {
   "ユーザーを作成する"
   createUser(input: NewUser!): User!
   "認証ユーザーを作成する"
-  createAuthUser(input: NewUser!): User!
+  createAuthUser(input: NewUser!): NewAuthUser!
   "ユーザーを更新する"
   updateUser(input: UpdateUser!): User!
   "アイテムを作成する"
