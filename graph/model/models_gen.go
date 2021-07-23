@@ -68,6 +68,21 @@ type ItemsInPeriodEdge struct {
 	Cursor string `json:"cursor"`
 }
 
+type NewAuthUser struct {
+	// ユーザーID
+	ID string `json:"id"`
+	// 表示名
+	DisplayName string `json:"displayName"`
+	// 画像URL
+	Image string `json:"image"`
+	// 新規作成
+	New bool `json:"new"`
+	// 作成日時
+	CreatedAt time.Time `json:"createdAt"`
+	// 更新日時
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
 type NewItem struct {
 	// タイトル
 	Title string `json:"title"`
