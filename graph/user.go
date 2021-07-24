@@ -36,7 +36,8 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewUser) (*mode
 	}
 
 	mu := &model.NewAuthUser{
-		ID: input.ID,
+		ID:  input.ID,
+		New: false,
 	}
 
 	exist, err := g.App.UserRepository.ExistByFirebaseUID(ctx, g.FirestoreClient, u.FirebaseUID)
@@ -65,6 +66,20 @@ func (g *Graph) GetUser(ctx context.Context) (*model.User, error) {
 
 	return u, nil
 
+}
+
+// ExistAuthUser 認証ユーザーが存在するか判定する
+func (g *Graph) ExistAuthUser(ctx context.Context) (*model.ExistAuthUser, error) {
+	rau := &model.ExistAuthUser{}
+
+	exist, err := g.App.UserRepository.ExistByFirebaseUID(ctx, g.FirestoreClient, g.Client.AuthToken.Get(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	rau.Exist = exist
+
+	return rau, nil
 }
 
 // UpdateUser ユーザーを更新

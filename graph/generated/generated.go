@@ -44,6 +44,10 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	ExistAuthUser struct {
+		Exist func(childComplexity int) int
+	}
+
 	Invite struct {
 		Code      func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
@@ -112,6 +116,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		ExistAuthUser        func(childComplexity int) int
 		Invite               func(childComplexity int) int
 		InviteByCode         func(childComplexity int, code string) int
 		Item                 func(childComplexity int, id string) int
@@ -188,6 +193,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	User(ctx context.Context) (*model.User, error)
+	ExistAuthUser(ctx context.Context) (*model.ExistAuthUser, error)
 	Item(ctx context.Context, id string) (*model.Item, error)
 	ItemsByDate(ctx context.Context, date time.Time) ([]*model.Item, error)
 	ItemsInDate(ctx context.Context, date time.Time) ([]*model.Item, error)
@@ -212,6 +218,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "ExistAuthUser.exist":
+		if e.complexity.ExistAuthUser.Exist == nil {
+			break
+		}
+
+		return e.complexity.ExistAuthUser.Exist(childComplexity), true
 
 	case "Invite.code":
 		if e.complexity.Invite.Code == nil {
@@ -568,6 +581,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PushToken.UserID(childComplexity), true
+
+	case "Query.existAuthUser":
+		if e.complexity.Query.ExistAuthUser == nil {
+			break
+		}
+
+		return e.complexity.Query.ExistAuthUser(childComplexity), true
 
 	case "Query.invite":
 		if e.complexity.Query.Invite == nil {
@@ -1082,9 +1102,15 @@ type PushToken {
   updatedAt: Time!
 }
 
+type ExistAuthUser {
+  exist: Boolean!
+}
+
 type Query {
   "ユーザーを取得する"
   user: User!
+  "認証ユーザーが存在するか判定する"
+  existAuthUser: ExistAuthUser!
   "アイテムを取得する"
   item(id: ID!): Item
   "アイテムを日付で取得する"
@@ -1548,6 +1574,41 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _ExistAuthUser_exist(ctx context.Context, field graphql.CollectedField, obj *model.ExistAuthUser) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ExistAuthUser",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Exist, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Invite_userID(ctx context.Context, field graphql.CollectedField, obj *model.Invite) (ret graphql.Marshaler) {
 	defer func() {
@@ -3161,6 +3222,41 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 	res := resTmp.(*model.User)
 	fc.Result = res
 	return ec.marshalNUser2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_existAuthUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ExistAuthUser(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.ExistAuthUser)
+	fc.Result = res
+	return ec.marshalNExistAuthUser2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐExistAuthUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_item(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -5889,6 +5985,33 @@ func (ec *executionContext) unmarshalInputUpdateUser(ctx context.Context, obj in
 
 // region    **************************** object.gotpl ****************************
 
+var existAuthUserImplementors = []string{"ExistAuthUser"}
+
+func (ec *executionContext) _ExistAuthUser(ctx context.Context, sel ast.SelectionSet, obj *model.ExistAuthUser) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, existAuthUserImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ExistAuthUser")
+		case "exist":
+			out.Values[i] = ec._ExistAuthUser_exist(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var inviteImplementors = []string{"Invite"}
 
 func (ec *executionContext) _Invite(ctx context.Context, sel ast.SelectionSet, obj *model.Invite) graphql.Marshaler {
@@ -6305,6 +6428,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_user(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "existAuthUser":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_existAuthUser(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -6963,6 +7100,20 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 func (ec *executionContext) unmarshalNDeleteItem2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐDeleteItem(ctx context.Context, v interface{}) (model.DeleteItem, error) {
 	res, err := ec.unmarshalInputDeleteItem(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNExistAuthUser2githubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐExistAuthUser(ctx context.Context, sel ast.SelectionSet, v model.ExistAuthUser) graphql.Marshaler {
+	return ec._ExistAuthUser(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNExistAuthUser2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐExistAuthUser(ctx context.Context, sel ast.SelectionSet, v *model.ExistAuthUser) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._ExistAuthUser(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {

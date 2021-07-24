@@ -201,6 +201,17 @@ func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
 	return result, nil
 }
 
+func (r *queryResolver) ExistAuthUser(ctx context.Context) (*model.ExistAuthUser, error) {
+	g := NewGraphWithSetUserID(r.App, r.FirestoreClient, "")
+
+	result, err := g.ExistAuthUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (r *queryResolver) Item(ctx context.Context, id string) (*model.Item, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {

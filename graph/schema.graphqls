@@ -157,9 +157,15 @@ type PushToken {
   updatedAt: Time!
 }
 
+type ExistAuthUser {
+  exist: Boolean!
+}
+
 type Query {
   "ユーザーを取得する"
   user: User!
+  "認証ユーザーが存在するか判定する"
+  existAuthUser: ExistAuthUser!
   "アイテムを取得する"
   item(id: ID!): Item
   "アイテムを日付で取得する"
