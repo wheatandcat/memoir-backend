@@ -11,6 +11,10 @@ type DeleteItem struct {
 	ID string `json:"id"`
 }
 
+type ExistAuthUser struct {
+	Exist bool `json:"exist"`
+}
+
 type InputItemsInPeriod struct {
 	After     *string   `json:"after"`
 	First     int       `json:"first"`

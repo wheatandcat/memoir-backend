@@ -30,7 +30,6 @@ $ moq -out=repository/moq.go ./repository ItemRepositoryInterface UserRepository
 $ go test -race ./...
 ```
 
-
 ## デプロイ
 
 ```
