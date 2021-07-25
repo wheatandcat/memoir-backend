@@ -24,7 +24,7 @@ func (g *Graph) CreateUser(ctx context.Context, input *model.NewUser) (*model.Us
 }
 
 // CreateAuthUser 認証済みユーザーを作成
-func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewUser) (*model.NewAuthUser, error) {
+func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewAuthUser) (*model.AuthUser, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
 		return nil, fmt.Errorf("invalid authorization")
 	}
@@ -35,9 +35,8 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewUser) (*mode
 		UpdatedAt:   g.Client.Time.Now(),
 	}
 
-	mu := &model.NewAuthUser{
-		ID:  input.ID,
-		New: false,
+	mu := &model.AuthUser{
+		ID: input.ID,
 	}
 
 	exist, err := g.App.UserRepository.ExistByFirebaseUID(ctx, g.FirestoreClient, u.FirebaseUID)
@@ -48,6 +47,15 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewUser) (*mode
 	if exist {
 		// 既にユーザー作成済みの場合は更新しないで完了
 		return mu, nil
+	}
+
+	if input.IsNewUser {
+		v := &model.NewUser{
+			ID: input.ID,
+		}
+		if _, err = g.CreateUser(ctx, v); err != nil {
+			return nil, err
+		}
 	}
 
 	if err = g.App.UserRepository.UpdateFirebaseUID(ctx, g.FirestoreClient, u); err != nil {

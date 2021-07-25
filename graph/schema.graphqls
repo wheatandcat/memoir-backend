@@ -20,7 +20,7 @@ type User {
   updatedAt: Time!
 }
 
-type NewAuthUser {
+type AuthUser {
   "ユーザーID"
   id: ID!
   "表示名"
@@ -189,6 +189,13 @@ input NewUser {
   id: ID!
 }
 
+input NewAuthUser {
+  "ユーザーID"
+  id: ID!
+  "true: ユーザー作成を行う"
+  isNewUser: Boolean!
+}
+
 input UpdateUser {
   "表示名"
   displayName: String!
@@ -241,7 +248,7 @@ type Mutation {
   "ユーザーを作成する"
   createUser(input: NewUser!): User!
   "認証ユーザーを作成する"
-  createAuthUser(input: NewUser!): NewAuthUser!
+  createAuthUser(input: NewAuthUser!): AuthUser!
   "ユーザーを更新する"
   updateUser(input: UpdateUser!): User!
   "アイテムを作成する"

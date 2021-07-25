@@ -23,7 +23,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	return result, nil
 }
 
-func (r *mutationResolver) CreateAuthUser(ctx context.Context, input model.NewUser) (*model.NewAuthUser, error) {
+func (r *mutationResolver) CreateAuthUser(ctx context.Context, input model.NewAuthUser) (*model.AuthUser, error) {
 	g := NewGraphWithSetUserID(r.App, r.FirestoreClient, "")
 	result, err := g.CreateAuthUser(ctx, &input)
 	if err != nil {
