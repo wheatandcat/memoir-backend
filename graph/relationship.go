@@ -3,6 +3,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
@@ -36,11 +37,16 @@ func (g *Graph) DeleteRelationship(ctx context.Context, followedID string) (*mod
 	return r1, nil
 }
 
-// GetRelationships 共有の招待リクエストを取得する
+// GetRelationships 共有ユーザーを取得する
 func (g *Graph) GetRelationships(ctx context.Context, input model.InputRelationships, userSkip bool) (*model.Relationships, error) {
 	t := g.Client.Time
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("invalid authorization")
+		log.Println("OK")
+		ibp := &model.Relationships{
+			PageInfo: &model.PageInfo{},
+			Edges:    []*model.RelationshipEdge{},
+		}
+		return ibp, nil
 	}
 
 	cursor := repository.RelationshipCursor{
