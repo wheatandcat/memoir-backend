@@ -92,10 +92,6 @@ func (g *Graph) ExistAuthUser(ctx context.Context) (*model.ExistAuthUser, error)
 
 // UpdateUser ユーザーを更新
 func (g *Graph) UpdateUser(ctx context.Context, input *model.UpdateUser) (*model.User, error) {
-	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("invalid authorization")
-	}
-
 	u := &model.User{
 		ID:          g.UserID,
 		DisplayName: input.DisplayName,
