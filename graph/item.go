@@ -125,6 +125,21 @@ func (g *Graph) GetItemsInPeriod(ctx context.Context, input model.InputItemsInPe
 		}
 	}
 
+	if len(input.UserIDList) > 0 {
+		tUserID := []string{}
+		tUserIDList := []string{}
+		for _, id := range input.UserIDList {
+			tUserIDList = append(tUserIDList, *id)
+		}
+		// UserIDListの設定がある場合は、UserIDをフィルタリングする
+		for _, id := range userID {
+			if Contains(tUserIDList, id) {
+				tUserID = append(tUserID, id)
+			}
+		}
+		userID = tUserID
+	}
+
 	items, err := g.App.ItemRepository.GetItemUserMultipleInPeriod(ctx, g.FirestoreClient, userID, input.StartDate, input.EndDate, input.First, cursor)
 	if err != nil {
 		return nil, err
