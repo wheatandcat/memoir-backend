@@ -80,6 +80,7 @@ input InputItemsInPeriod {
   first: Int!
   startDate: Time!
   endDate: Time!
+  userIDList: [String]
 }
 
 type RelationshipRequest {

@@ -31,10 +31,11 @@ type ExistAuthUser struct {
 }
 
 type InputItemsInPeriod struct {
-	After     *string   `json:"after"`
-	First     int       `json:"first"`
-	StartDate time.Time `json:"startDate"`
-	EndDate   time.Time `json:"endDate"`
+	After      *string   `json:"after"`
+	First      int       `json:"first"`
+	StartDate  time.Time `json:"startDate"`
+	EndDate    time.Time `json:"endDate"`
+	UserIDList []*string `json:"userIDList"`
 }
 
 type InputRelationshipRequests struct {
