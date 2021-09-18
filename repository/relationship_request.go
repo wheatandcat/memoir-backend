@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/pkg/errors"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 const (
@@ -56,7 +56,7 @@ func (re *RelationshipRequestRepository) Create(ctx context.Context, f *firestor
 	}
 
 	_, err := f.Collection("relationshipRequests").Doc(i.FollowerID+"_"+i.FollowedID).Set(ctx, rrd)
-	return err
+	return errors.WithStack(err)
 }
 
 // Update 更新する
@@ -76,16 +76,16 @@ func (re *RelationshipRequestRepository) Find(ctx context.Context, f *firestore.
 	var rr *model.RelationshipRequest
 	ds, err := f.Collection("relationshipRequests").Doc(i.FollowerID + "_" + i.FollowedID).Get(ctx)
 	if err != nil {
-		if status.Code(err) == codes.InvalidArgument || status.Code(err) == codes.NotFound {
+		if GrpcErrorStatusCode(err) == codes.InvalidArgument || GrpcErrorStatusCode(err) == codes.NotFound {
 			return &model.RelationshipRequest{}, nil
 		}
 
-		return i, err
+		return i, errors.WithStack(err)
 	}
 
 	ds.DataTo(&rr)
 
-	return rr, err
+	return rr, errors.WithStack(err)
 }
 
 // FindByFollowedID ページングで取得する
@@ -96,7 +96,7 @@ func (re *RelationshipRequestRepository) FindByFollowedID(ctx context.Context, f
 	if cursor.FollowerID != "" {
 		ds, err := f.Collection("relationshipRequests").Doc(cursor.FollowerID + "_" + cursor.FollowedID).Get(ctx)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 
 		query = query.StartAfter(ds)
@@ -106,7 +106,7 @@ func (re *RelationshipRequestRepository) FindByFollowedID(ctx context.Context, f
 	docs, err := matchItem.GetAll()
 
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	for _, doc := range docs {

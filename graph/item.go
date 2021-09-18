@@ -8,7 +8,6 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 // CreateItem アイテム作成
@@ -108,7 +107,7 @@ func (g *Graph) GetItemsInPeriod(ctx context.Context, input model.InputItemsInPe
 			userID = append(userID, rr.FollowerID)
 		}
 	} else {
-		if status.Code(err) != codes.NotFound {
+		if GrpcErrorStatusCode(err) != codes.NotFound {
 			return nil, err
 		}
 	}

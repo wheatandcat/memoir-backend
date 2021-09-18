@@ -2,12 +2,16 @@ package main
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"os"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/wheatandcat/memoir-backend/auth"
 	"github.com/wheatandcat/memoir-backend/graph"
 	"github.com/wheatandcat/memoir-backend/graph/generated"
@@ -17,6 +21,13 @@ import (
 const defaultPort = "8080"
 
 func main() {
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn: os.Getenv("SENTRY_DSN"),
+	})
+	if err != nil {
+		log.Fatalf("sentry.Init: %s", err)
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
@@ -45,6 +56,30 @@ func main() {
 	}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
+	srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
+		err := graphql.DefaultErrorPresenter(ctx, e)
+		goc := graphql.GetOperationContext(ctx)
+
+		sentry.WithScope(func(scope *sentry.Scope) {
+			scope.SetTag("kind", "GraphQL")
+			scope.SetTag("operationName", goc.OperationName)
+			scope.SetExtra("query", goc.RawQuery)
+			scope.SetExtra("variables", goc.Variables)
+
+			if err.Path.String() != "" {
+				sentry.AddBreadcrumb(&sentry.Breadcrumb{
+					Category: "GraphQL",
+					Message:  "Error Path:" + err.Path.String(),
+					Level:    sentry.LevelInfo,
+				})
+			}
+
+			sentry.CaptureException(e)
+		})
+
+		return err
+	})
+
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", srv)
 

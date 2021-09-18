@@ -3,7 +3,6 @@ package graph
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
@@ -41,7 +40,6 @@ func (g *Graph) DeleteRelationship(ctx context.Context, followedID string) (*mod
 func (g *Graph) GetRelationships(ctx context.Context, input model.InputRelationships, userSkip bool) (*model.Relationships, error) {
 	t := g.Client.Time
 	if !g.Client.AuthToken.Valid(ctx) {
-		log.Println("OK")
 		ibp := &model.Relationships{
 			PageInfo: &model.PageInfo{},
 			Edges:    []*model.RelationshipEdge{},
