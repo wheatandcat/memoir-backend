@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"cloud.google.com/go/firestore"
+	"github.com/pkg/errors"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type InviteRepositoryInterface interface {
@@ -60,14 +60,14 @@ func (re *InviteRepository) Find(ctx context.Context, f *firestore.Client, code 
 	ds, err := f.Collection("invites").Doc(code).Get(ctx)
 
 	if err != nil {
-		if status.Code(err) == codes.InvalidArgument || status.Code(err) == codes.NotFound {
+		if GrpcErrorStatusCode(err) == codes.InvalidArgument || GrpcErrorStatusCode(err) == codes.NotFound {
 			return &model.Invite{}, nil
 		}
 
-		return i, err
+		return i, errors.WithStack(err)
 	}
 
 	ds.DataTo(&i)
 
-	return i, err
+	return i, errors.WithStack(err)
 }

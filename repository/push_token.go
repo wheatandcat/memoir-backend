@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"cloud.google.com/go/firestore"
+	"github.com/pkg/errors"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type PushTokenRepositoryInterface interface {
@@ -30,7 +30,7 @@ func getPushTokenCollection(f *firestore.Client, userID string) *firestore.Colle
 func (re *PushTokenRepository) Create(ctx context.Context, f *firestore.Client, userID string, i *model.PushToken) error {
 	_, err := getPushTokenCollection(f, userID).Doc(i.DeviceID).Set(ctx, i)
 
-	return err
+	return errors.WithStack(err)
 }
 
 func (re *PushTokenRepository) GetItems(ctx context.Context, f *firestore.Client, userID string) ([]*model.PushToken, error) {
@@ -39,7 +39,7 @@ func (re *PushTokenRepository) GetItems(ctx context.Context, f *firestore.Client
 	matchItem := getPushTokenCollection(f, userID).Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	for _, doc := range docs {
@@ -55,7 +55,7 @@ func (re *PushTokenRepository) GetItems(ctx context.Context, f *firestore.Client
 func (re *PushTokenRepository) GetTokens(ctx context.Context, f *firestore.Client, userID string) []string {
 	tokens := []string{}
 	items, err := re.GetItems(ctx, f, userID)
-	if status.Code(err) == codes.InvalidArgument || status.Code(err) == codes.NotFound {
+	if GrpcErrorStatusCode(err) == codes.InvalidArgument || GrpcErrorStatusCode(err) == codes.NotFound {
 		return tokens
 	}
 

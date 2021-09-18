@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/pkg/errors"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
 
@@ -59,12 +60,12 @@ func (re *RelationshipRepository) Find(ctx context.Context, f *firestore.Client,
 	var rr *model.Relationship
 	ds, err := f.Collection("relationships").Doc(i.FollowerID + "_" + i.FollowedID).Get(ctx)
 	if err != nil {
-		return i, err
+		return i, errors.WithStack(err)
 	}
 
 	ds.DataTo(&rr)
 
-	return rr, err
+	return rr, nil
 }
 
 // FindByFollowedID ページングで取得する
@@ -75,7 +76,7 @@ func (re *RelationshipRepository) FindByFollowedID(ctx context.Context, f *fires
 	if cursor.FollowerID != "" {
 		ds, err := f.Collection("relationships").Doc(cursor.FollowerID + "_" + cursor.FollowedID).Get(ctx)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 
 		query = query.StartAfter(ds)
@@ -85,7 +86,7 @@ func (re *RelationshipRepository) FindByFollowedID(ctx context.Context, f *fires
 	docs, err := matchItem.GetAll()
 
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	for _, doc := range docs {

@@ -6,11 +6,15 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/getsentry/sentry-go"
+	"github.com/pkg/errors"
 	"github.com/wheatandcat/memoir-backend/auth"
 	"github.com/wheatandcat/memoir-backend/client/authToken"
 	"github.com/wheatandcat/memoir-backend/client/task"
 	"github.com/wheatandcat/memoir-backend/client/timegen"
 	"github.com/wheatandcat/memoir-backend/client/uuidgen"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // Graph Graph struct
@@ -45,12 +49,24 @@ func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Grap
 		if u.FirebaseUID != "" {
 			return nil, fmt.Errorf("need to firebase auth")
 		}
+		sentry.AddBreadcrumb(&sentry.Breadcrumb{
+			Category: "Auth",
+			Message:  "Not logged in, UserID: " + u.ID,
+			Level:    sentry.LevelInfo,
+		})
+
 	} else {
 		// Firebase認証有り
 		u, err := app.UserRepository.FindByFirebaseUID(ctx, f, user.FirebaseUID)
 		if err != nil {
 			return nil, fmt.Errorf("firebase auth invalid")
 		}
+
+		sentry.AddBreadcrumb(&sentry.Breadcrumb{
+			Category: "Auth",
+			Message:  "Logged in, UserID: " + u.ID,
+			Level:    sentry.LevelInfo,
+		})
 
 		user.ID = u.ID
 	}
@@ -64,6 +80,10 @@ func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Grap
 
 // NewGraphWithSetUserID Graphを作成（ログイン前）
 func NewGraphWithSetUserID(app *Application, f *firestore.Client, uid string) *Graph {
+	sentry.ConfigureScope(func(scope *sentry.Scope) {
+		scope.SetUser(sentry.User{ID: uid})
+	})
+
 	client := &Client{
 		UUID:      &uuidgen.UUID{},
 		Time:      &timegen.Time{},
@@ -111,4 +131,8 @@ func Contains(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+func GrpcErrorStatusCode(err error) codes.Code {
+	return status.Code(errors.Cause(err))
 }

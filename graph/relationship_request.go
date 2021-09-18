@@ -9,7 +9,6 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 // CreateRelationshipRequest 共有の招待リクエストを作成する
@@ -42,7 +41,7 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 	}
 
 	data, err := g.App.RelationshipRequestRepository.Find(ctx, g.FirestoreClient, rr)
-	if status.Code(err) != codes.NotFound {
+	if GrpcErrorStatusCode(err) != codes.NotFound {
 		if data.Status == repository.RelationshipRequestStatusRequest {
 			return nil, fmt.Errorf("既に招待リクエスト済みです")
 		}
