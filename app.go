@@ -21,8 +21,6 @@ import (
 const defaultPort = "8080"
 
 func main() {
-	log.Println("RELEASE_INSTANCE_VERSION:", os.Getenv("RELEASE_INSTANCE_VERSION"))
-
 	sco := sentry.ClientOptions{
 		Dsn: os.Getenv("SENTRY_DSN"),
 	}
