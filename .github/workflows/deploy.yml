@@ -30,7 +30,7 @@ jobs:
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H:%M:%S')"
-    - name: set env
-      run: echo "release${{ steps.date.outputs.date }}" >> $RELEASE_INSTANCE_VERSION
     - name: Use gcloud CLI
-      run: gcloud app deploy --quiet app.yaml 
+      run: |
+        echo "release${{ steps.date.outputs.date }}" >> $RELEASE_INSTANCE_VERSION
+        gcloud app deploy --quiet app.yaml --version=$RELEASE_INSTANCE_VERSION
