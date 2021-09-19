@@ -32,4 +32,6 @@ jobs:
     - name: set env
       run: echo "release_version=release${{ steps.date.outputs.date }}" >> $GITHUB_ENV
     - name: Use gcloud CLI
-      run: gcloud app deploy --quiet app.yaml --version=${{ env.release_version }}
+      run: |
+        export RELEASE_INSTANCE_VERSION=${{ env.release_version }}
+        gcloud app deploy --quiet app.yaml --version=${{ env.release_version }}
