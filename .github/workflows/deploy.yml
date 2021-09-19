@@ -7,7 +7,6 @@ env:
   REVIEW_APP_YAML: ${{ secrets.REVIEW_APP_YAML }}
   SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
   GCP_SERVICE_ACCOUNT_JSON: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON }}
-  RELEASE_INSTANCE_VERSION: "release"
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -30,7 +29,7 @@ jobs:
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H:%M:%S')"
+    - name: set env
+      run: echo "release_version=release${{ steps.date.outputs.date }}" >> $GITHUB_ENV
     - name: Use gcloud CLI
-      run: |
-        echo "release${{ steps.date.outputs.date }}" >> $RELEASE_INSTANCE_VERSION
-        gcloud app deploy --quiet app.yaml --version=$RELEASE_INSTANCE_VERSION
+      run: gcloud app deploy --quiet app.yaml --version=${{ env.release_version }}
