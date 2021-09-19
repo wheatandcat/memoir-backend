@@ -35,4 +35,3 @@ jobs:
       run: |
         echo "env_variables:\n  RELEASE_INSTANCE_VERSION: ${{ env.release_version }}" >> release.yaml
         cat release.yaml
-        gcloud app deploy --quiet app.yaml --version=${{ env.release_version }}
