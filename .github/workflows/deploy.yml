@@ -28,7 +28,7 @@ jobs:
         export_default_credentials: true
     - name: Get current date
       id: date
-      run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H:%M:%S')"
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H%M%S')"
     - name: set env
       run: echo "release_version=release${{ steps.date.outputs.date }}" >> $GITHUB_ENV
     - name: Use gcloud CLI
