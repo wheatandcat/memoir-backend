@@ -1,9 +1,8 @@
 name: Deploy
 
 on:
-  push:
-    branches:
-      - main
+  push
+
 env:
   REVIEW_APP_YAML: ${{ secrets.REVIEW_APP_YAML }}
   SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
@@ -21,12 +20,16 @@ jobs:
       run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
     - name: Create gcpServiceAccount.json file
       run: echo $GCP_SERVICE_ACCOUNT_JSON | base64 --decode -i > ./gcpServiceAccount.json
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@master
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON }}
         export_default_credentials: true
-
     - name: Use gcloud CLI
-      run: gcloud app deploy --quiet app.yaml
+      run: |
+        echo "release-${{ steps.date.outputs.date }}" >> $RELEASE_INSTANCE_VERSION
+        gcloud app deploy --quiet app.yaml -v $RELEASE_INSTANCE_VERSION

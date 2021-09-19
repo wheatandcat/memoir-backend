@@ -21,9 +21,16 @@ import (
 const defaultPort = "8080"
 
 func main() {
-	err := sentry.Init(sentry.ClientOptions{
+	log.Println("RELEASE_INSTANCE_VERSION:", os.Getenv("RELEASE_INSTANCE_VERSION"))
+
+	sco := sentry.ClientOptions{
 		Dsn: os.Getenv("SENTRY_DSN"),
-	})
+	}
+	if os.Getenv("APP_ENV") != "local" {
+		sco.Release = os.Getenv("RELEASE_INSTANCE_VERSION")
+	}
+
+	err := sentry.Init(sco)
 	if err != nil {
 		log.Fatalf("sentry.Init: %s", err)
 	}
