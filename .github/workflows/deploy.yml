@@ -24,6 +24,8 @@ jobs:
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H:%M:%S')"
+    - name: set env
+      run: echo "release-${{ steps.date.outputs.date }}" >> $RELEASE_INSTANCE_VERSION
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@master
       with:
@@ -31,6 +33,4 @@ jobs:
         service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON }}
         export_default_credentials: true
     - name: Use gcloud CLI
-      run: |
-        echo "release-${{ steps.date.outputs.date }}" >> $RELEASE_INSTANCE_VERSION
-        gcloud app deploy --quiet app.yaml -v $RELEASE_INSTANCE_VERSION
+      run: gcloud app deploy --quiet app.yaml -v $RELEASE_INSTANCE_VERSION
