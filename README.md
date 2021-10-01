@@ -39,15 +39,31 @@ $ gcloud app deploy
 
 ## CI環境
 
+### レビュー環境
+
 ```
-$ base64 -i serviceAccount.json | pbcopy
+$ base64 -i serviceAccount.review.json | pbcopy
 ```
 
 ```
-$ base64 -i gcpServiceAccount.json | pbcopy
+$ base64 -i gcpServiceAccount.review.json | pbcopy
 ```
 
 ```
 $ base64 -i app.yaml | pbcopy
+```
+
+### 本番環境
+
+```
+$ base64 -i serviceAccount.production.json | pbcopy
+```
+
+```
+$ base64 -i gcpServiceAccount.production.json | pbcopy
+```
+
+```
+$ base64 -i app.production.yaml | pbcopy
 ```
 
