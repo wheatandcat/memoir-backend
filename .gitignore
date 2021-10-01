@@ -1,10 +1,16 @@
 vendor
 app.yaml
 app.local.yaml
+app.production.yaml
 serviceAccount.json
+serviceAccount.review.json
+serviceAccount.production.json
+gcpServiceAccount.review.json
+gcpServiceAccount.production.json
 gcpServiceAccount.json
 package.json
 yarn.lock
 node_modules
 .expo-shared
 .DS_Store
+.envrc
