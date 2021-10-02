@@ -5,7 +5,7 @@ on:
     branches:
       - main
 env:
-  REVIEW_APP_YAML: ${{ secrets.REVIEW_APP_YAML }}
+  APP_YAML: ${{ secrets.REVIEW_APP_YAML }}
   SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_SERVICE_ACCOUNT_JSON }}
   GCP_SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_GCP_SERVICE_ACCOUNT_JSON }}
 jobs:
@@ -16,7 +16,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
     - name: Create .env file
-      run: echo $REVIEW_APP_YAML | base64 --decode -i > ./app.yaml
+      run: echo $APP_YAML | base64 --decode -i > ./app.yaml
     - name: Create serviceAccount.json file
       run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
     - name: Create gcpServiceAccount.json file
