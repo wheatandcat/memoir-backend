@@ -1,5 +1,8 @@
 name: Test
-on: [push]
+on: 
+  push:
+    tags-ignore:
+      - 'v*'
 jobs:
   test:
     name: test
