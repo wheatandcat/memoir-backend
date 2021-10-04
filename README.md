@@ -30,12 +30,20 @@ $ moq -out=repository/moq.go ./repository ItemRepositoryInterface UserRepository
 $ go test -race ./...
 ```
 
-## デプロイ
+## 手動デプロイ
 
 ```
 $ gcloud app deploy
 ```
 
+## 本番デプロイ
+
+```
+$ git checkout main
+$ git pull --ff-only origin main
+$ git tag -a v1.0.0 -m 'リリース内容'
+$ git push origin v1.0.0
+```
 
 ## CI環境
 
