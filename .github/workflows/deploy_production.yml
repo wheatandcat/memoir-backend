@@ -27,23 +27,15 @@ jobs:
         project_id: ${{ secrets.PRODUCTION_GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.PRODUCTION_GCP_SERVICE_ACCOUNT_JSON }}
         export_default_credentials: true
+
     - uses: FranzDiebold/github-env-vars-action@v1.2.1
-    - name: Print environment variables
-      run: |
-        echo "GITHUB_REPOSITORY_SLUG=$GITHUB_REPOSITORY_SLUG"
-        echo "GITHUB_REPOSITORY_OWNER=$GITHUB_REPOSITORY_OWNER"
-        echo "GITHUB_REPOSITORY_OWNER_SLUG=$GITHUB_REPOSITORY_OWNER_SLUG"
-        echo "GITHUB_REPOSITORY_NAME=$GITHUB_REPOSITORY_NAME"
-        echo "GITHUB_REPOSITORY_NAME_SLUG=$GITHUB_REPOSITORY_NAME_SLUG"
-        echo "GITHUB_REF_SLUG=$GITHUB_REF_SLUG"
-        echo "GITHUB_REF_NAME=$GITHUB_REF_NAME"
-        echo "GITHUB_REF_NAME_SLUG=$GITHUB_REF_NAME_SLUG"
-        echo "GITHUB_SHA_SHORT=$GITHUB_SHA_SHORT"
     - name: set env
-      run: echo "release_version=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+      run: |
+        echo "sentry_version=GITHUB_REF_NAME=$GITHUB_REF_NAME" >> $GITHUB_ENV
+        echo "release_version="GITHUB_REF_NAME_SLUG=$GITHUB_REF_NAME_SLUG" >> $GITHUB_ENV
 
     - name: Use gcloud CLI
       run: |
-        echo -e "env_variables:\n  RELEASE_INSTANCE_VERSION: ${{ env.release_version }}" >> release.yaml
+        echo -e "env_variables:\n  RELEASE_INSTANCE_VERSION: ${{ env.sentry_version }}" >> release.yaml
         cat release.yaml
         gcloud app deploy --quiet app.yaml --version=${{ env.release_version }}
