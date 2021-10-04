@@ -29,13 +29,8 @@ jobs:
         export_default_credentials: true
 
     - uses: FranzDiebold/github-env-vars-action@v1.2.1
-    - name: set env
-      run: |
-        echo "sentry_version=GITHUB_REF_NAME=$GITHUB_REF_NAME" >> $GITHUB_ENV
-        echo "release_version="GITHUB_REF_NAME_SLUG=$GITHUB_REF_NAME_SLUG" >> $GITHUB_ENV
-
     - name: Use gcloud CLI
       run: |
-        echo -e "env_variables:\n  RELEASE_INSTANCE_VERSION: ${{ env.sentry_version }}" >> release.yaml
+        echo -e "env_variables:\n  RELEASE_INSTANCE_VERSION: $GITHUB_REF_NAME" >> release.yaml
         cat release.yaml
-        gcloud app deploy --quiet app.yaml --version=${{ env.release_version }}
+        gcloud app deploy --quiet app.yaml --version=$GITHUB_REF_NAME_SLUG
