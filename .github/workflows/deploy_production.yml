@@ -29,8 +29,9 @@ jobs:
         export_default_credentials: true
     - name: set env
       run: echo "release_version=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
     - name: Use gcloud CLI
       run: |
         echo -e "env_variables:\n  RELEASE_INSTANCE_VERSION: ${{ env.release_version }}" >> release.yaml
         cat release.yaml
-        gcloud app deploy --quiet app.yaml --version=${{ env.release_version }}
+        gcloud app deploy --quiet app.yaml --version=${{ env.release_version }//./-}
