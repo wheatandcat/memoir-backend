@@ -15,6 +15,8 @@ require (
 	github.com/go-chi/chi v3.3.2+incompatible
 	github.com/google/go-cmp v0.5.5
 	github.com/google/uuid v1.1.2
+	github.com/joho/godotenv v1.4.0
+	github.com/k-motoyan/envenb v0.0.0-20181128144113-56d3b7780ec2 // indirect
 	github.com/matryer/moq v0.2.3 // indirect
 	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
