@@ -9,6 +9,8 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
 
+//go:generate moq -out=moq/relationship.go -pkg=moqs . RelationshipInterface
+
 type RelationshipInterface interface {
 	Create(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)
 	Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)

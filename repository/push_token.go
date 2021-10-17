@@ -9,6 +9,8 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
+//go:generate moq -out=moq/push_token.go -pkg=moqs . PushTokenRepositoryInterface
+
 type PushTokenRepositoryInterface interface {
 	Create(ctx context.Context, f *firestore.Client, userID string, i *model.PushToken) error
 	GetItems(ctx context.Context, f *firestore.Client, userID string) ([]*model.PushToken, error)

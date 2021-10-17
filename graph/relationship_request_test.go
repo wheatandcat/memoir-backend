@@ -14,6 +14,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gopkg.in/go-playground/assert.v1"
+
+	moq_repository "github.com/wheatandcat/memoir-backend/repository/moq"
 )
 
 func TestCreateRelationshipRequest(t *testing.T) {
@@ -52,13 +54,13 @@ func TestCreateRelationshipRequest(t *testing.T) {
 
 	g := newGraph()
 
-	inviteRepositoryMock := &repository.InviteRepositoryInterfaceMock{
+	inviteRepositoryMock := &moq_repository.InviteRepositoryInterfaceMock{
 		FindFunc: func(ctx context.Context, f *firestore.Client, code string) (*model.Invite, error) {
 			return invite, nil
 		},
 	}
 
-	relationshipRequestRepositoryMock := &repository.RelationshipRequestInterfaceMock{
+	relationshipRequestRepositoryMock := &moq_repository.RelationshipRequestInterfaceMock{
 		FindFunc: func(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) (*model.RelationshipRequest, error) {
 			return nil, status.Errorf(codes.NotFound, "%q not found", "")
 		},
@@ -67,13 +69,13 @@ func TestCreateRelationshipRequest(t *testing.T) {
 		},
 	}
 
-	userRepositoryMock := &repository.UserRepositoryInterfaceMock{
+	userRepositoryMock := &moq_repository.UserRepositoryInterfaceMock{
 		FindByUIDFunc: func(ctx context.Context, f *firestore.Client, uid string) (*model.User, error) {
 			return u, nil
 		},
 	}
 
-	pushTokenRepositoryMock := &repository.PushTokenRepositoryInterfaceMock{
+	pushTokenRepositoryMock := &moq_repository.PushTokenRepositoryInterfaceMock{
 		GetTokensFunc: func(ctx context.Context, f *firestore.Client, uid string) []string {
 			return []string{}
 		},
@@ -136,28 +138,28 @@ func TestAcceptRelationshipRequest(t *testing.T) {
 
 	g := newGraph()
 
-	relationshipRequestRepositoryMock := &repository.RelationshipRequestInterfaceMock{
+	relationshipRequestRepositoryMock := &moq_repository.RelationshipRequestInterfaceMock{
 		UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest) {
 		},
 		FindFunc: func(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) (*model.RelationshipRequest, error) {
 			return &model.RelationshipRequest{}, nil
 		},
 	}
-	relationshipRepositoryMock := &repository.RelationshipInterfaceMock{
+	relationshipRepositoryMock := &moq_repository.RelationshipInterfaceMock{
 		CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship) {
 		},
 	}
-	commonRepositoryMock := &repository.CommonRepositoryInterfaceMock{
+	commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
 		CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
 			return nil
 		},
 	}
-	pushTokenRepositoryMock := &repository.PushTokenRepositoryInterfaceMock{
+	pushTokenRepositoryMock := &moq_repository.PushTokenRepositoryInterfaceMock{
 		GetTokensFunc: func(ctx context.Context, f *firestore.Client, uid string) []string {
 			return []string{}
 		},
 	}
-	userRepositoryMock := &repository.UserRepositoryInterfaceMock{
+	userRepositoryMock := &moq_repository.UserRepositoryInterfaceMock{
 		FindByUIDFunc: func(ctx context.Context, f *firestore.Client, uid string) (*model.User, error) {
 			return u, nil
 		},
@@ -213,11 +215,11 @@ func TestNgRelationshipRequest(t *testing.T) {
 
 	g := newGraph()
 
-	relationshipRequestRepositoryMock := &repository.RelationshipRequestInterfaceMock{
+	relationshipRequestRepositoryMock := &moq_repository.RelationshipRequestInterfaceMock{
 		UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest) {
 		},
 	}
-	commonRepositoryMock := &repository.CommonRepositoryInterfaceMock{
+	commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
 		CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
 			return nil
 		},
@@ -310,13 +312,13 @@ func TestGetRelationshipRequests(t *testing.T) {
 
 	g := newGraph()
 
-	relationshipRequestRepositoryMock := &repository.RelationshipRequestInterfaceMock{
+	relationshipRequestRepositoryMock := &moq_repository.RelationshipRequestInterfaceMock{
 		FindByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string, first int, cursor repository.RelationshipRequestCursor) ([]*model.RelationshipRequest, error) {
 			return rr, nil
 		},
 	}
 
-	userRepositoryInterfaceMock := &repository.UserRepositoryInterfaceMock{
+	userRepositoryInterfaceMock := &moq_repository.UserRepositoryInterfaceMock{
 		FindInUIDFunc: func(ctx context.Context, f *firestore.Client, uid []string) ([]*model.User, error) {
 			return users, nil
 		},

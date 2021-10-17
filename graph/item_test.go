@@ -13,6 +13,8 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
 	"gopkg.in/go-playground/assert.v1"
+
+	moq_repository "github.com/wheatandcat/memoir-backend/repository/moq"
 )
 
 func TestGetItemsInDate(t *testing.T) {
@@ -36,7 +38,7 @@ func TestGetItemsInDate(t *testing.T) {
 
 	g := newGraph()
 
-	itemRepositoryMock := &repository.ItemRepositoryInterfaceMock{
+	itemRepositoryMock := &moq_repository.ItemRepositoryInterfaceMock{
 		GetItemsInDateFunc: func(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error) {
 			return items, nil
 		},
@@ -99,13 +101,13 @@ func TestGetItemsInPeriod(t *testing.T) {
 
 	g := newGraph()
 
-	itemRepositoryMock := &repository.ItemRepositoryInterfaceMock{
+	itemRepositoryMock := &moq_repository.ItemRepositoryInterfaceMock{
 		GetItemUserMultipleInPeriodFunc: func(ctx context.Context, f *firestore.Client, userID []string, startDate time.Time, endDate time.Time, first int, cursor repository.ItemsInPeriodCursor) ([]*model.Item, error) {
 			return items, nil
 		},
 	}
 
-	relationshipRepositoryMock := &repository.RelationshipInterfaceMock{
+	relationshipRepositoryMock := &moq_repository.RelationshipInterfaceMock{
 		FindByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string, first int, cursor repository.RelationshipCursor) ([]*model.Relationship, error) {
 			return rr, nil
 		},

@@ -9,6 +9,8 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
 
+//go:generate moq -out=moq/item.go -pkg=moqs . ItemRepositoryInterface
+
 type ItemRepositoryInterface interface {
 	Create(ctx context.Context, f *firestore.Client, userID string, i *model.Item) error
 	Update(ctx context.Context, f *firestore.Client, userID string, i *model.UpdateItem, updatedAt time.Time) error

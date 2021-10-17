@@ -9,6 +9,8 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
+//go:generate moq -out=moq/invite.go -pkg=moqs . InviteRepositoryInterface
+
 type InviteRepositoryInterface interface {
 	Create(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Invite)
 	Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, code string)

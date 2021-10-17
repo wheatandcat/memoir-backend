@@ -10,8 +10,9 @@ import (
 	"github.com/wheatandcat/memoir-backend/client/uuidgen"
 	"github.com/wheatandcat/memoir-backend/graph"
 	"github.com/wheatandcat/memoir-backend/graph/model"
-	"github.com/wheatandcat/memoir-backend/repository"
 	"gopkg.in/go-playground/assert.v1"
+
+	moq_repository "github.com/wheatandcat/memoir-backend/repository/moq"
 )
 
 func TestCreatePushToken(t *testing.T) {
@@ -34,7 +35,7 @@ func TestCreatePushToken(t *testing.T) {
 
 	g := newGraph()
 
-	pushTokenRepositoryMock := &repository.PushTokenRepositoryInterfaceMock{
+	pushTokenRepositoryMock := &moq_repository.PushTokenRepositoryInterfaceMock{
 		CreateFunc: func(ctx context.Context, f *firestore.Client, userID string, i *model.PushToken) error {
 			return nil
 		},

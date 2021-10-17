@@ -6,7 +6,8 @@ import (
 	mock_timegen "github.com/wheatandcat/memoir-backend/client/timegen/mocks"
 	mock_uuidgen "github.com/wheatandcat/memoir-backend/client/uuidgen/mocks"
 	"github.com/wheatandcat/memoir-backend/graph"
-	"github.com/wheatandcat/memoir-backend/repository"
+
+	moq_repository "github.com/wheatandcat/memoir-backend/repository/moq"
 )
 
 func newGraph() graph.Graph {
@@ -18,13 +19,13 @@ func newGraph() graph.Graph {
 	}
 
 	app := &graph.Application{
-		UserRepository:                &repository.UserRepositoryInterfaceMock{},
-		ItemRepository:                &repository.ItemRepositoryInterfaceMock{},
-		InviteRepository:              &repository.InviteRepositoryInterfaceMock{},
-		RelationshipRequestRepository: &repository.RelationshipRequestInterfaceMock{},
-		RelationshipRepository:        &repository.RelationshipInterfaceMock{},
-		PushTokenRepository:           &repository.PushTokenRepositoryInterfaceMock{},
-		CommonRepository:              &repository.CommonRepositoryInterfaceMock{},
+		UserRepository:                &moq_repository.UserRepositoryInterfaceMock{},
+		ItemRepository:                &moq_repository.ItemRepositoryInterfaceMock{},
+		InviteRepository:              &moq_repository.InviteRepositoryInterfaceMock{},
+		RelationshipRequestRepository: &moq_repository.RelationshipRequestInterfaceMock{},
+		RelationshipRepository:        &moq_repository.RelationshipInterfaceMock{},
+		PushTokenRepository:           &moq_repository.PushTokenRepositoryInterfaceMock{},
+		CommonRepository:              &moq_repository.CommonRepositoryInterfaceMock{},
 	}
 
 	g := graph.Graph{
