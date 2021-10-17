@@ -2,8 +2,15 @@
 
 ## ローカル実行
 
+### 導入
 ```
-$ dev_appserver.py app.local.yaml
+$ go get -u github.com/cosmtrek/air
+```
+
+### 起動
+
+```
+$ air
 ```
 
 ## GraphQL スキーマドキュメント
