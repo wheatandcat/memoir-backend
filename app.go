@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi"
+	"github.com/joho/godotenv"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/wheatandcat/memoir-backend/auth"
 	"github.com/wheatandcat/memoir-backend/graph"
@@ -21,6 +23,13 @@ import (
 const defaultPort = "8080"
 
 func main() {
+	if os.Getenv("APP_ENV") == "local" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			fmt.Printf("読み込み出来ませんでした: %v", err)
+		}
+	}
+
 	sco := sentry.ClientOptions{
 		Dsn: os.Getenv("SENTRY_DSN"),
 	}
