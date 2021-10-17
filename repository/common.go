@@ -9,6 +9,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+//go:generate moq -out=moq/common.go -pkg=moqs . CommonRepositoryInterface
+
 type CommonRepositoryInterface interface {
 	Commit(ctx context.Context, batch *firestore.WriteBatch) error
 }

@@ -11,6 +11,7 @@ require (
 	github.com/go-chi/chi v3.3.2+incompatible
 	github.com/google/go-cmp v0.5.5
 	github.com/google/uuid v1.1.2
+	github.com/matryer/moq v0.2.3 // indirect
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/vektah/gqlparser/v2 v2.1.0

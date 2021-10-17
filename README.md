@@ -20,9 +20,9 @@ $ go run github.com/99designs/gqlgen generate
 
 ## テスト
 
+moqを生成
 ```
-$ rm -rf ./repository/moq.go
-$ moq -out=repository/moq.go ./repository ItemRepositoryInterface UserRepositoryInterface InviteRepositoryInterface RelationshipRequestInterface RelationshipInterface PushTokenRepositoryInterface CommonRepositoryInterface
+$ make moqgen
 ```
 
 テストを実行

@@ -10,12 +10,7 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
 
-type User struct {
-	ID          string
-	FirebaseUID string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-}
+//go:generate moq -out=moq/user.go -pkg=moqs . UserRepositoryInterface
 
 // UserRepositoryInterface is repository interface
 type UserRepositoryInterface interface {
@@ -27,6 +22,13 @@ type UserRepositoryInterface interface {
 	FindByFirebaseUID(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error)
 	ExistByFirebaseUID(ctx context.Context, f *firestore.Client, fUID string) (bool, error)
 	FindInUID(ctx context.Context, f *firestore.Client, uid []string) ([]*model.User, error)
+}
+
+type User struct {
+	ID          string
+	FirebaseUID string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 // UserRepository is repository for user

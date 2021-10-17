@@ -16,6 +16,8 @@ const (
 	RelationshipRequestStatusNG      = 3
 )
 
+//go:generate moq -out=moq/relationship_request.go -pkg=moqs . RelationshipRequestInterface
+
 type RelationshipRequestInterface interface {
 	Create(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) error
 	Update(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest)

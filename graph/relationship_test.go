@@ -12,6 +12,8 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
 	"gopkg.in/go-playground/assert.v1"
+
+	moq_repository "github.com/wheatandcat/memoir-backend/repository/moq"
 )
 
 func TestDeleteRelationship(t *testing.T) {
@@ -24,11 +26,11 @@ func TestDeleteRelationship(t *testing.T) {
 
 	g := newGraph()
 
-	relationshipRepositoryMock := &repository.RelationshipInterfaceMock{
+	relationshipRepositoryMock := &moq_repository.RelationshipInterfaceMock{
 		DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship) {
 		},
 	}
-	commonRepositoryMock := &repository.CommonRepositoryInterfaceMock{
+	commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
 		CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
 			return nil
 		},
@@ -120,13 +122,13 @@ func TestGetRelationships(t *testing.T) {
 
 	g := newGraph()
 
-	relationshipRepositoryMock := &repository.RelationshipInterfaceMock{
+	relationshipRepositoryMock := &moq_repository.RelationshipInterfaceMock{
 		FindByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string, first int, cursor repository.RelationshipCursor) ([]*model.Relationship, error) {
 			return rr, nil
 		},
 	}
 
-	userRepositoryInterfaceMock := &repository.UserRepositoryInterfaceMock{
+	userRepositoryInterfaceMock := &moq_repository.UserRepositoryInterfaceMock{
 		FindInUIDFunc: func(ctx context.Context, f *firestore.Client, uid []string) ([]*model.User, error) {
 			return users, nil
 		},

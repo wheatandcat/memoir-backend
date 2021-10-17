@@ -11,8 +11,9 @@ import (
 	"github.com/wheatandcat/memoir-backend/client/uuidgen"
 	"github.com/wheatandcat/memoir-backend/graph"
 	"github.com/wheatandcat/memoir-backend/graph/model"
-	"github.com/wheatandcat/memoir-backend/repository"
 	"gopkg.in/go-playground/assert.v1"
+
+	moq_repository "github.com/wheatandcat/memoir-backend/repository/moq"
 )
 
 type contextKey struct {
@@ -35,7 +36,7 @@ func TestUpdateUser(t *testing.T) {
 
 	g := newGraph()
 
-	userRepositoryMock := &repository.UserRepositoryInterfaceMock{
+	userRepositoryMock := &moq_repository.UserRepositoryInterfaceMock{
 		UpdateFunc: func(ctx context.Context, f *firestore.Client, u *model.User) error {
 			return nil
 		},
