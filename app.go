@@ -20,7 +20,7 @@ import (
 	"github.com/wheatandcat/memoir-backend/repository"
 )
 
-const defaultPort = "8081"
+const defaultPort = "8080"
 
 func main() {
 	if os.Getenv("APP_ENV") == "local" {
