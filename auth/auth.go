@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	firebase "firebase.google.com/go"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
 
 var UserCtxKey = &contextKey{"user"}
@@ -47,7 +48,8 @@ func FirebaseLoginMiddleware(app *firebase.App) func(http.Handler) http.Handler 
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			client, err := app.Auth(r.Context())
 			if err != nil {
-				http.Error(w, "Firebase not initialize", http.StatusBadRequest)
+				e := ce.CustomErrorWrap(err, "Firebase not initialize:")
+				http.Error(w, e.Error(), http.StatusBadRequest)
 				return
 			}
 
@@ -60,7 +62,8 @@ func FirebaseLoginMiddleware(app *firebase.App) func(http.Handler) http.Handler 
 			idToken := strings.Replace(auth, "Bearer ", "", 1)
 			token, err := client.VerifyIDToken(r.Context(), idToken)
 			if err != nil {
-				http.Error(w, "Invalid token", http.StatusForbidden)
+				e := ce.CustomError(err)
+				http.Error(w, e.Error(), http.StatusForbidden)
 				return
 			}
 

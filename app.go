@@ -20,7 +20,7 @@ import (
 	"github.com/wheatandcat/memoir-backend/repository"
 )
 
-const defaultPort = "8080"
+const defaultPort = "8081"
 
 func main() {
 	if os.Getenv("APP_ENV") == "local" {
@@ -37,9 +37,12 @@ func main() {
 		sco.Release = os.Getenv("RELEASE_INSTANCE_VERSION")
 	}
 
-	err := sentry.Init(sco)
-	if err != nil {
-		log.Fatalf("sentry.Init: %s", err)
+	if os.Getenv("APP_ENV") != "local" {
+		// ローカルの時はSentryを送信しない
+		err := sentry.Init(sco)
+		if err != nil {
+			log.Fatalf("sentry.Init: %s", err)
+		}
 	}
 
 	port := os.Getenv("PORT")

@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
-	"github.com/pkg/errors"
 	"github.com/wheatandcat/memoir-backend/graph/model"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
 
 //go:generate moq -out=moq/item.go -pkg=moqs . ItemRepositoryInterface
@@ -44,7 +44,7 @@ func getItemCollection(f *firestore.Client, userID string) *firestore.Collection
 func (re *ItemRepository) Create(ctx context.Context, f *firestore.Client, userID string, i *model.Item) error {
 	_, err := getItemCollection(f, userID).Doc(i.ID).Set(ctx, i)
 
-	return errors.WithStack(err)
+	return ce.CustomError(err)
 }
 
 // Update アイテムを更新する
@@ -69,7 +69,7 @@ func (re *ItemRepository) Update(ctx context.Context, f *firestore.Client, userI
 
 	_, err := getItemCollection(f, userID).Doc(i.ID).Update(ctx, u)
 
-	return errors.WithStack(err)
+	return ce.CustomError(err)
 }
 
 // Delete アイテムを削除する
@@ -84,7 +84,7 @@ func (re *ItemRepository) GetItem(ctx context.Context, f *firestore.Client, user
 
 	ds, err := getItemCollection(f, userID).Doc(id).Get(ctx)
 	if err != nil {
-		return i, errors.WithStack(err)
+		return i, ce.CustomError(err)
 	}
 
 	ds.DataTo(&i)
@@ -99,7 +99,7 @@ func (re *ItemRepository) GetItemsInDate(ctx context.Context, f *firestore.Clien
 	matchItem := getItemCollection(f, userID).Where("Date", "==", date).OrderBy("CreatedAt", firestore.Desc).Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, ce.CustomError(err)
 	}
 
 	for _, doc := range docs {
@@ -125,7 +125,7 @@ func (re *ItemRepository) GetItemsInPeriod(ctx context.Context, f *firestore.Cli
 	if cursor.ID != "" {
 		ds, err := getItemCollection(f, cursor.UserID).Doc(cursor.ID).Get(ctx)
 		if err != nil {
-			return nil, errors.WithStack(err)
+			return nil, ce.CustomError(err)
 		}
 
 		query = query.StartAfter(ds)
@@ -135,7 +135,7 @@ func (re *ItemRepository) GetItemsInPeriod(ctx context.Context, f *firestore.Cli
 	docs, err := matchItem.GetAll()
 
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, ce.CustomError(err)
 	}
 
 	for _, doc := range docs {
@@ -157,7 +157,7 @@ func (re *ItemRepository) GetItemUserMultipleInPeriod(ctx context.Context, f *fi
 	if cursor.ID != "" {
 		ds, err := getItemCollection(f, cursor.UserID).Doc(cursor.ID).Get(ctx)
 		if err != nil {
-			return nil, errors.WithStack(err)
+			return nil, ce.CustomError(err)
 		}
 
 		query = query.StartAfter(ds)
@@ -167,7 +167,7 @@ func (re *ItemRepository) GetItemUserMultipleInPeriod(ctx context.Context, f *fi
 	docs, err := matchItem.GetAll()
 
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, ce.CustomError(err)
 	}
 
 	for _, doc := range docs {
