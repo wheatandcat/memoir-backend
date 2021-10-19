@@ -7,6 +7,7 @@ import (
 	"os"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
 )
 
@@ -42,13 +43,13 @@ func (t *HTTPTask) PushNotification(r NotificationRequest) (*taskspb.Task, error
 	ctx := context.Background()
 	client, err := cloudtasks.NewClient(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("NewClient: %v", err)
+		return nil, ce.CustomErrorWrap(err, "NewClient")
 	}
 	defer client.Close()
 
 	body, err := json.Marshal(r)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	// Build the Task queue path.
@@ -69,7 +70,7 @@ func (t *HTTPTask) PushNotification(r NotificationRequest) (*taskspb.Task, error
 
 	createdTask, err := client.CreateTask(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("cloudtasks.CreateTask: %v", err)
+		return nil, ce.CustomErrorWrap(err, "cloudtasks.CreateTask")
 	}
 
 	return createdTask, nil

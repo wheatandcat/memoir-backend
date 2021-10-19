@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
-	"github.com/pkg/errors"
 	"github.com/wheatandcat/memoir-backend/graph/model"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
 
 //go:generate moq -out=moq/relationship.go -pkg=moqs . RelationshipInterface
@@ -62,7 +62,7 @@ func (re *RelationshipRepository) Find(ctx context.Context, f *firestore.Client,
 	var rr *model.Relationship
 	ds, err := f.Collection("relationships").Doc(i.FollowerID + "_" + i.FollowedID).Get(ctx)
 	if err != nil {
-		return i, errors.WithStack(err)
+		return i, ce.CustomError(err)
 	}
 
 	ds.DataTo(&rr)
@@ -78,7 +78,7 @@ func (re *RelationshipRepository) FindByFollowedID(ctx context.Context, f *fires
 	if cursor.FollowerID != "" {
 		ds, err := f.Collection("relationships").Doc(cursor.FollowerID + "_" + cursor.FollowedID).Get(ctx)
 		if err != nil {
-			return nil, errors.WithStack(err)
+			return nil, ce.CustomError(err)
 		}
 
 		query = query.StartAfter(ds)
@@ -88,7 +88,7 @@ func (re *RelationshipRepository) FindByFollowedID(ctx context.Context, f *fires
 	docs, err := matchItem.GetAll()
 
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, ce.CustomError(err)
 	}
 
 	for _, doc := range docs {
