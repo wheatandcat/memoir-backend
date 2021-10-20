@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
 
 // PushToken トークン作成
@@ -17,7 +18,7 @@ func (g *Graph) CreatePushToken(ctx context.Context, input *model.NewPushToken) 
 	}
 
 	if err := g.App.PushTokenRepository.Create(ctx, g.FirestoreClient, g.UserID, i); err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return i, nil

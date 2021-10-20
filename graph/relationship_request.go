@@ -8,25 +8,26 @@ import (
 	"github.com/wheatandcat/memoir-backend/client/task"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"google.golang.org/grpc/codes"
 )
 
 // CreateRelationshipRequest 共有の招待リクエストを作成する
 func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRelationshipRequest) (*model.RelationshipRequest, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("invalid authorization")
+		return nil, ce.CustomError(fmt.Errorf("invalid authorization"))
 	}
 
 	i, err := g.App.InviteRepository.Find(ctx, g.FirestoreClient, input.Code)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 	if i.UserID == "" {
-		return nil, fmt.Errorf("招待コードが見つかりません")
+		return nil, ce.CustomError(fmt.Errorf("招待コードが見つかりません"))
 	}
 
 	if i.UserID == g.UserID {
-		return nil, fmt.Errorf("自身の招待コードです")
+		return nil, ce.CustomError(fmt.Errorf("自身の招待コードです"))
 	}
 
 	uuid := g.Client.UUID.Get()
@@ -43,13 +44,13 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 	data, err := g.App.RelationshipRequestRepository.Find(ctx, g.FirestoreClient, rr)
 	if GrpcErrorStatusCode(err) != codes.NotFound {
 		if data.Status == repository.RelationshipRequestStatusRequest {
-			return nil, fmt.Errorf("既に招待リクエスト済みです")
+			return nil, ce.CustomError(fmt.Errorf("既に招待リクエスト済みです"))
 		}
 	}
 
 	u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, i.UserID)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	tokens := g.App.PushTokenRepository.GetTokens(ctx, g.FirestoreClient, i.UserID)
@@ -57,7 +58,7 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 	if len(tokens) > 0 {
 		me, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, g.UserID)
 		if err != nil {
-			return nil, err
+			return nil, ce.CustomError(err)
 		}
 
 		r := task.NotificationRequest{
@@ -68,12 +69,12 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 		}
 
 		if _, err = g.Client.Task.PushNotification(r); err != nil {
-			return nil, err
+			return nil, ce.CustomError(err)
 		}
 	}
 
 	if err = g.App.RelationshipRequestRepository.Create(ctx, g.FirestoreClient, rr); err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	rr.User = u
@@ -84,7 +85,7 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 // AcceptRelationshipRequest 招待リクエストを承諾する
 func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("invalid authorization")
+		return nil, ce.CustomError(fmt.Errorf("invalid authorization"))
 	}
 	rr1 := &model.RelationshipRequest{
 		FollowerID: followedID,
@@ -130,7 +131,7 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 	g.App.RelationshipRepository.Create(ctx, g.FirestoreClient, batch, r2)
 
 	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	tokens := g.App.PushTokenRepository.GetTokens(ctx, g.FirestoreClient, followedID)
@@ -138,7 +139,7 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 	if len(tokens) > 0 {
 		u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, g.UserID)
 		if err != nil {
-			return nil, err
+			return nil, ce.CustomError(err)
 		}
 
 		r := task.NotificationRequest{
@@ -149,7 +150,7 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 		}
 
 		if _, err = g.Client.Task.PushNotification(r); err != nil {
-			return nil, err
+			return nil, ce.CustomError(err)
 		}
 	}
 
@@ -159,7 +160,7 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 // ngRelationshipRequest 招待リクエストを拒否する
 func (g *Graph) NgRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("invalid authorization")
+		return nil, ce.CustomError(fmt.Errorf("invalid authorization"))
 	}
 	rr := &model.RelationshipRequest{
 		FollowerID: followedID,
@@ -173,7 +174,7 @@ func (g *Graph) NgRelationshipRequest(ctx context.Context, followedID string) (*
 
 	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
 
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return rr, nil
@@ -183,7 +184,7 @@ func (g *Graph) NgRelationshipRequest(ctx context.Context, followedID string) (*
 func (g *Graph) GetRelationshipRequests(ctx context.Context, input model.InputRelationshipRequests, userSkip bool) (*model.RelationshipRequests, error) {
 	t := g.Client.Time
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("invalid authorization")
+		return nil, ce.CustomError(fmt.Errorf("invalid authorization"))
 	}
 
 	cursor := repository.RelationshipRequestCursor{
@@ -201,7 +202,7 @@ func (g *Graph) GetRelationshipRequests(ctx context.Context, input model.InputRe
 
 	items, err := g.App.RelationshipRequestRepository.FindByFollowedID(ctx, g.FirestoreClient, g.UserID, input.First, cursor)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	userID := []string{}
@@ -213,7 +214,7 @@ func (g *Graph) GetRelationshipRequests(ctx context.Context, input model.InputRe
 	if !userSkip && len(userID) > 0 {
 		users, err = g.App.UserRepository.FindInUID(ctx, g.FirestoreClient, userID)
 		if err != nil {
-			return nil, err
+			return nil, ce.CustomError(err)
 		}
 
 	}

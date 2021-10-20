@@ -7,12 +7,13 @@ import (
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
 
 // DeleteRelationship 共有ユーザーを解除する
 func (g *Graph) DeleteRelationship(ctx context.Context, followedID string) (*model.Relationship, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("invalid authorization")
+		return nil, ce.CustomError(fmt.Errorf("invalid authorization"))
 	}
 
 	batch := g.FirestoreClient.Batch()
@@ -30,7 +31,7 @@ func (g *Graph) DeleteRelationship(ctx context.Context, followedID string) (*mod
 	g.App.RelationshipRepository.Delete(ctx, g.FirestoreClient, batch, r2)
 
 	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return r1, nil
@@ -62,7 +63,7 @@ func (g *Graph) GetRelationships(ctx context.Context, input model.InputRelations
 
 	items, err := g.App.RelationshipRepository.FindByFollowedID(ctx, g.FirestoreClient, g.UserID, input.First, cursor)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	userID := []string{}
@@ -74,7 +75,7 @@ func (g *Graph) GetRelationships(ctx context.Context, input model.InputRelations
 	if !userSkip && len(userID) > 0 {
 		users, err = g.App.UserRepository.FindInUID(ctx, g.FirestoreClient, userID)
 		if err != nil {
-			return nil, err
+			return nil, ce.CustomError(err)
 		}
 
 	}

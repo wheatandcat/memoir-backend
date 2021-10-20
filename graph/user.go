@@ -6,6 +6,7 @@ import (
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
 
 // CreateUser ユーザー作成
@@ -17,7 +18,7 @@ func (g *Graph) CreateUser(ctx context.Context, input *model.NewUser) (*model.Us
 	}
 
 	if err := g.App.UserRepository.Create(ctx, g.FirestoreClient, u); err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return u, nil
@@ -26,7 +27,7 @@ func (g *Graph) CreateUser(ctx context.Context, input *model.NewUser) (*model.Us
 // CreateAuthUser 認証済みユーザーを作成
 func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewAuthUser) (*model.AuthUser, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("invalid authorization")
+		return nil, ce.CustomError(fmt.Errorf("invalid authorization"))
 	}
 
 	u := &repository.User{
@@ -41,7 +42,7 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewAuthUser) (*
 
 	exist, err := g.App.UserRepository.ExistByFirebaseUID(ctx, g.FirestoreClient, u.FirebaseUID)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	if exist {
@@ -54,12 +55,12 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewAuthUser) (*
 			ID: input.ID,
 		}
 		if _, err = g.CreateUser(ctx, v); err != nil {
-			return nil, err
+			return nil, ce.CustomError(err)
 		}
 	}
 
 	if err = g.App.UserRepository.UpdateFirebaseUID(ctx, g.FirestoreClient, u); err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return mu, nil
@@ -69,7 +70,7 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewAuthUser) (*
 func (g *Graph) GetUser(ctx context.Context) (*model.User, error) {
 	u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, g.UserID)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return u, nil
@@ -82,7 +83,7 @@ func (g *Graph) ExistAuthUser(ctx context.Context) (*model.ExistAuthUser, error)
 
 	exist, err := g.App.UserRepository.ExistByFirebaseUID(ctx, g.FirestoreClient, g.Client.AuthToken.Get(ctx))
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	rau.Exist = exist
@@ -101,7 +102,7 @@ func (g *Graph) UpdateUser(ctx context.Context, input *model.UpdateUser) (*model
 
 	err := g.App.UserRepository.Update(ctx, g.FirestoreClient, u)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return u, nil
