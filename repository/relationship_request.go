@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
-	"github.com/pkg/errors"
 	"github.com/wheatandcat/memoir-backend/graph/model"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"google.golang.org/grpc/codes"
 )
 
@@ -58,7 +58,7 @@ func (re *RelationshipRequestRepository) Create(ctx context.Context, f *firestor
 	}
 
 	_, err := f.Collection("relationshipRequests").Doc(i.FollowerID+"_"+i.FollowedID).Set(ctx, rrd)
-	return errors.WithStack(err)
+	return ce.CustomError(err)
 }
 
 // Update 更新する
@@ -82,12 +82,12 @@ func (re *RelationshipRequestRepository) Find(ctx context.Context, f *firestore.
 			return &model.RelationshipRequest{}, nil
 		}
 
-		return i, errors.WithStack(err)
+		return i, ce.CustomError(err)
 	}
 
 	ds.DataTo(&rr)
 
-	return rr, errors.WithStack(err)
+	return rr, ce.CustomError(err)
 }
 
 // FindByFollowedID ページングで取得する
@@ -98,7 +98,7 @@ func (re *RelationshipRequestRepository) FindByFollowedID(ctx context.Context, f
 	if cursor.FollowerID != "" {
 		ds, err := f.Collection("relationshipRequests").Doc(cursor.FollowerID + "_" + cursor.FollowedID).Get(ctx)
 		if err != nil {
-			return nil, errors.WithStack(err)
+			return nil, ce.CustomError(err)
 		}
 
 		query = query.StartAfter(ds)
@@ -108,7 +108,7 @@ func (re *RelationshipRequestRepository) FindByFollowedID(ctx context.Context, f
 	docs, err := matchItem.GetAll()
 
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, ce.CustomError(err)
 	}
 
 	for _, doc := range docs {

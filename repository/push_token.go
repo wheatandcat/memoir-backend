@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"cloud.google.com/go/firestore"
-	"github.com/pkg/errors"
 	"github.com/wheatandcat/memoir-backend/graph/model"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"google.golang.org/grpc/codes"
 )
 
@@ -32,7 +32,7 @@ func getPushTokenCollection(f *firestore.Client, userID string) *firestore.Colle
 func (re *PushTokenRepository) Create(ctx context.Context, f *firestore.Client, userID string, i *model.PushToken) error {
 	_, err := getPushTokenCollection(f, userID).Doc(i.DeviceID).Set(ctx, i)
 
-	return errors.WithStack(err)
+	return ce.CustomError(err)
 }
 
 func (re *PushTokenRepository) GetItems(ctx context.Context, f *firestore.Client, userID string) ([]*model.PushToken, error) {
@@ -41,7 +41,7 @@ func (re *PushTokenRepository) GetItems(ctx context.Context, f *firestore.Client
 	matchItem := getPushTokenCollection(f, userID).Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, ce.CustomError(err)
 	}
 
 	for _, doc := range docs {

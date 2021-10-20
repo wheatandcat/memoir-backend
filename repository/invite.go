@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"cloud.google.com/go/firestore"
-	"github.com/pkg/errors"
 	"github.com/wheatandcat/memoir-backend/graph/model"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"google.golang.org/grpc/codes"
 )
 
@@ -66,10 +66,10 @@ func (re *InviteRepository) Find(ctx context.Context, f *firestore.Client, code 
 			return &model.Invite{}, nil
 		}
 
-		return i, errors.WithStack(err)
+		return i, ce.CustomError(err)
 	}
 
 	ds.DataTo(&i)
 
-	return i, errors.WithStack(err)
+	return i, ce.CustomError(err)
 }

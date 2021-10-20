@@ -5,6 +5,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/pkg/errors"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -26,7 +27,7 @@ func NewCommonRepository() CommonRepositoryInterface {
 func (re *CommonRepository) Commit(ctx context.Context, batch *firestore.WriteBatch) error {
 	_, err := batch.Commit(ctx)
 
-	return errors.WithStack(err)
+	return ce.CustomError(err)
 }
 
 func GrpcErrorStatusCode(err error) codes.Code {
