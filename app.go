@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -26,7 +25,7 @@ func main() {
 	if os.Getenv("APP_ENV") == "local" {
 		err := godotenv.Load(".env")
 		if err != nil {
-			fmt.Printf("読み込み出来ませんでした: %v", err)
+			log.Fatalf("読み込み出来ませんでした: %v", err)
 		}
 	}
 

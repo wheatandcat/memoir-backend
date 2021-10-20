@@ -7,6 +7,7 @@ import (
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"google.golang.org/grpc/codes"
 )
 
@@ -25,7 +26,7 @@ func (g *Graph) CreateItem(ctx context.Context, input *model.NewItem) (*model.It
 	}
 
 	if err := g.App.ItemRepository.Create(ctx, g.FirestoreClient, g.UserID, i); err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return i, nil
@@ -40,7 +41,7 @@ func (g *Graph) UpdateItem(ctx context.Context, input *model.UpdateItem) (*model
 	}
 
 	if err := g.App.ItemRepository.Update(ctx, g.FirestoreClient, g.UserID, input, i.UpdatedAt); err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return i, nil
@@ -53,7 +54,7 @@ func (g *Graph) DeleteItem(ctx context.Context, input *model.DeleteItem) (*model
 	}
 
 	if err := g.App.ItemRepository.Delete(ctx, g.FirestoreClient, g.UserID, input); err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return i, nil
@@ -63,7 +64,7 @@ func (g *Graph) DeleteItem(ctx context.Context, input *model.DeleteItem) (*model
 func (g *Graph) GetItem(ctx context.Context, id string) (*model.Item, error) {
 	i, err := g.App.ItemRepository.GetItem(ctx, g.FirestoreClient, g.UserID, id)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	t := g.Client.Time
@@ -79,7 +80,7 @@ func (g *Graph) GetItem(ctx context.Context, id string) (*model.Item, error) {
 func (g *Graph) GetItemsInDate(ctx context.Context, date time.Time) ([]*model.Item, error) {
 	items, err := g.App.ItemRepository.GetItemsInDate(ctx, g.FirestoreClient, g.UserID, date)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	t := g.Client.Time
@@ -108,7 +109,7 @@ func (g *Graph) GetItemsInPeriod(ctx context.Context, input model.InputItemsInPe
 		}
 	} else {
 		if GrpcErrorStatusCode(err) != codes.NotFound {
-			return nil, err
+			return nil, ce.CustomError(err)
 		}
 	}
 
@@ -141,7 +142,7 @@ func (g *Graph) GetItemsInPeriod(ctx context.Context, input model.InputItemsInPe
 
 	items, err := g.App.ItemRepository.GetItemUserMultipleInPeriod(ctx, g.FirestoreClient, userID, input.StartDate, input.EndDate, input.First, cursor)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	var ibpes []*model.ItemsInPeriodEdge

@@ -13,6 +13,7 @@ import (
 	"github.com/wheatandcat/memoir-backend/client/task"
 	"github.com/wheatandcat/memoir-backend/client/timegen"
 	"github.com/wheatandcat/memoir-backend/client/uuidgen"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -37,17 +38,17 @@ type Client struct {
 func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Graph, error) {
 	user := auth.ForContext(ctx)
 	if user == nil {
-		return nil, fmt.Errorf("access denied")
+		return nil, ce.CustomError(fmt.Errorf("access denied"))
 	}
 
 	if user.FirebaseUID == "" {
 		// Firebase認証無し
 		u, err := app.UserRepository.FindDatabaseDataByUID(ctx, f, user.ID)
 		if err != nil {
-			return nil, fmt.Errorf("User Invalid")
+			return nil, ce.CustomErrorWrap(err, "User Invalid")
 		}
 		if u.FirebaseUID != "" {
-			return nil, fmt.Errorf("need to firebase auth")
+			return nil, ce.CustomError(fmt.Errorf("need to firebase auth"))
 		}
 		sentry.AddBreadcrumb(&sentry.Breadcrumb{
 			Category: "Auth",
@@ -59,7 +60,7 @@ func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Grap
 		// Firebase認証有り
 		u, err := app.UserRepository.FindByFirebaseUID(ctx, f, user.FirebaseUID)
 		if err != nil {
-			return nil, fmt.Errorf("firebase auth invalid")
+			return nil, ce.CustomErrorWrap(err, "firebase auth invalid")
 		}
 
 		sentry.AddBreadcrumb(&sentry.Breadcrumb{
@@ -72,7 +73,7 @@ func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Grap
 	}
 
 	if user.ID == "" {
-		return nil, fmt.Errorf("UserID Invalid")
+		return nil, ce.CustomError(fmt.Errorf("UserID Invalid"))
 	}
 
 	return NewGraphWithSetUserID(app, f, user.ID), nil

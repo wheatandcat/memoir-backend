@@ -10,6 +10,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/graph/model"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
@@ -17,7 +18,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	result, err := g.CreateUser(ctx, &input)
 
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -27,7 +28,7 @@ func (r *mutationResolver) CreateAuthUser(ctx context.Context, input model.NewAu
 	g := NewGraphWithSetUserID(r.App, r.FirestoreClient, "")
 	result, err := g.CreateAuthUser(ctx, &input)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -36,12 +37,12 @@ func (r *mutationResolver) CreateAuthUser(ctx context.Context, input model.NewAu
 func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUser) (*model.User, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.UpdateUser(ctx, &input)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -50,12 +51,12 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUse
 func (r *mutationResolver) CreateItem(ctx context.Context, input model.NewItem) (*model.Item, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.CreateItem(ctx, &input)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -64,12 +65,12 @@ func (r *mutationResolver) CreateItem(ctx context.Context, input model.NewItem) 
 func (r *mutationResolver) UpdateItem(ctx context.Context, input model.UpdateItem) (*model.Item, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.UpdateItem(ctx, &input)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -78,12 +79,12 @@ func (r *mutationResolver) UpdateItem(ctx context.Context, input model.UpdateIte
 func (r *mutationResolver) DeleteItem(ctx context.Context, input model.DeleteItem) (*model.Item, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.DeleteItem(ctx, &input)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -92,12 +93,12 @@ func (r *mutationResolver) DeleteItem(ctx context.Context, input model.DeleteIte
 func (r *mutationResolver) CreateInvite(ctx context.Context) (*model.Invite, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.CreateInvite(ctx)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -106,12 +107,12 @@ func (r *mutationResolver) CreateInvite(ctx context.Context) (*model.Invite, err
 func (r *mutationResolver) UpdateInvite(ctx context.Context) (*model.Invite, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.UpdateInvite(ctx)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -120,12 +121,12 @@ func (r *mutationResolver) UpdateInvite(ctx context.Context) (*model.Invite, err
 func (r *mutationResolver) CreateRelationshipRequest(ctx context.Context, input model.NewRelationshipRequest) (*model.RelationshipRequest, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.CreateRelationshipRequest(ctx, input)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -134,12 +135,12 @@ func (r *mutationResolver) CreateRelationshipRequest(ctx context.Context, input 
 func (r *mutationResolver) AcceptRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.AcceptRelationshipRequest(ctx, followedID)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -148,12 +149,12 @@ func (r *mutationResolver) AcceptRelationshipRequest(ctx context.Context, follow
 func (r *mutationResolver) NgRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.NgRelationshipRequest(ctx, followedID)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -162,12 +163,12 @@ func (r *mutationResolver) NgRelationshipRequest(ctx context.Context, followedID
 func (r *mutationResolver) DeleteRelationship(ctx context.Context, followedID string) (*model.Relationship, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.DeleteRelationship(ctx, followedID)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -176,12 +177,12 @@ func (r *mutationResolver) DeleteRelationship(ctx context.Context, followedID st
 func (r *mutationResolver) CreatePushToken(ctx context.Context, input model.NewPushToken) (*model.PushToken, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.CreatePushToken(ctx, &input)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -190,12 +191,12 @@ func (r *mutationResolver) CreatePushToken(ctx context.Context, input model.NewP
 func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.GetUser(ctx)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -206,7 +207,7 @@ func (r *queryResolver) ExistAuthUser(ctx context.Context) (*model.ExistAuthUser
 
 	result, err := g.ExistAuthUser(ctx)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -215,12 +216,12 @@ func (r *queryResolver) ExistAuthUser(ctx context.Context) (*model.ExistAuthUser
 func (r *queryResolver) Item(ctx context.Context, id string) (*model.Item, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.GetItem(ctx, id)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -229,12 +230,12 @@ func (r *queryResolver) Item(ctx context.Context, id string) (*model.Item, error
 func (r *queryResolver) ItemsByDate(ctx context.Context, date time.Time) ([]*model.Item, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.GetItemsInDate(ctx, date)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -243,12 +244,12 @@ func (r *queryResolver) ItemsByDate(ctx context.Context, date time.Time) ([]*mod
 func (r *queryResolver) ItemsInDate(ctx context.Context, date time.Time) ([]*model.Item, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.GetItemsInDate(ctx, date)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -257,12 +258,12 @@ func (r *queryResolver) ItemsInDate(ctx context.Context, date time.Time) ([]*mod
 func (r *queryResolver) ItemsInPeriod(ctx context.Context, input model.InputItemsInPeriod) (*model.ItemsInPeriod, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.GetItemsInPeriod(ctx, input)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -271,12 +272,12 @@ func (r *queryResolver) ItemsInPeriod(ctx context.Context, input model.InputItem
 func (r *queryResolver) Invite(ctx context.Context) (*model.Invite, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.GetInviteByUseID(ctx)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -285,12 +286,12 @@ func (r *queryResolver) Invite(ctx context.Context) (*model.Invite, error) {
 func (r *queryResolver) InviteByCode(ctx context.Context, code string) (*model.User, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	result, err := g.GetInviteByCode(ctx, code)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -299,7 +300,7 @@ func (r *queryResolver) InviteByCode(ctx context.Context, code string) (*model.U
 func (r *queryResolver) RelationshipRequests(ctx context.Context, input model.InputRelationshipRequests) (*model.RelationshipRequests, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	userSkip := true
@@ -312,7 +313,7 @@ func (r *queryResolver) RelationshipRequests(ctx context.Context, input model.In
 
 	result, err := g.GetRelationshipRequests(ctx, input, userSkip)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil
@@ -321,7 +322,7 @@ func (r *queryResolver) RelationshipRequests(ctx context.Context, input model.In
 func (r *queryResolver) Relationships(ctx context.Context, input model.InputRelationships) (*model.Relationships, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	userSkip := true
@@ -334,7 +335,7 @@ func (r *queryResolver) Relationships(ctx context.Context, input model.InputRela
 
 	result, err := g.GetRelationships(ctx, input, userSkip)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return result, nil

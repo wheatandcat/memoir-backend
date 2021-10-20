@@ -6,21 +6,22 @@ import (
 	"strings"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
 
 // CreateInvite 招待を作成する
 func (g *Graph) CreateInvite(ctx context.Context) (*model.Invite, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("invalid authorization")
+		return nil, ce.CustomError(fmt.Errorf("invalid authorization"))
 	}
 
 	i, err := g.App.InviteRepository.FindByUserID(ctx, g.FirestoreClient, g.UserID)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	if i.UserID == g.UserID {
-		return nil, fmt.Errorf("自身の招待コードです")
+		return nil, ce.CustomError(fmt.Errorf("自身の招待コードです"))
 	}
 
 	uuid := g.Client.UUID.Get()
@@ -37,7 +38,7 @@ func (g *Graph) CreateInvite(ctx context.Context) (*model.Invite, error) {
 	g.App.InviteRepository.Create(ctx, g.FirestoreClient, batch, i)
 
 	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return i, nil
@@ -46,12 +47,12 @@ func (g *Graph) CreateInvite(ctx context.Context) (*model.Invite, error) {
 // UpdateInvite 招待を更新する
 func (g *Graph) UpdateInvite(ctx context.Context) (*model.Invite, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("invalid authorization")
+		return nil, ce.CustomError(fmt.Errorf("invalid authorization"))
 	}
 
 	i, err := g.App.InviteRepository.FindByUserID(ctx, g.FirestoreClient, g.UserID)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	uuid := g.Client.UUID.Get()
@@ -65,7 +66,7 @@ func (g *Graph) UpdateInvite(ctx context.Context) (*model.Invite, error) {
 	g.App.InviteRepository.Create(ctx, g.FirestoreClient, batch, i)
 
 	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return i, nil
@@ -74,12 +75,12 @@ func (g *Graph) UpdateInvite(ctx context.Context) (*model.Invite, error) {
 // GetInviteByUseID ユーザーIDから招待を取得する
 func (g *Graph) GetInviteByUseID(ctx context.Context) (*model.Invite, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("invalid authorization")
+		return nil, ce.CustomError(fmt.Errorf("invalid authorization"))
 	}
 
 	i, err := g.App.InviteRepository.FindByUserID(ctx, g.FirestoreClient, g.UserID)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return i, nil
@@ -88,21 +89,21 @@ func (g *Graph) GetInviteByUseID(ctx context.Context) (*model.Invite, error) {
 // GetInviteByCode コードから招待を取得する
 func (g *Graph) GetInviteByCode(ctx context.Context, code string) (*model.User, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, fmt.Errorf("invalid authorization")
+		return nil, ce.CustomError(fmt.Errorf("invalid authorization"))
 	}
 
 	i, err := g.App.InviteRepository.Find(ctx, g.FirestoreClient, code)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	if i.UserID == "" {
-		return nil, fmt.Errorf("招待コードが見つかりません")
+		return nil, ce.CustomError(fmt.Errorf("招待コードが見つかりません"))
 	}
 
 	u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, i.UserID)
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return u, nil

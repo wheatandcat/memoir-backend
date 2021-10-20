@@ -43,7 +43,7 @@ func (re *InviteRepository) FindByUserID(ctx context.Context, f *firestore.Clien
 	docs, err := matchItem.GetAll()
 
 	if err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	if len(docs) == 0 {

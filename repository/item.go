@@ -75,7 +75,7 @@ func (re *ItemRepository) Update(ctx context.Context, f *firestore.Client, userI
 // Delete アイテムを削除する
 func (re *ItemRepository) Delete(ctx context.Context, f *firestore.Client, userID string, i *model.DeleteItem) error {
 	_, err := getItemCollection(f, userID).Doc(i.ID).Delete(ctx)
-	return err
+	return ce.CustomError(err)
 }
 
 // GetItem アイテムを取得する

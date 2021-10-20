@@ -33,18 +33,26 @@ func GetCustomStackTrace(err error) errors.StackTrace {
 
 	if os.Getenv("APP_ENV") == "local" {
 		// エラー出力
+		fmt.Print("-----------------------\n")
 		fmt.Printf("■ error: %+v\n", err.Error())
 		if len(fs) > 3 {
 			fs = fs[:3]
 		}
 
 		fmt.Printf("■ stack trace: %+v\n", fs)
+		fmt.Print("-----------------------")
 	}
 
 	return fs
 }
 
 func CustomError(err error) error {
+	// 既にスタックトレースの設定がある場合は、そのままエラーを返す
+	_, ok := err.(interface{ StackTrace() errors.StackTrace })
+	if ok {
+		return err
+	}
+
 	e := errors.WithStack(err)
 	GetCustomStackTrace(e)
 
@@ -52,6 +60,12 @@ func CustomError(err error) error {
 }
 
 func CustomErrorWrap(err error, message string) error {
+	// 既にスタックトレースの設定がある場合は、そのままエラーを返す
+	_, ok := err.(interface{ StackTrace() errors.StackTrace })
+	if ok {
+		return err
+	}
+
 	e := errors.Wrap(err, message)
 	GetCustomStackTrace(e)
 
