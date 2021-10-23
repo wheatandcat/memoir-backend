@@ -129,3 +129,52 @@ func TestCreateUser(t *testing.T) {
 	}
 
 }
+
+func TestCreateAuthUser(t *testing.T) {
+
+	u := &auth.User{
+		ID:          "test",
+		FirebaseUID: "test",
+	}
+
+	ctx := context.WithValue(context.Background(), &contextKey{"user"}, u)
+
+	g := newGraph()
+
+	userRepositoryMock := &moq_repository.UserRepositoryInterfaceMock{
+		ExistByFirebaseUIDFunc: func(ctx context.Context, f *firestore.Client, fUID string) (bool, error) {
+			return true, nil
+		},
+	}
+	g.App.UserRepository = userRepositoryMock
+
+	tests := []struct {
+		name   string
+		param  *model.NewAuthUser
+		result *model.AuthUser
+	}{
+		{
+			name: "認証済みユーザーを作成",
+			param: &model.NewAuthUser{
+				ID:        "test",
+				IsNewUser: false,
+			},
+			result: &model.AuthUser{
+				ID: "test",
+			},
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			r, _ := g.CreateAuthUser(ctx, td.param)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
+		})
+	}
+
+}
