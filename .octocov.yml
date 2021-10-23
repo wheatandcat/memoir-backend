@@ -17,3 +17,6 @@ push:
 diff:
   datastores:
     - gs://memoir-backend-report/report
+report:
+  datastores:
+    - gs://memoir-backend-report/report
