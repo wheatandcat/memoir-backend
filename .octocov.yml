@@ -14,3 +14,6 @@ comment:
   enable: true
 push:
   enable: true
+diff:
+  datastores:
+    - gs://memoir-backend-report/report
