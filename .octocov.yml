@@ -1,0 +1,24 @@
+coverage:
+  path: coverage.out
+  badge:
+    path: docs/coverage.svg
+codeToTestRatio:
+  badge:
+    path: docs/ratio.svg
+  code:
+    - '**/*.go'
+    - '!**/*_test.go'
+  test:
+    - '**/*_test.go'
+testExecutionTime:
+  badge:
+    path: docs/time.svg
+comment:
+  enable: true
+diff:
+  datastores:
+    - gs://memoir-backend-report/report
+report:
+  datastores:
+    - gs://memoir-backend-report/report
+

@@ -74,3 +74,58 @@ func TestUpdateUser(t *testing.T) {
 	}
 
 }
+
+func TestCreateUser(t *testing.T) {
+
+	u := &auth.User{
+		ID:          "test",
+		FirebaseUID: "test",
+	}
+
+	ctx := context.WithValue(context.Background(), &contextKey{"user"}, u)
+
+	client := &graph.Client{
+		UUID: &uuidgen.UUID{},
+		Time: &timegen.Time{},
+	}
+
+	g := newGraph()
+
+	userRepositoryMock := &moq_repository.UserRepositoryInterfaceMock{
+		CreateFunc: func(ctx context.Context, f *firestore.Client, u *model.User) error {
+			return nil
+		},
+	}
+	g.App.UserRepository = userRepositoryMock
+
+	tests := []struct {
+		name   string
+		param  *model.NewUser
+		result *model.User
+	}{
+		{
+			name: "ユーザーを更新する",
+			param: &model.NewUser{
+				ID: "test",
+			},
+			result: &model.User{
+				ID:        "test",
+				CreatedAt: client.Time.ParseInLocation("2020-01-01T00:00:00"),
+				UpdatedAt: client.Time.ParseInLocation("2020-01-01T00:00:00"),
+			},
+		},
+	}
+
+	for _, td := range tests {
+		t.Run(td.name, func(t *testing.T) {
+			r, _ := g.CreateUser(ctx, td.param)
+			diff := cmp.Diff(r, td.result)
+			if diff != "" {
+				t.Errorf("differs: (-got +want)\n%s", diff)
+			} else {
+				assert.Equal(t, diff, "")
+			}
+		})
+	}
+
+}
