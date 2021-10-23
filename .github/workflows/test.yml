@@ -1,8 +1,8 @@
 name: Test
 on: 
-  push:
-    tags-ignore:
-      - 'v*'
+  pull_request:
+env:
+  OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS_JSON }}
 jobs:
   test:
     name: test
@@ -20,5 +20,6 @@ jobs:
         key: ${{ runner.os }}-memoir-backend-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-memoir-backend-
-    - name: Test
-      run: go test -race ./...
+    - name: Run tests with coverage report output
+      run: go test ./... -coverprofile=coverage.out
+    - uses: k1LoW/octocov-action@v0

@@ -1,5 +1,7 @@
 # memoir-backend
 
+![coverage](docs/coverage.svg)
+
 ## ローカル実行
 
 ### 導入
@@ -27,6 +29,8 @@ $ go run github.com/99designs/gqlgen generate
 
 ## テスト
 
+
+### 実行
 moqを生成
 ```
 $ make moqgen
@@ -35,6 +39,28 @@ $ make moqgen
 テストを実行
 ```
 $ go test -race ./...
+```
+
+### カバレッジ表示
+
+### インストール
+```
+$ brew install k1LoW/tap/octocov
+```
+
+### 実行
+```
+$ go test ./... -coverprofile=coverage.out
+$ octocov
+```
+
+### 各ファイルカバレッジ確認
+```
+$ octocov ls-files
+```
+
+```
+$ octocov view graph/invite.go
 ```
 
 ## 手動デプロイ
