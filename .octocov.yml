@@ -10,15 +10,7 @@ codeToTestRatio:
     - '!**/*_test.go'
   test:
     - '**/*_test.go'
-testExecutionTime:
-  badge:
-    path: docs/time.svg
 comment:
   enable: true
-diff:
-  datastores:
-    - gs://memoir-backend-report/report
-report:
-  datastores:
-    - gs://memoir-backend-report/report
-
+push:
+  enable: true

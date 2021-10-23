@@ -42,15 +42,25 @@ $ go test -race ./...
 ```
 
 ### カバレッジ表示
-インストール
+
+### インストール
 ```
 $ brew install k1LoW/tap/octocov
 ```
 
-実行
+### 実行
 ```
 $ go test ./... -coverprofile=coverage.out
 $ octocov
+```
+
+### 各ファイルカバレッジ確認
+```
+$ octocov ls-files
+```
+
+```
+$ octocov view graph/invite.go
 ```
 
 ## 手動デプロイ
