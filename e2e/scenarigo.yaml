@@ -1,0 +1,4 @@
+schemaVersion: config/v1
+
+scenarios:
+- user.yaml

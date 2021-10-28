@@ -1,0 +1,23 @@
+title: get user-info
+steps:
+- title: login
+  include: './login.yaml'
+  bind:
+    vars:
+      userToken: "{{vars.userToken}}"
+- title: POST / query
+  protocol: http
+  request:
+    method: POST
+    url: "http://{{env.HOST}}/query"
+    header:
+      Authorization: "Bearer {{vars.userToken}}"
+      Content-Type: application/json
+    body: 
+      query: "query User { user {  id  } }"
+      variables: 
+  expect:
+    body:
+      data:
+        user: 
+          id: test_id
