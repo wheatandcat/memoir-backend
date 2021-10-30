@@ -8,7 +8,7 @@ env:
   ENVENB_GO: ${{ secrets.ENVENB_GO }}
   AUTH_CONFIG: ${{ secrets.AUTH_CONFIG }}
 jobs:
-  test:
+  e2e:
     name: test
     runs-on: ubuntu-latest
     steps:
@@ -43,6 +43,17 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: '16'
+    - name: setup gcloud
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        version: "latest"
+    - name: setup firestore emulator
+      run: |
+        gcloud components install beta --quiet
+        gcloud components install cloud-firestore-emulator --quiet
     - name: Run e2e
-      run: make ci_scenarigo
+      run: |
+        gcloud beta emulators firestore start --host-port localhost:3600 &
+        go install github.com/zoncoen/scenarigo/cmd/scenarigo@v0.8.1
+        make scenarigo
       working-directory: ./e2e
