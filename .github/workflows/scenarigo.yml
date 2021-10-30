@@ -40,9 +40,9 @@ jobs:
     - name: create auth token file
       run: make create_login_yaml
       working-directory: ./e2e
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '16'
     - name: Run e2e
       run: make ci_scenarigo
       working-directory: ./e2e
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
