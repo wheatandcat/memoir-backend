@@ -1,0 +1,34 @@
+name: e2e test
+on: [push]
+env:
+  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_SERVICE_ACCOUNT_JSON }}
+  GCP_SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_GCP_SERVICE_ACCOUNT_JSON }}
+  APP_LOCAL_EMV: ${{ secrets.APP_LOCAL_EMV }}
+  ENVENB_GO: ${{ secrets.ENVENB_GO }}
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
+    - name: Create gcpServiceAccount.json file
+      run: echo $GCP_SERVICE_ACCOUNT_JSON | base64 --decode -i > ./gcpServiceAccount.json
+    - name: Create .env file
+      run: echo $APP_LOCAL_EMV | base64 --decode -i > ./.env
+    - name: Create envenb.go file
+      run: echo $ENVENB_GO | base64 --decode -i > ./envenb.go
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '^1.16'
+    - run: go version
+    - name: cache
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-memoir-backend-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-memoir-backend-
+    - name: Run server
+      run: make ci_setup_server

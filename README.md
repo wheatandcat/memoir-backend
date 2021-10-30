@@ -97,6 +97,11 @@ $ git push origin v1.0.0
 
 ## CI環境
 
+### Firebase トークン
+
+```:zsh
+$ firebase login:ci
+```
 ### レビュー環境
 
 ```:zsh
@@ -109,6 +114,16 @@ $ base64 -i gcpServiceAccount.review.json | pbcopy
 
 ```:zsh
 $ base64 -i app.yaml | pbcopy
+```
+
+### E2E
+
+```:zsh
+$ base64 -i .env | pbcopy
+```
+
+```:zsh
+$ base64 -i envenb.go | pbcopy
 ```
 
 ### 本番環境
