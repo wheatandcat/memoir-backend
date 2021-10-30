@@ -33,7 +33,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	opt := option.WithCredentialsFile("serviceAccount.json")
+	opt := option.WithCredentialsFile("../serviceAccount.json")
 	config := &firebase.Config{ProjectID: os.Getenv("FIREBASE_PROJECT_ID")}
 	app, err := firebase.NewApp(ctx, config, opt)
 	if err != nil {
