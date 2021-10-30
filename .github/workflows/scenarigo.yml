@@ -6,6 +6,7 @@ env:
   GCP_SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_GCP_SERVICE_ACCOUNT_JSON }}
   APP_LOCAL_EMV: ${{ secrets.APP_LOCAL_EMV }}
   ENVENB_GO: ${{ secrets.ENVENB_GO }}
+  AUTH_CONFIG: ${{ secrets.AUTH_CONFIG }}
 jobs:
   test:
     name: test
@@ -21,6 +22,8 @@ jobs:
       run: echo $APP_LOCAL_EMV | base64 --decode -i > ./.env
     - name: Create envenb.go file
       run: echo $ENVENB_GO | base64 --decode -i > ./envenb.go
+    - name: Create e2e/.env file
+      run: echo $AUTH_CONFIG | base64 --decode -i > ./e2e/.env
     - uses: actions/setup-go@v2
       with:
         go-version: '^1.16'
@@ -34,3 +37,9 @@ jobs:
           ${{ runner.os }}-memoir-backend-
     - name: Run server
       run: make ci_setup_server
+    - name: create auth token file
+      run: make create_login_yaml
+      working-directory: ./e2e
+    - name: Run e2e
+      run: make ci_scenarigo
+      working-directory: ./e2e

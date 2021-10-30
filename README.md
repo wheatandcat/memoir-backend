@@ -126,6 +126,10 @@ $ base64 -i .env | pbcopy
 $ base64 -i envenb.go | pbcopy
 ```
 
+```:zsh
+$ base64 -i e2e/.env | pbcopy
+```
+
 ### 本番環境
 
 ```:zsh
