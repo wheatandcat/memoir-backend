@@ -1,11 +1,11 @@
-title: get user-info
+title: ユーザー
 steps:
 - title: login
   include: './login.yaml'
   bind:
     vars:
       userToken: "{{vars.userToken}}"
-- title: POST / query
+- title: ユーザーを作成する
   protocol: http
   request:
     method: POST
@@ -14,10 +14,117 @@ steps:
       Authorization: "Bearer {{vars.userToken}}"
       Content-Type: application/json
     body: 
-      query: "query User { user {  id  } }"
+      query: |-
+        mutation CreateAuthUser($input: NewAuthUser!) {
+          createAuthUser(input: $input) {
+            id
+          }
+        }
+      variables: 
+        input:
+          id: test_id
+          isNewUser: true
+  expect:
+    body:
+      data:
+        createAuthUser:
+          id: test_id
+- title: ユーザー情報を取得する①
+  protocol: http
+  request:
+    method: POST
+    url: "http://{{env.HOST}}/query"
+    header:
+      Authorization: "Bearer {{vars.userToken}}"
+      Content-Type: application/json
+    body: 
+      query: |-
+        query User {
+          user {
+            id
+            displayName
+            image
+          }
+        }
       variables: 
   expect:
     body:
       data:
         user: 
           id: test_id
+          displayName: ""
+          image: ""
+- title: ユーザー認証を判定
+  protocol: http
+  request:
+    method: POST
+    url: "http://{{env.HOST}}/query"
+    header:
+      Authorization: "Bearer {{vars.userToken}}"
+      Content-Type: application/json
+    body: 
+      query: |-
+        query ExistAuthUser {
+          existAuthUser {
+            exist
+          }
+        }
+      variables: 
+  expect:
+    body:
+      data:
+        existAuthUser: 
+          exist: true
+- title: ユーザー情報を更新する
+  protocol: http
+  request:
+    method: POST
+    url: "http://{{env.HOST}}/query"
+    header:
+      Authorization: "Bearer {{vars.userToken}}"
+      Content-Type: application/json
+    body: 
+      query: |-
+        mutation UpdateUser($input: UpdateUser!) {
+          updateUser(input: $input) {
+            id
+            displayName
+            image
+          }
+        }
+      variables: 
+        input:
+          displayName: test-name
+          image: https://placehold.jp/150x150.png
+  expect:
+    body:
+      data:
+        updateUser:
+          id: test_id
+          displayName: test-name
+          image: https://placehold.jp/150x150.png
+- title: ユーザー情報を取得する②
+  protocol: http
+  request:
+    method: POST
+    url: "http://{{env.HOST}}/query"
+    header:
+      Authorization: "Bearer {{vars.userToken}}"
+      Content-Type: application/json
+    body: 
+      query: |-
+        query User {
+          user {
+            id
+            displayName
+            image
+          }
+        }
+      variables:
+  expect:
+    body:
+      data:
+        user: 
+          id: test_id
+          displayName: test-name
+          image: https://placehold.jp/150x150.png
