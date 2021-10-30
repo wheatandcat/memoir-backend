@@ -12,7 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-    - uses: actions/checkout@v2
+      uses: actions/checkout@v2
+    - name: Create serviceAccount.json file
       run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
     - name: Create gcpServiceAccount.json file
       run: echo $GCP_SERVICE_ACCOUNT_JSON | base64 --decode -i > ./gcpServiceAccount.json
