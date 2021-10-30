@@ -51,9 +51,10 @@ jobs:
       run: |
         gcloud components install beta --quiet
         gcloud components install cloud-firestore-emulator --quiet
-    - name: Run e2e
+    - name: setup e2e
       run: |
         gcloud beta emulators firestore start --host-port localhost:3600 &
         go install github.com/zoncoen/scenarigo/cmd/scenarigo@v0.8.1
-        make scenarigo
+    - name: run e2e
+      run: make scenarigo
       working-directory: ./e2e
