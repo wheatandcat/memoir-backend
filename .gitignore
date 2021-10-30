@@ -18,3 +18,9 @@ tmp/
 .env
 coverage.out
 cover.html
+e2e/.env
+e2e/login.yaml
+e2e/serviceAccount.json
+ui-debug.log
+firestore-debug.log
+envenb.go
