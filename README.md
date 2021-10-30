@@ -65,19 +65,13 @@ $ octocov view graph/invite.go
 ## E2Eテスト
 
 ```:zsh
-$ cd e2e/simulator
-$ firebase emulators:start
-```
-
-```:zsh
 $ FIRESTORE_EMULATOR_HOST=localhost:3600 air
 ```
-
 
 ```:zsh
 $ cd e2e
 $ make create_loggin_yaml
-$ make scenarigo
+$ make local_scenarigo
 ```
 
 ## 手動デプロイ
