@@ -85,14 +85,13 @@ func (re *RelationshipRequestRepository) Find(ctx context.Context, f *firestore.
 		return i, ce.CustomError(err)
 	}
 
-	ds.DataTo(&rr)
+	err = ds.DataTo(&rr)
 
 	return rr, ce.CustomError(err)
 }
 
 // FindByFollowedID ページングで取得する
 func (re *RelationshipRequestRepository) FindByFollowedID(ctx context.Context, f *firestore.Client, userID string, first int, cursor RelationshipRequestCursor) ([]*model.RelationshipRequest, error) {
-	var items []*model.RelationshipRequest
 	query := f.Collection("relationshipRequests").Where("FollowedID", "==", userID).Where("Status", "==", RelationshipRequestStatusRequest).OrderBy("CreatedAt", firestore.Desc)
 
 	if cursor.FollowerID != "" {
@@ -111,11 +110,14 @@ func (re *RelationshipRequestRepository) FindByFollowedID(ctx context.Context, f
 		return nil, ce.CustomError(err)
 	}
 
-	for _, doc := range docs {
-		var item *model.RelationshipRequest
-		doc.DataTo(&item)
+	items := make([]*model.RelationshipRequest, len(docs))
 
-		items = append(items, item)
+	for i, doc := range docs {
+		var item *model.RelationshipRequest
+		if err = doc.DataTo(&item); err != nil {
+			return items, ce.CustomError(err)
+		}
+		items[i] = item
 	}
 
 	return items, nil

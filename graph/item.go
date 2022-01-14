@@ -145,16 +145,16 @@ func (g *Graph) GetItemsInPeriod(ctx context.Context, input model.InputItemsInPe
 		return nil, ce.CustomError(err)
 	}
 
-	var ibpes []*model.ItemsInPeriodEdge
+	ibpes := make([]*model.ItemsInPeriodEdge, len(items))
 	for index, i := range items {
 		items[index].Date = t.Location(i.Date)
 		items[index].CreatedAt = t.Location(i.CreatedAt)
 		items[index].UpdatedAt = t.Location(i.UpdatedAt)
 
-		ibpes = append(ibpes, &model.ItemsInPeriodEdge{
+		ibpes[index] = &model.ItemsInPeriodEdge{
 			Node:   items[index],
 			Cursor: i.UserID + "/" + i.ID,
-		})
+		}
 	}
 
 	pi := &model.PageInfo{

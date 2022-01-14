@@ -45,7 +45,10 @@ func (t *HTTPTask) PushNotification(r NotificationRequest) (*taskspb.Task, error
 	if err != nil {
 		return nil, ce.CustomErrorWrap(err, "NewClient")
 	}
-	defer client.Close()
+
+	defer func() {
+		err = client.Close()
+	}()
 
 	body, err := json.Marshal(r)
 	if err != nil {
@@ -62,7 +65,7 @@ func (t *HTTPTask) PushNotification(r NotificationRequest) (*taskspb.Task, error
 				HttpRequest: &taskspb.HttpRequest{
 					HttpMethod: taskspb.HttpMethod_POST,
 					Url:        t.URL,
-					Body:       []byte(body),
+					Body:       body,
 				},
 			},
 		},
