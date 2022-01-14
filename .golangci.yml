@@ -1,0 +1,29 @@
+run:
+  issues-exit-code: 0
+  tests: false
+
+issues:
+  exclude-use-default: false
+
+linters-settings:
+  gosec:
+    config:
+      G306: "0600"
+      G101:
+        pattern: "(?i)example"
+        ignore_entropy: false
+        entropy_threshold: "80.0"
+        per_char_threshold: "3.0"
+        truncate: "32"
+
+linters:
+  disable-all: true
+  enable:
+    - staticcheck
+    - errcheck
+    - ineffassign
+    - unconvert
+    - misspell
+    - unparam
+    - prealloc
+    - gosec

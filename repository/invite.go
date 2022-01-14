@@ -51,7 +51,10 @@ func (re *InviteRepository) FindByUserID(ctx context.Context, f *firestore.Clien
 	}
 
 	var invite *model.Invite
-	docs[0].DataTo(&invite)
+
+	if err = docs[0].DataTo(&invite); err != nil {
+		return nil, ce.CustomError(err)
+	}
 
 	return invite, nil
 }
@@ -69,7 +72,9 @@ func (re *InviteRepository) Find(ctx context.Context, f *firestore.Client, code 
 		return i, ce.CustomError(err)
 	}
 
-	ds.DataTo(&i)
+	if err = ds.DataTo(&i); err != nil {
+		return nil, ce.CustomError(err)
+	}
 
 	return i, ce.CustomError(err)
 }

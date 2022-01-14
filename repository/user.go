@@ -84,7 +84,9 @@ func (re *UserRepository) FindByUID(ctx context.Context, f *firestore.Client, ui
 		return u, ce.CustomError(err)
 	}
 
-	ds.DataTo(&u)
+	if err = ds.DataTo(&u); err != nil {
+		return u, ce.CustomError(err)
+	}
 
 	return u, nil
 }
@@ -97,7 +99,9 @@ func (re *UserRepository) FindDatabaseDataByUID(ctx context.Context, f *firestor
 		return u, ce.CustomError(err)
 	}
 
-	ds.DataTo(&u)
+	if err = ds.DataTo(&u); err != nil {
+		return u, ce.CustomError(err)
+	}
 
 	return u, nil
 }
@@ -115,7 +119,9 @@ func (re *UserRepository) FindByFirebaseUID(ctx context.Context, f *firestore.Cl
 		return nil, ce.CustomError(fmt.Errorf("not found user"))
 	}
 
-	docs[0].DataTo(&u)
+	if err = docs[0].DataTo(&u); err != nil {
+		return u, ce.CustomError(err)
+	}
 
 	return u, nil
 }
@@ -134,18 +140,19 @@ func (re *UserRepository) ExistByFirebaseUID(ctx context.Context, f *firestore.C
 
 // FindInUID ユーザーIDリストから取得する
 func (re *UserRepository) FindInUID(ctx context.Context, f *firestore.Client, uid []string) ([]*model.User, error) {
-	var us []*model.User
 	matchItem := f.Collection("users").Where("ID", "in", uid).OrderBy("CreatedAt", firestore.Asc).Limit(10).Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
-		return us, ce.CustomError(err)
+		return nil, ce.CustomError(err)
 	}
 
-	for _, doc := range docs {
+	us := make([]*model.User, len(docs))
+	for i, doc := range docs {
 		var u *model.User
-		doc.DataTo(&u)
-
-		us = append(us, u)
+		if err = doc.DataTo(&u); err != nil {
+			return us, ce.CustomError(err)
+		}
+		us[i] = u
 	}
 
 	return us, nil

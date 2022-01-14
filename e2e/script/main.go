@@ -79,16 +79,23 @@ func main() {
 		log.Fatalf("WriteOnFile: %v\n", err)
 	}
 
-	os.Chmod("./login.yaml", 0777)
+	if err = os.Chmod("./login.yaml", 0600); err != nil {
+		log.Fatalf("OSコマンドで失敗: %v", err)
+	}
 }
 
 func postRequest(url string, req []byte) ([]byte, error) {
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(req))
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(req)) //nolint:gosec
 	if err != nil {
 		return nil, err
 	}
 
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected http status code: %d", resp.StatusCode)
 	}

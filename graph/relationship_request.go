@@ -219,7 +219,7 @@ func (g *Graph) GetRelationshipRequests(ctx context.Context, input model.InputRe
 
 	}
 
-	var rres []*model.RelationshipRequestEdge
+	rres := make([]*model.RelationshipRequestEdge, len(items))
 
 	for index, i := range items {
 		items[index].CreatedAt = t.Location(i.CreatedAt)
@@ -237,10 +237,10 @@ func (g *Graph) GetRelationshipRequests(ctx context.Context, input model.InputRe
 
 		items[index].User = user
 
-		rres = append(rres, &model.RelationshipRequestEdge{
+		rres[index] = &model.RelationshipRequestEdge{
 			Node:   items[index],
 			Cursor: i.FollowedID + "/" + i.FollowerID,
-		})
+		}
 
 	}
 

@@ -36,19 +36,19 @@ func (re *PushTokenRepository) Create(ctx context.Context, f *firestore.Client, 
 }
 
 func (re *PushTokenRepository) GetItems(ctx context.Context, f *firestore.Client, userID string) ([]*model.PushToken, error) {
-	var items []*model.PushToken
-
 	matchItem := getPushTokenCollection(f, userID).Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
 		return nil, ce.CustomError(err)
 	}
 
-	for _, doc := range docs {
+	items := make([]*model.PushToken, len(docs))
+	for i, doc := range docs {
 		var item *model.PushToken
-		doc.DataTo(&item)
-
-		items = append(items, item)
+		if err = doc.DataTo(&item); err != nil {
+			return items, ce.CustomError(err)
+		}
+		items[i] = item
 	}
 
 	return items, nil
@@ -62,7 +62,6 @@ func (re *PushTokenRepository) GetTokens(ctx context.Context, f *firestore.Clien
 	}
 
 	for _, item := range items {
-
 		tokens = append(tokens, item.Token)
 	}
 

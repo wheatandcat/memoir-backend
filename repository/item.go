@@ -87,26 +87,29 @@ func (re *ItemRepository) GetItem(ctx context.Context, f *firestore.Client, user
 		return i, ce.CustomError(err)
 	}
 
-	ds.DataTo(&i)
+	if err = ds.DataTo(&i); err != nil {
+		return nil, err
+	}
 
 	return i, nil
 }
 
 // GetItemsInDate 日付でアイテムを取得する
 func (re *ItemRepository) GetItemsInDate(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error) {
-	var items []*model.Item
-
 	matchItem := getItemCollection(f, userID).Where("Date", "==", date).OrderBy("CreatedAt", firestore.Desc).Documents(ctx)
 	docs, err := matchItem.GetAll()
 	if err != nil {
 		return nil, ce.CustomError(err)
 	}
 
-	for _, doc := range docs {
+	items := make([]*model.Item, len(docs))
+	for i, doc := range docs {
 		var item *model.Item
-		doc.DataTo(&item)
+		if err = doc.DataTo(&item); err != nil {
+			return items, ce.CustomError(err)
+		}
 
-		items = append(items, item)
+		items[i] = item
 	}
 
 	return items, nil
@@ -119,7 +122,6 @@ type ItemsInPeriodCursor struct {
 
 // GetItemsInPeriod 期間でアイテムを取得する
 func (re *ItemRepository) GetItemsInPeriod(ctx context.Context, f *firestore.Client, userID string, startDate time.Time, endDate time.Time, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error) {
-	var items []*model.Item
 	query := getItemCollection(f, userID).Where("Date", ">=", startDate).Where("Date", "<=", endDate).OrderBy("Date", firestore.Asc).OrderBy("CreatedAt", firestore.Asc).OrderBy("ID", firestore.Asc)
 
 	if cursor.ID != "" {
@@ -138,11 +140,15 @@ func (re *ItemRepository) GetItemsInPeriod(ctx context.Context, f *firestore.Cli
 		return nil, ce.CustomError(err)
 	}
 
-	for _, doc := range docs {
-		var item *model.Item
-		doc.DataTo(&item)
+	items := make([]*model.Item, len(docs))
 
-		items = append(items, item)
+	for i, doc := range docs {
+		var item *model.Item
+		if err = doc.DataTo(&item); err != nil {
+			return items, ce.CustomError(err)
+		}
+
+		items[i] = item
 	}
 
 	return items, nil
@@ -150,8 +156,6 @@ func (re *ItemRepository) GetItemsInPeriod(ctx context.Context, f *firestore.Cli
 
 // GetItemUserMultipleInPeriod 期間でアイテムを取得する
 func (re *ItemRepository) GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, userID []string, startDate time.Time, endDate time.Time, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error) {
-	var items []*model.Item
-
 	query := f.CollectionGroup("items").Where("UserID", "in", userID).Where("Date", ">=", startDate).Where("Date", "<=", endDate).OrderBy("Date", firestore.Asc).OrderBy("CreatedAt", firestore.Asc)
 
 	if cursor.ID != "" {
@@ -170,11 +174,14 @@ func (re *ItemRepository) GetItemUserMultipleInPeriod(ctx context.Context, f *fi
 		return nil, ce.CustomError(err)
 	}
 
-	for _, doc := range docs {
-		var item *model.Item
-		doc.DataTo(&item)
+	items := make([]*model.Item, len(docs))
 
-		items = append(items, item)
+	for i, doc := range docs {
+		var item *model.Item
+		if err = doc.DataTo(&item); err != nil {
+			return items, ce.CustomError(err)
+		}
+		items[i] = item
 	}
 
 	return items, nil
