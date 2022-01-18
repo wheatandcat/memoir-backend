@@ -31,7 +31,7 @@ var _ repository.ItemRepositoryInterface = &ItemRepositoryInterfaceMock{}
 // 			GetItemFunc: func(ctx context.Context, f *firestore.Client, userID string, id string) (*model.Item, error) {
 // 				panic("mock out the GetItem method")
 // 			},
-// 			GetItemUserMultipleInPeriodFunc: func(ctx context.Context, f *firestore.Client, userID []string, stertDate time.Time, endDate time.Time, first int, cursor repository.ItemsInPeriodCursor) ([]*model.Item, error) {
+// 			GetItemUserMultipleInPeriodFunc: func(ctx context.Context, f *firestore.Client, sip repository.SearchItemParam, first int, cursor repository.ItemsInPeriodCursor) ([]*model.Item, error) {
 // 				panic("mock out the GetItemUserMultipleInPeriod method")
 // 			},
 // 			GetItemsInDateFunc: func(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error) {
@@ -60,7 +60,7 @@ type ItemRepositoryInterfaceMock struct {
 	GetItemFunc func(ctx context.Context, f *firestore.Client, userID string, id string) (*model.Item, error)
 
 	// GetItemUserMultipleInPeriodFunc mocks the GetItemUserMultipleInPeriod method.
-	GetItemUserMultipleInPeriodFunc func(ctx context.Context, f *firestore.Client, userID []string, stertDate time.Time, endDate time.Time, first int, cursor repository.ItemsInPeriodCursor) ([]*model.Item, error)
+	GetItemUserMultipleInPeriodFunc func(ctx context.Context, f *firestore.Client, sip repository.SearchItemParam, first int, cursor repository.ItemsInPeriodCursor) ([]*model.Item, error)
 
 	// GetItemsInDateFunc mocks the GetItemsInDate method.
 	GetItemsInDateFunc func(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error)
@@ -112,12 +112,8 @@ type ItemRepositoryInterfaceMock struct {
 			Ctx context.Context
 			// F is the f argument value.
 			F *firestore.Client
-			// UserID is the userID argument value.
-			UserID []string
-			// StertDate is the stertDate argument value.
-			StertDate time.Time
-			// EndDate is the endDate argument value.
-			EndDate time.Time
+			// Sip is the sip argument value.
+			Sip repository.SearchItemParam
 			// First is the first argument value.
 			First int
 			// Cursor is the cursor argument value.
@@ -304,53 +300,45 @@ func (mock *ItemRepositoryInterfaceMock) GetItemCalls() []struct {
 }
 
 // GetItemUserMultipleInPeriod calls GetItemUserMultipleInPeriodFunc.
-func (mock *ItemRepositoryInterfaceMock) GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, userID []string, stertDate time.Time, endDate time.Time, first int, cursor repository.ItemsInPeriodCursor) ([]*model.Item, error) {
+func (mock *ItemRepositoryInterfaceMock) GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, sip repository.SearchItemParam, first int, cursor repository.ItemsInPeriodCursor) ([]*model.Item, error) {
 	if mock.GetItemUserMultipleInPeriodFunc == nil {
 		panic("ItemRepositoryInterfaceMock.GetItemUserMultipleInPeriodFunc: method is nil but ItemRepositoryInterface.GetItemUserMultipleInPeriod was just called")
 	}
 	callInfo := struct {
-		Ctx       context.Context
-		F         *firestore.Client
-		UserID    []string
-		StertDate time.Time
-		EndDate   time.Time
-		First     int
-		Cursor    repository.ItemsInPeriodCursor
+		Ctx    context.Context
+		F      *firestore.Client
+		Sip    repository.SearchItemParam
+		First  int
+		Cursor repository.ItemsInPeriodCursor
 	}{
-		Ctx:       ctx,
-		F:         f,
-		UserID:    userID,
-		StertDate: stertDate,
-		EndDate:   endDate,
-		First:     first,
-		Cursor:    cursor,
+		Ctx:    ctx,
+		F:      f,
+		Sip:    sip,
+		First:  first,
+		Cursor: cursor,
 	}
 	mock.lockGetItemUserMultipleInPeriod.Lock()
 	mock.calls.GetItemUserMultipleInPeriod = append(mock.calls.GetItemUserMultipleInPeriod, callInfo)
 	mock.lockGetItemUserMultipleInPeriod.Unlock()
-	return mock.GetItemUserMultipleInPeriodFunc(ctx, f, userID, stertDate, endDate, first, cursor)
+	return mock.GetItemUserMultipleInPeriodFunc(ctx, f, sip, first, cursor)
 }
 
 // GetItemUserMultipleInPeriodCalls gets all the calls that were made to GetItemUserMultipleInPeriod.
 // Check the length with:
 //     len(mockedItemRepositoryInterface.GetItemUserMultipleInPeriodCalls())
 func (mock *ItemRepositoryInterfaceMock) GetItemUserMultipleInPeriodCalls() []struct {
-	Ctx       context.Context
-	F         *firestore.Client
-	UserID    []string
-	StertDate time.Time
-	EndDate   time.Time
-	First     int
-	Cursor    repository.ItemsInPeriodCursor
+	Ctx    context.Context
+	F      *firestore.Client
+	Sip    repository.SearchItemParam
+	First  int
+	Cursor repository.ItemsInPeriodCursor
 } {
 	var calls []struct {
-		Ctx       context.Context
-		F         *firestore.Client
-		UserID    []string
-		StertDate time.Time
-		EndDate   time.Time
-		First     int
-		Cursor    repository.ItemsInPeriodCursor
+		Ctx    context.Context
+		F      *firestore.Client
+		Sip    repository.SearchItemParam
+		First  int
+		Cursor repository.ItemsInPeriodCursor
 	}
 	mock.lockGetItemUserMultipleInPeriod.RLock()
 	calls = mock.calls.GetItemUserMultipleInPeriod

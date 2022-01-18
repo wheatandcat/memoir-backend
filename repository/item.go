@@ -18,19 +18,16 @@ type ItemRepositoryInterface interface {
 	GetItem(ctx context.Context, f *firestore.Client, userID string, id string) (*model.Item, error)
 	GetItemsInDate(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error)
 	GetItemsInPeriod(ctx context.Context, f *firestore.Client, userID string, stertDate time.Time, endDate time.Time, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error)
-	GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, userID []string, stertDate time.Time, endDate time.Time, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error)
+	GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, sip SearchItemParam, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error)
 }
 
-// ItemKey is item key
 type ItemKey struct {
 	UserID string
 }
 
-// ItemRepository is repository for item
 type ItemRepository struct {
 }
 
-// NewItemRepository is Create new ItemRepository
 func NewItemRepository() ItemRepositoryInterface {
 	return &ItemRepository{}
 }
@@ -154,9 +151,30 @@ func (re *ItemRepository) GetItemsInPeriod(ctx context.Context, f *firestore.Cli
 	return items, nil
 }
 
+type SearchItemParam struct {
+	UserID     []string
+	StartDate  time.Time
+	EndDate    time.Time
+	Like       bool
+	Dislike    bool
+	CategoryID int
+}
+
 // GetItemUserMultipleInPeriod 期間でアイテムを取得する
-func (re *ItemRepository) GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, userID []string, startDate time.Time, endDate time.Time, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error) {
-	query := f.CollectionGroup("items").Where("UserID", "in", userID).Where("Date", ">=", startDate).Where("Date", "<=", endDate).OrderBy("Date", firestore.Asc).OrderBy("CreatedAt", firestore.Asc)
+func (re *ItemRepository) GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, sip SearchItemParam, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error) {
+	query := f.CollectionGroup("items").Where("UserID", "in", sip.UserID).Where("Date", ">=", sip.StartDate).Where("Date", "<=", sip.EndDate)
+
+	if sip.Like && !sip.Dislike {
+		query = query.Where("Like", "==", true).Where("Dislike", "==", false)
+	} else if !sip.Like && sip.Dislike {
+		query = query.Where("Like", "==", false).Where("Dislike", "==", true)
+	}
+
+	if sip.CategoryID != 0 {
+		query = query.Where("CategoryID", "==", sip.CategoryID)
+	}
+
+	query = query.OrderBy("Date", firestore.Asc).OrderBy("CreatedAt", firestore.Asc)
 
 	if cursor.ID != "" {
 		ds, err := getItemCollection(f, cursor.UserID).Doc(cursor.ID).Get(ctx)
