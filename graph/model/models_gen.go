@@ -31,11 +31,20 @@ type ExistAuthUser struct {
 }
 
 type InputItemsInPeriod struct {
-	After      *string   `json:"after"`
-	First      int       `json:"first"`
-	StartDate  time.Time `json:"startDate"`
-	EndDate    time.Time `json:"endDate"`
+	After *string `json:"after"`
+	First int     `json:"first"`
+	// 開始日
+	StartDate time.Time `json:"startDate"`
+	// 終了日
+	EndDate time.Time `json:"endDate"`
+	// ユーザーID
 	UserIDList []*string `json:"userIDList"`
+	// カテゴリーID
+	CategoryID *int `json:"categoryID"`
+	// Good
+	Like *bool `json:"like"`
+	// Bad
+	Dislike *bool `json:"dislike"`
 }
 
 type InputRelationshipRequests struct {

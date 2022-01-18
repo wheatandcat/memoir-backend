@@ -78,9 +78,18 @@ type ItemsInPeriod {
 input InputItemsInPeriod {
   after: String
   first: Int!
+  "開始日"
   startDate: Time!
+  "終了日"
   endDate: Time!
+  "ユーザーID"
   userIDList: [String]
+  "カテゴリーID"
+  categoryID: Int
+  "Good"
+  like: Boolean
+  "Bad"
+  dislike: Boolean
 }
 
 type RelationshipRequest {

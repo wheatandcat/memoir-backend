@@ -1023,9 +1023,18 @@ type ItemsInPeriod {
 input InputItemsInPeriod {
   after: String
   first: Int!
+  "開始日"
   startDate: Time!
+  "終了日"
   endDate: Time!
+  "ユーザーID"
   userIDList: [String]
+  "カテゴリーID"
+  categoryID: Int
+  "Good"
+  like: Boolean
+  "Bad"
+  dislike: Boolean
 }
 
 type RelationshipRequest {
@@ -5720,6 +5729,30 @@ func (ec *executionContext) unmarshalInputInputItemsInPeriod(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userIDList"))
 			it.UserIDList, err = ec.unmarshalOString2ᚕᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "categoryID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryID"))
+			it.CategoryID, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "like":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("like"))
+			it.Like, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dislike":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dislike"))
+			it.Dislike, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
 			if err != nil {
 				return it, err
 			}

@@ -140,7 +140,29 @@ func (g *Graph) GetItemsInPeriod(ctx context.Context, input model.InputItemsInPe
 		userID = tUserID
 	}
 
-	items, err := g.App.ItemRepository.GetItemUserMultipleInPeriod(ctx, g.FirestoreClient, userID, input.StartDate, input.EndDate, input.First, cursor)
+	dislike := false
+	if input.Dislike != nil {
+		dislike = *input.Dislike
+	}
+	like := false
+	if input.Like != nil {
+		like = *input.Like
+	}
+	ci := 0
+	if input.CategoryID != nil {
+		ci = *input.CategoryID
+	}
+
+	sip := repository.SearchItemParam{
+		UserID:     userID,
+		StartDate:  input.StartDate,
+		EndDate:    input.EndDate,
+		Like:       like,
+		Dislike:    dislike,
+		CategoryID: ci,
+	}
+
+	items, err := g.App.ItemRepository.GetItemUserMultipleInPeriod(ctx, g.FirestoreClient, sip, input.First, cursor)
 	if err != nil {
 		return nil, ce.CustomError(err)
 	}

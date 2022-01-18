@@ -102,7 +102,7 @@ func TestGetItemsInPeriod(t *testing.T) {
 	g := newGraph()
 
 	itemRepositoryMock := &moq_repository.ItemRepositoryInterfaceMock{
-		GetItemUserMultipleInPeriodFunc: func(ctx context.Context, f *firestore.Client, userID []string, startDate time.Time, endDate time.Time, first int, cursor repository.ItemsInPeriodCursor) ([]*model.Item, error) {
+		GetItemUserMultipleInPeriodFunc: func(_ context.Context, _ *firestore.Client, _ repository.SearchItemParam, _ int, _ repository.ItemsInPeriodCursor) ([]*model.Item, error) {
 			return items, nil
 		},
 	}
@@ -138,6 +138,10 @@ func TestGetItemsInPeriod(t *testing.T) {
 		Edges: iipe,
 	}
 
+	like := true
+	dislike := true
+	categoryID := 1
+
 	tests := []struct {
 		name   string
 		param  model.InputItemsInPeriod
@@ -150,6 +154,19 @@ func TestGetItemsInPeriod(t *testing.T) {
 				First:     10,
 				StartDate: date,
 				EndDate:   date,
+			},
+			result: result,
+		},
+		{
+			name: "日付、Like、Dislike、CategoryIDを指定してアイテムを取得する",
+			param: model.InputItemsInPeriod{
+				After:      &after,
+				First:      10,
+				StartDate:  date,
+				EndDate:    date,
+				Like:       &like,
+				Dislike:    &dislike,
+				CategoryID: &categoryID,
 			},
 			result: result,
 		},
