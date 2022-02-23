@@ -35,6 +35,10 @@ func (r *mutationResolver) CreateAuthUser(ctx context.Context, input model.NewAu
 }
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUser) (*model.User, error) {
+	if err := input.Validate(); err != nil {
+		return nil, ce.CustomError(err)
+	}
+
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
 		return nil, ce.CustomError(err)
@@ -49,6 +53,10 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUse
 }
 
 func (r *mutationResolver) CreateItem(ctx context.Context, input model.NewItem) (*model.Item, error) {
+	if err := input.Validate(); err != nil {
+		return nil, ce.CustomError(err)
+	}
+
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
 		return nil, ce.CustomError(err)
@@ -63,6 +71,10 @@ func (r *mutationResolver) CreateItem(ctx context.Context, input model.NewItem) 
 }
 
 func (r *mutationResolver) UpdateItem(ctx context.Context, input model.UpdateItem) (*model.Item, error) {
+	if err := input.Validate(); err != nil {
+		return nil, ce.CustomError(err)
+	}
+
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
 		return nil, ce.CustomError(err)
