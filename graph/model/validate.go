@@ -6,37 +6,43 @@ import (
 )
 
 func (r UpdateUser) Validate() error {
-	err := validation.ValidateStruct(&r,
+	if err := validation.ValidateStruct(&r,
 		validation.Field(
 			&r.DisplayName,
 			validation.Required.Error("名前の入力は必須です"),
 			validation.RuneLength(1, 30).Error("名前は最大30文字までです"),
 		),
-	)
+	); err != nil {
+		return ce.NewValidationError(err.Error())
+	}
 
-	return ce.NewValidationError(err.Error())
+	return nil
 }
 
 func (r NewItem) Validate() error {
-	err := validation.ValidateStruct(&r,
+	if err := validation.ValidateStruct(&r,
 		validation.Field(
 			&r.Title,
 			validation.Required.Error("タイトルの入力は必須です"),
 			validation.RuneLength(1, 100).Error("タイトルは最大100文字までです"),
 		),
-	)
+	); err != nil {
+		return ce.NewValidationError(err.Error())
+	}
 
-	return ce.NewValidationError(err.Error())
+	return nil
 }
 
 func (r UpdateItem) Validate() error {
-	err := validation.ValidateStruct(&r,
+	if err := validation.ValidateStruct(&r,
 		validation.Field(
 			&r.Title,
 			validation.Required.Error("タイトルの入力は必須です"),
 			validation.RuneLength(1, 100).Error("タイトルは最大100文字までです"),
 		),
-	)
+	); err != nil {
+		return ce.NewValidationError(err.Error())
+	}
 
-	return ce.NewValidationError(err.Error())
+	return nil
 }
