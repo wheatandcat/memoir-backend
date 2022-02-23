@@ -10,6 +10,7 @@ require (
 	github.com/99designs/gqlgen v0.13.0
 	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-chi/chi v3.3.2+incompatible
+	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible // indirect
 	github.com/google/go-cmp v0.5.6
 	github.com/google/uuid v1.1.2
 	github.com/joho/godotenv v1.4.0
