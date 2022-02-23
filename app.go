@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -17,6 +18,7 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph"
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/repository"
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
 
 const defaultPort = "8080"
@@ -76,11 +78,23 @@ func main() {
 		err := graphql.DefaultErrorPresenter(ctx, e)
 		goc := graphql.GetOperationContext(ctx)
 
+		errorCode := ce.CodeDefault
+
+		var re ce.RequestError
+		if errors.As(e, &re) {
+			errorCode = re.Code
+		}
+
+		err.Extensions = map[string]interface{}{
+			"code": errorCode,
+		}
+
 		sentry.WithScope(func(scope *sentry.Scope) {
 			scope.SetTag("kind", "GraphQL")
 			scope.SetTag("operationName", goc.OperationName)
 			scope.SetExtra("query", goc.RawQuery)
 			scope.SetExtra("variables", goc.Variables)
+			scope.SetExtra("Error Code", errorCode)
 
 			if err.Path.String() != "" {
 				sentry.AddBreadcrumb(&sentry.Breadcrumb{
