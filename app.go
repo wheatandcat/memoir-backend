@@ -94,7 +94,7 @@ func main() {
 			scope.SetTag("operationName", goc.OperationName)
 			scope.SetExtra("query", goc.RawQuery)
 			scope.SetExtra("variables", goc.Variables)
-			scope.SetExtra("Error Code", errorCode)
+			scope.SetExtra("errorCode", errorCode)
 
 			if err.Path.String() != "" {
 				sentry.AddBreadcrumb(&sentry.Breadcrumb{
