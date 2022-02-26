@@ -2,7 +2,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
@@ -13,7 +12,7 @@ import (
 // DeleteRelationship 共有ユーザーを解除する
 func (g *Graph) DeleteRelationship(ctx context.Context, followedID string) (*model.Relationship, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, ce.CustomError(fmt.Errorf("invalid authorization"))
+		return nil, ce.CustomError(ce.NewInvalidAuthError("invalid authorization"))
 	}
 
 	batch := g.FirestoreClient.Batch()

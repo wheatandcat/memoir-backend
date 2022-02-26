@@ -44,7 +44,7 @@ jobs:
       with:
         node-version: '16'
     - name: setup gcloud
-      uses: google-github-actions/setup-gcloud@master
+      uses: google-github-actions/setup-gcloud@v0
       with:
         version: "latest"
     - name: setup firestore emulator

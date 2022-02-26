@@ -71,3 +71,32 @@ func CustomErrorWrap(err error, message string) error {
 
 	return e
 }
+
+type RequestError struct {
+	Code    string
+	Message string
+}
+
+func (re RequestError) Error() string {
+	return re.Message
+}
+
+func NewRequestError(code string, message string) error {
+	return RequestError{Code: code, Message: message}
+}
+
+func NewValidationError(message string) error {
+	return RequestError{Code: CodeValidation, Message: message}
+}
+
+func NewInvalidAuthError(message string) error {
+	return RequestError{Code: CodeInvalidAuthorization, Message: message}
+}
+
+func NewNotFoundError(message string) error {
+	return RequestError{Code: CodeNotFound, Message: message}
+}
+
+func NewAlreadyExists(message string) error {
+	return RequestError{Code: CodeAlreadyExists, Message: message}
+}

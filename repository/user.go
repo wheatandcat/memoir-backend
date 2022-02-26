@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -116,7 +115,7 @@ func (re *UserRepository) FindByFirebaseUID(ctx context.Context, f *firestore.Cl
 	}
 
 	if len(docs) == 0 {
-		return nil, ce.CustomError(fmt.Errorf("not found user"))
+		return nil, ce.CustomError(ce.NewNotFoundError("ユーザーが存在しません"))
 	}
 
 	if err = docs[0].DataTo(&u); err != nil {

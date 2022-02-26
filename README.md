@@ -23,7 +23,7 @@ $ yarn graphql-markdown http://localhost:8080/query > schema.md
 
 ## GraphQLスキーマ更新
 
-```:zsh
+```zsh
 $ go run github.com/99designs/gqlgen generate
 ```
 
@@ -31,44 +31,44 @@ $ go run github.com/99designs/gqlgen generate
 
 ### 実行
 moqを生成
-```:zsh
+```zsh
 $ make moqgen
 ```
 
 テストを実行
-```:zsh
+```zsh
 $ go test -race ./...
 ```
 
 ### カバレッジ表示
 
 ### インストール
-```:zsh
+```zsh
 $ brew install k1LoW/tap/octocov
 ```
 
 ### 実行
-```:zsh
+```zsh
 $ go test ./... -coverprofile=coverage.out
 $ octocov
 ```
 
 ### 各ファイルカバレッジ確認
-```:zsh
+```zsh
 $ octocov ls-files
 ```
 
-```:zsh
+```zsh
 $ octocov view graph/invite.go
 ```
 
 ## E2Eテスト
 
-```:zsh
+```zsh
 $ FIRESTORE_EMULATOR_HOST=localhost:3600 air
 ```
 
-```:zsh
+```zsh
 $ cd e2e
 $ make create_loggin_yaml
 $ make local_scenarigo
@@ -76,13 +76,13 @@ $ make local_scenarigo
 
 ## 手動デプロイ
 
-```:zsh
+```zsh
 $ gcloud app deploy
 ```
 
 ## 本番デプロイ
 
-```:zsh
+```zsh
 $ git checkout main
 $ git pull --ff-only origin main
 $ git tag -a v1.0.0 -m 'リリース内容'
@@ -93,48 +93,48 @@ $ git push origin v1.0.0
 
 ### Firebase トークン
 
-```:zsh
+```zsh
 $ firebase login:ci
 ```
 ### レビュー環境
 
-```:zsh
+```zsh
 $ base64 -i serviceAccount.review.json | pbcopy
 ```
 
-```:zsh
+```zsh
 $ base64 -i gcpServiceAccount.review.json | pbcopy
 ```
 
-```:zsh
+```zsh
 $ base64 -i app.yaml | pbcopy
 ```
 
 ### E2E
 
-```:zsh
+```zsh
 $ base64 -i .env | pbcopy
 ```
 
-```:zsh
+```zsh
 $ base64 -i envenb.go | pbcopy
 ```
 
-```:zsh
+```zsh
 $ base64 -i e2e/.env | pbcopy
 ```
 
 ### 本番環境
 
-```:zsh
+```zsh
 $ base64 -i serviceAccount.production.json | pbcopy
 ```
 
-```:zsh
+```zsh
 $ base64 -i gcpServiceAccount.production.json | pbcopy
 ```
 
-```:zsh
+```zsh
 $ base64 -i app.production.yaml | pbcopy
 ```
 

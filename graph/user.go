@@ -2,7 +2,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
@@ -27,7 +26,7 @@ func (g *Graph) CreateUser(ctx context.Context, input *model.NewUser) (*model.Us
 // CreateAuthUser 認証済みユーザーを作成
 func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewAuthUser) (*model.AuthUser, error) {
 	if !g.Client.AuthToken.Valid(ctx) {
-		return nil, ce.CustomError(fmt.Errorf("invalid authorization"))
+		return nil, ce.CustomError(ce.NewInvalidAuthError("invalid authorization"))
 	}
 
 	u := &repository.User{
