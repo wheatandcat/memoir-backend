@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	"fmt"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	"github.com/wheatandcat/memoir-backend/graph/model"
@@ -11,17 +11,25 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-// CreateUser ユーザー作成
+type Auth struct {
+	UserID    string
+	CreatedAt time.Time
+}
+
+// CreateAuthUser 認証ユーザー作成
 func (uci *useCaseImpl) CreateAuthUser(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) error {
 	aref := f.Collection("auth").Doc(u.FirebaseUID)
 	uref := f.Collection("users").Doc(u.ID)
 	err := f.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
-		doc, err := tx.Get(aref)
-		fmt.Printf("%+v", doc)
+		_, err := tx.Get(aref)
 
 		if repository.GrpcErrorStatusCode(err) == codes.InvalidArgument || repository.GrpcErrorStatusCode(err) == codes.NotFound {
 			// 既にユーザー作成済みの場合は更新しないで完了
-			err := tx.Set(aref, mu)
+			a := Auth{
+				UserID:    mu.ID,
+				CreatedAt: mu.CreatedAt,
+			}
+			err := tx.Set(aref, a)
 			if err != nil {
 				return ce.CustomError(err)
 			}
