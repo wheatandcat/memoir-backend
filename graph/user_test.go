@@ -165,8 +165,8 @@ func TestCreateAuthUser(t *testing.T) {
 				}
 				g.App.UserRepository = userRepositoryMock
 				authUseCaseMock := &moq_usecase_auth.UseCaseMock{
-					CreateAuthUserFunc: func(_ __, _ ___, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) error {
-						return nil
+					CreateAuthUserFunc: func(_ __, _ ___, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) (string, error) {
+						return "", nil
 					},
 				}
 				g.App.AuthUseCase = authUseCaseMock
@@ -198,8 +198,8 @@ func TestCreateAuthUser(t *testing.T) {
 				}
 				g.App.UserRepository = userRepositoryMock
 				authUseCaseMock := &moq_usecase_auth.UseCaseMock{
-					CreateAuthUserFunc: func(_ __, _ ___, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) error {
-						return nil
+					CreateAuthUserFunc: func(_ __, _ ___, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) (string, error) {
+						return "", nil
 					},
 				}
 				g.App.AuthUseCase = authUseCaseMock

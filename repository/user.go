@@ -27,6 +27,7 @@ type UserRepositoryInterface interface {
 type User struct {
 	ID          string
 	FirebaseUID string
+	DisplayName string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

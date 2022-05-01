@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -17,10 +18,32 @@ type Auth struct {
 }
 
 // CreateAuthUser 認証ユーザー作成
-func (uci *useCaseImpl) CreateAuthUser(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) error {
+func (uci *useCaseImpl) CreateAuthUser(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) (string, error) {
+	displayName := ""
+
+	app, err := repository.FirebaseApp(ctx)
+	if err != nil {
+		return displayName, err
+	}
+	client, err := app.Auth(ctx)
+	if err != nil {
+		return displayName, err
+	}
+	user, err := client.GetUser(ctx, u.FirebaseUID)
+	if err != nil {
+		return displayName, err
+	}
+
+	arr1 := strings.Split(user.UserInfo.Email, "@")
+	if len(arr1) > 0 {
+		displayName = arr1[0]
+	}
+
+	u.DisplayName = displayName
+
 	aref := f.Collection("auth").Doc(u.FirebaseUID)
 	uref := f.Collection("users").Doc(u.ID)
-	err := f.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+	err = f.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
 		_, err := tx.Get(aref)
 
 		if repository.GrpcErrorStatusCode(err) == codes.InvalidArgument || repository.GrpcErrorStatusCode(err) == codes.NotFound {
@@ -41,9 +64,23 @@ func (uci *useCaseImpl) CreateAuthUser(ctx context.Context, f *firestore.Client,
 					return ce.CustomError(err)
 				}
 			} else {
+				ds, err := uref.Get(ctx)
+				if err != nil {
+					return ce.CustomError(err)
+				}
+				dn, err := ds.DataAt("DisplayName")
+				if err != nil {
+					return ce.CustomError(err)
+				}
 				u.UpdatedAt = mu.UpdatedAt
 				var uu []firestore.Update
 				uu = append(uu, firestore.Update{Path: "FirebaseUID", Value: u.FirebaseUID})
+				if dn.(string) == "" {
+					// 名前が空ならメールアドレスで設定
+					uu = append(uu, firestore.Update{Path: "DisplayName", Value: u.DisplayName})
+				} else {
+					displayName = dn.(string)
+				}
 
 				if err = tx.Update(uref, uu); err != nil {
 					return ce.CustomError(err)
@@ -56,5 +93,5 @@ func (uci *useCaseImpl) CreateAuthUser(ctx context.Context, f *firestore.Client,
 		return nil
 	})
 
-	return err
+	return displayName, err
 }
