@@ -1,6 +1,9 @@
 package graph
 
-import "github.com/wheatandcat/memoir-backend/repository"
+import (
+	"github.com/wheatandcat/memoir-backend/repository"
+	"github.com/wheatandcat/memoir-backend/usecase/auth"
+)
 
 // Application is app interface
 type Application struct {
@@ -11,6 +14,8 @@ type Application struct {
 	RelationshipRepository        repository.RelationshipInterface
 	PushTokenRepository           repository.PushTokenRepositoryInterface
 	CommonRepository              repository.CommonRepositoryInterface
+
+	AuthUseCase auth.UseCase
 }
 
 // NewApplication アプリケーションを作成する
@@ -23,5 +28,7 @@ func NewApplication() *Application {
 		RelationshipRepository:        repository.NewRelationshipRepository(),
 		PushTokenRepository:           repository.NewPushTokenRepository(),
 		CommonRepository:              repository.NewCommonRepository(),
+
+		AuthUseCase: auth.New(),
 	}
 }

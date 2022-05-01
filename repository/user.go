@@ -31,11 +31,9 @@ type User struct {
 	UpdatedAt   time.Time
 }
 
-// UserRepository is repository for user
 type UserRepository struct {
 }
 
-// NewUserRepository is Create new UserRepository
 func NewUserRepository() UserRepositoryInterface {
 	return &UserRepository{}
 }

@@ -15,6 +15,7 @@ import (
 	"gopkg.in/go-playground/assert.v1"
 
 	moq_repository "github.com/wheatandcat/memoir-backend/repository/moq"
+	moq_usecase_auth "github.com/wheatandcat/memoir-backend/usecase/auth/moq"
 )
 
 type contextKey struct {
@@ -138,6 +139,10 @@ func TestCreateAuthUser(t *testing.T) {
 
 	ctx := context.WithValue(context.Background(), &contextKey{"user"}, u)
 
+	client := &graph.Client{
+		UUID: &uuidgen.UUID{},
+		Time: &timegen.Time{},
+	}
 	g := newGraph()
 
 	tests := []struct {
@@ -159,9 +164,18 @@ func TestCreateAuthUser(t *testing.T) {
 					},
 				}
 				g.App.UserRepository = userRepositoryMock
+				authUseCaseMock := &moq_usecase_auth.UseCaseMock{
+					CreateAuthUserFunc: func(_ __, _ ___, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) error {
+						return nil
+					},
+				}
+				g.App.AuthUseCase = authUseCaseMock
+
 			},
 			result: &model.AuthUser{
-				ID: "test",
+				ID:        "test",
+				CreatedAt: client.Time.ParseInLocation("2020-01-01T00:00:00"),
+				UpdatedAt: client.Time.ParseInLocation("2020-01-01T00:00:00"),
 			},
 		},
 		{
@@ -183,9 +197,17 @@ func TestCreateAuthUser(t *testing.T) {
 					},
 				}
 				g.App.UserRepository = userRepositoryMock
+				authUseCaseMock := &moq_usecase_auth.UseCaseMock{
+					CreateAuthUserFunc: func(_ __, _ ___, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) error {
+						return nil
+					},
+				}
+				g.App.AuthUseCase = authUseCaseMock
 			},
 			result: &model.AuthUser{
-				ID: "test",
+				ID:        "test",
+				CreatedAt: client.Time.ParseInLocation("2020-01-01T00:00:00"),
+				UpdatedAt: client.Time.ParseInLocation("2020-01-01T00:00:00"),
 			},
 		},
 	}

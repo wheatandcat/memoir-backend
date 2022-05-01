@@ -11,6 +11,7 @@ import (
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 
 	moq_repository "github.com/wheatandcat/memoir-backend/repository/moq"
+	moq_usecase_auth "github.com/wheatandcat/memoir-backend/usecase/auth/moq"
 )
 
 func newGraph() graph.Graph {
@@ -29,6 +30,8 @@ func newGraph() graph.Graph {
 		RelationshipRepository:        &moq_repository.RelationshipInterfaceMock{},
 		PushTokenRepository:           &moq_repository.PushTokenRepositoryInterfaceMock{},
 		CommonRepository:              &moq_repository.CommonRepositoryInterfaceMock{},
+
+		AuthUseCase: &moq_usecase_auth.UseCaseMock{},
 	}
 
 	g := graph.Graph{
