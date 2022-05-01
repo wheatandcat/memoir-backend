@@ -36,7 +36,9 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewAuthUser) (*
 	}
 
 	mu := &model.AuthUser{
-		ID: input.ID,
+		ID:        input.ID,
+		CreatedAt: g.Client.Time.Now(),
+		UpdatedAt: g.Client.Time.Now(),
 	}
 
 	exist, err := g.App.UserRepository.ExistByFirebaseUID(ctx, g.FirestoreClient, u.FirebaseUID)
@@ -49,16 +51,7 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewAuthUser) (*
 		return mu, nil
 	}
 
-	if input.IsNewUser {
-		v := &model.NewUser{
-			ID: input.ID,
-		}
-		if _, err = g.CreateUser(ctx, v); err != nil {
-			return nil, ce.CustomError(err)
-		}
-	}
-
-	if err = g.App.UserRepository.UpdateFirebaseUID(ctx, g.FirestoreClient, u); err != nil {
+	if err := g.App.AuthUseCase.CreateAuthUser(ctx, g.FirestoreClient, input, u, mu); err != nil {
 		return nil, ce.CustomError(err)
 	}
 
