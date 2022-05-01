@@ -22,7 +22,7 @@ var _ auth.UseCase = &UseCaseMock{}
 //
 // 		// make and configure a mocked auth.UseCase
 // 		mockedUseCase := &UseCaseMock{
-// 			CreateAuthUserFunc: func(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) error {
+// 			CreateAuthUserFunc: func(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) (string, error) {
 // 				panic("mock out the CreateAuthUser method")
 // 			},
 // 		}
@@ -33,7 +33,7 @@ var _ auth.UseCase = &UseCaseMock{}
 // 	}
 type UseCaseMock struct {
 	// CreateAuthUserFunc mocks the CreateAuthUser method.
-	CreateAuthUserFunc func(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) error
+	CreateAuthUserFunc func(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) (string, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -55,7 +55,7 @@ type UseCaseMock struct {
 }
 
 // CreateAuthUser calls CreateAuthUserFunc.
-func (mock *UseCaseMock) CreateAuthUser(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) error {
+func (mock *UseCaseMock) CreateAuthUser(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) (string, error) {
 	if mock.CreateAuthUserFunc == nil {
 		panic("UseCaseMock.CreateAuthUserFunc: method is nil but UseCase.CreateAuthUser was just called")
 	}

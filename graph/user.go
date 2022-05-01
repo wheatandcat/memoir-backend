@@ -51,7 +51,10 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewAuthUser) (*
 		return mu, nil
 	}
 
-	if err := g.App.AuthUseCase.CreateAuthUser(ctx, g.FirestoreClient, input, u, mu); err != nil {
+	displayName, err := g.App.AuthUseCase.CreateAuthUser(ctx, g.FirestoreClient, input, u, mu)
+	mu.DisplayName = displayName
+
+	if err != nil {
 		exist, err := g.App.UserRepository.ExistByFirebaseUID(ctx, g.FirestoreClient, u.FirebaseUID)
 		if err != nil {
 			return nil, ce.CustomError(err)
