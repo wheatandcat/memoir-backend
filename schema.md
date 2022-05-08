@@ -8,6 +8,8 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
   * [Query](#query)
   * [Mutation](#mutation)
   * [Objects](#objects)
+    * [AuthUser](#authuser)
+    * [ExistAuthUser](#existauthuser)
     * [Invite](#invite)
     * [Item](#item)
     * [ItemsInPeriod](#itemsinperiod)
@@ -26,6 +28,7 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
     * [InputItemsInPeriod](#inputitemsinperiod)
     * [InputRelationshipRequests](#inputrelationshiprequests)
     * [InputRelationships](#inputrelationships)
+    * [NewAuthUser](#newauthuser)
     * [NewItem](#newitem)
     * [NewPushToken](#newpushtoken)
     * [NewRelationshipRequest](#newrelationshiprequest)
@@ -59,6 +62,15 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <td>
 
 ユーザーを取得する
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>existAuthUser</strong></td>
+<td valign="top"><a href="#existauthuser">ExistAuthUser</a>!</td>
+<td>
+
+認証ユーザーが存在するか判定する
 
 </td>
 </tr>
@@ -199,7 +211,7 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>createAuthUser</strong></td>
-<td valign="top"><a href="#user">User</a>!</td>
+<td valign="top"><a href="#authuser">AuthUser</a>!</td>
 <td>
 
 認証ユーザーを作成する
@@ -208,7 +220,7 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 </tr>
 <tr>
 <td colspan="2" align="right" valign="top">input</td>
-<td valign="top"><a href="#newuser">NewUser</a>!</td>
+<td valign="top"><a href="#newauthuser">NewAuthUser</a>!</td>
 <td></td>
 </tr>
 <tr>
@@ -224,6 +236,15 @@ $ /Users/iinoyouhei/go/src/github.com/wheatandcat/memoir-backend/node_modules/.b
 <td colspan="2" align="right" valign="top">input</td>
 <td valign="top"><a href="#updateuser">UpdateUser</a>!</td>
 <td></td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>deleteUser</strong></td>
+<td valign="top"><a href="#user">User</a>!</td>
+<td>
+
+ユーザーを削除する
+
+</td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>createItem</strong></td>
@@ -359,6 +380,95 @@ Push通知のトークンを作成する
 </table>
 
 ## Objects
+
+### AuthUser
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
+<td>
+
+ユーザーID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>displayName</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+表示名
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>image</strong></td>
+<td valign="top"><a href="#string">String</a>!</td>
+<td>
+
+画像URL
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>new</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a>!</td>
+<td>
+
+新規作成
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>createdAt</strong></td>
+<td valign="top"><a href="#time">Time</a>!</td>
+<td>
+
+作成日時
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>updatedAt</strong></td>
+<td valign="top"><a href="#time">Time</a>!</td>
+<td>
+
+更新日時
+
+</td>
+</tr>
+</tbody>
+</table>
+
+### ExistAuthUser
+
+<table>
+<thead>
+<tr>
+<th align="left">Field</th>
+<th align="right">Argument</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>exist</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a>!</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 ### Invite
 
@@ -1000,12 +1110,56 @@ ID
 <tr>
 <td colspan="2" valign="top"><strong>startDate</strong></td>
 <td valign="top"><a href="#time">Time</a>!</td>
-<td></td>
+<td>
+
+開始日
+
+</td>
 </tr>
 <tr>
 <td colspan="2" valign="top"><strong>endDate</strong></td>
 <td valign="top"><a href="#time">Time</a>!</td>
-<td></td>
+<td>
+
+終了日
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>userIDList</strong></td>
+<td valign="top">[<a href="#string">String</a>]</td>
+<td>
+
+ユーザーID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>categoryID</strong></td>
+<td valign="top"><a href="#int">Int</a></td>
+<td>
+
+カテゴリーID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>like</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a></td>
+<td>
+
+Good
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>dislike</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a></td>
+<td>
+
+Bad
+
+</td>
 </tr>
 </tbody>
 </table>
@@ -1054,6 +1208,38 @@ ID
 <td colspan="2" valign="top"><strong>first</strong></td>
 <td valign="top"><a href="#int">Int</a>!</td>
 <td></td>
+</tr>
+</tbody>
+</table>
+
+### NewAuthUser
+
+<table>
+<thead>
+<tr>
+<th colspan="2" align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2" valign="top"><strong>id</strong></td>
+<td valign="top"><a href="#id">ID</a>!</td>
+<td>
+
+ユーザーID
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top"><strong>isNewUser</strong></td>
+<td valign="top"><a href="#boolean">Boolean</a>!</td>
+<td>
+
+true: ユーザー作成を行う
+
+</td>
 </tr>
 </tbody>
 </table>
@@ -1303,4 +1489,4 @@ The `String`scalar type represents textual data, represented as UTF-8 character 
 
 ### Time
 
-Done in 2.56s.
+Done in 0.19s.

@@ -24,6 +24,9 @@ var _ repository.UserRepositoryInterface = &UserRepositoryInterfaceMock{}
 // 			CreateFunc: func(ctx context.Context, f *firestore.Client, u *model.User) error {
 // 				panic("mock out the Create method")
 // 			},
+// 			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string)  {
+// 				panic("mock out the Delete method")
+// 			},
 // 			ExistByFirebaseUIDFunc: func(ctx context.Context, f *firestore.Client, fUID string) (bool, error) {
 // 				panic("mock out the ExistByFirebaseUID method")
 // 			},
@@ -54,6 +57,9 @@ var _ repository.UserRepositoryInterface = &UserRepositoryInterfaceMock{}
 type UserRepositoryInterfaceMock struct {
 	// CreateFunc mocks the Create method.
 	CreateFunc func(ctx context.Context, f *firestore.Client, u *model.User) error
+
+	// DeleteFunc mocks the Delete method.
+	DeleteFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string)
 
 	// ExistByFirebaseUIDFunc mocks the ExistByFirebaseUID method.
 	ExistByFirebaseUIDFunc func(ctx context.Context, f *firestore.Client, fUID string) (bool, error)
@@ -86,6 +92,17 @@ type UserRepositoryInterfaceMock struct {
 			F *firestore.Client
 			// U is the u argument value.
 			U *model.User
+		}
+		// Delete holds details about calls to the Delete method.
+		Delete []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// Batch is the batch argument value.
+			Batch *firestore.WriteBatch
+			// UID is the uid argument value.
+			UID string
 		}
 		// ExistByFirebaseUID holds details about calls to the ExistByFirebaseUID method.
 		ExistByFirebaseUID []struct {
@@ -152,6 +169,7 @@ type UserRepositoryInterfaceMock struct {
 		}
 	}
 	lockCreate                sync.RWMutex
+	lockDelete                sync.RWMutex
 	lockExistByFirebaseUID    sync.RWMutex
 	lockFindByFirebaseUID     sync.RWMutex
 	lockFindByUID             sync.RWMutex
@@ -197,6 +215,49 @@ func (mock *UserRepositoryInterfaceMock) CreateCalls() []struct {
 	mock.lockCreate.RLock()
 	calls = mock.calls.Create
 	mock.lockCreate.RUnlock()
+	return calls
+}
+
+// Delete calls DeleteFunc.
+func (mock *UserRepositoryInterfaceMock) Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string) {
+	if mock.DeleteFunc == nil {
+		panic("UserRepositoryInterfaceMock.DeleteFunc: method is nil but UserRepositoryInterface.Delete was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		F     *firestore.Client
+		Batch *firestore.WriteBatch
+		UID   string
+	}{
+		Ctx:   ctx,
+		F:     f,
+		Batch: batch,
+		UID:   uid,
+	}
+	mock.lockDelete.Lock()
+	mock.calls.Delete = append(mock.calls.Delete, callInfo)
+	mock.lockDelete.Unlock()
+	mock.DeleteFunc(ctx, f, batch, uid)
+}
+
+// DeleteCalls gets all the calls that were made to Delete.
+// Check the length with:
+//     len(mockedUserRepositoryInterface.DeleteCalls())
+func (mock *UserRepositoryInterfaceMock) DeleteCalls() []struct {
+	Ctx   context.Context
+	F     *firestore.Client
+	Batch *firestore.WriteBatch
+	UID   string
+} {
+	var calls []struct {
+		Ctx   context.Context
+		F     *firestore.Client
+		Batch *firestore.WriteBatch
+		UID   string
+	}
+	mock.lockDelete.RLock()
+	calls = mock.calls.Delete
+	mock.lockDelete.RUnlock()
 	return calls
 }
 

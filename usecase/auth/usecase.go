@@ -12,6 +12,7 @@ import (
 
 type UseCase interface {
 	CreateAuthUser(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) (string, error)
+	DeleteAuthUser(ctx context.Context, f *firestore.Client, uid string) error
 }
 
 type useCaseImpl struct {

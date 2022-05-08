@@ -261,6 +261,8 @@ type Mutation {
   createAuthUser(input: NewAuthUser!): AuthUser!
   "ユーザーを更新する"
   updateUser(input: UpdateUser!): User!
+  "ユーザーを削除する"
+  deleteUser: User!
   "アイテムを作成する"
   createItem(input: NewItem!): Item!
   "アイテムを更新する"

@@ -27,6 +27,9 @@ var _ repository.RelationshipInterface = &RelationshipInterfaceMock{}
 // 			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)  {
 // 				panic("mock out the Delete method")
 // 			},
+// 			ExistByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (bool, error) {
+// 				panic("mock out the ExistByFollowedID method")
+// 			},
 // 			FindByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string, first int, cursor repository.RelationshipCursor) ([]*model.Relationship, error) {
 // 				panic("mock out the FindByFollowedID method")
 // 			},
@@ -42,6 +45,9 @@ type RelationshipInterfaceMock struct {
 
 	// DeleteFunc mocks the Delete method.
 	DeleteFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)
+
+	// ExistByFollowedIDFunc mocks the ExistByFollowedID method.
+	ExistByFollowedIDFunc func(ctx context.Context, f *firestore.Client, userID string) (bool, error)
 
 	// FindByFollowedIDFunc mocks the FindByFollowedID method.
 	FindByFollowedIDFunc func(ctx context.Context, f *firestore.Client, userID string, first int, cursor repository.RelationshipCursor) ([]*model.Relationship, error)
@@ -70,6 +76,15 @@ type RelationshipInterfaceMock struct {
 			// I is the i argument value.
 			I *model.Relationship
 		}
+		// ExistByFollowedID holds details about calls to the ExistByFollowedID method.
+		ExistByFollowedID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// UserID is the userID argument value.
+			UserID string
+		}
 		// FindByFollowedID holds details about calls to the FindByFollowedID method.
 		FindByFollowedID []struct {
 			// Ctx is the ctx argument value.
@@ -84,9 +99,10 @@ type RelationshipInterfaceMock struct {
 			Cursor repository.RelationshipCursor
 		}
 	}
-	lockCreate           sync.RWMutex
-	lockDelete           sync.RWMutex
-	lockFindByFollowedID sync.RWMutex
+	lockCreate            sync.RWMutex
+	lockDelete            sync.RWMutex
+	lockExistByFollowedID sync.RWMutex
+	lockFindByFollowedID  sync.RWMutex
 }
 
 // Create calls CreateFunc.
@@ -172,6 +188,45 @@ func (mock *RelationshipInterfaceMock) DeleteCalls() []struct {
 	mock.lockDelete.RLock()
 	calls = mock.calls.Delete
 	mock.lockDelete.RUnlock()
+	return calls
+}
+
+// ExistByFollowedID calls ExistByFollowedIDFunc.
+func (mock *RelationshipInterfaceMock) ExistByFollowedID(ctx context.Context, f *firestore.Client, userID string) (bool, error) {
+	if mock.ExistByFollowedIDFunc == nil {
+		panic("RelationshipInterfaceMock.ExistByFollowedIDFunc: method is nil but RelationshipInterface.ExistByFollowedID was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		UserID string
+	}{
+		Ctx:    ctx,
+		F:      f,
+		UserID: userID,
+	}
+	mock.lockExistByFollowedID.Lock()
+	mock.calls.ExistByFollowedID = append(mock.calls.ExistByFollowedID, callInfo)
+	mock.lockExistByFollowedID.Unlock()
+	return mock.ExistByFollowedIDFunc(ctx, f, userID)
+}
+
+// ExistByFollowedIDCalls gets all the calls that were made to ExistByFollowedID.
+// Check the length with:
+//     len(mockedRelationshipInterface.ExistByFollowedIDCalls())
+func (mock *RelationshipInterfaceMock) ExistByFollowedIDCalls() []struct {
+	Ctx    context.Context
+	F      *firestore.Client
+	UserID string
+} {
+	var calls []struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		UserID string
+	}
+	mock.lockExistByFollowedID.RLock()
+	calls = mock.calls.ExistByFollowedID
+	mock.lockExistByFollowedID.RUnlock()
 	return calls
 }
 
