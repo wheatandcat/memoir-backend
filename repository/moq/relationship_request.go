@@ -24,6 +24,12 @@ var _ repository.RelationshipRequestInterface = &RelationshipRequestInterfaceMoc
 // 			CreateFunc: func(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) error {
 // 				panic("mock out the Create method")
 // 			},
+// 			DeleteByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error {
+// 				panic("mock out the DeleteByFollowedID method")
+// 			},
+// 			DeleteByFollowerIDFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error {
+// 				panic("mock out the DeleteByFollowerID method")
+// 			},
 // 			FindFunc: func(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) (*model.RelationshipRequest, error) {
 // 				panic("mock out the Find method")
 // 			},
@@ -42,6 +48,12 @@ var _ repository.RelationshipRequestInterface = &RelationshipRequestInterfaceMoc
 type RelationshipRequestInterfaceMock struct {
 	// CreateFunc mocks the Create method.
 	CreateFunc func(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) error
+
+	// DeleteByFollowedIDFunc mocks the DeleteByFollowedID method.
+	DeleteByFollowedIDFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error
+
+	// DeleteByFollowerIDFunc mocks the DeleteByFollowerID method.
+	DeleteByFollowerIDFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error
 
 	// FindFunc mocks the Find method.
 	FindFunc func(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) (*model.RelationshipRequest, error)
@@ -62,6 +74,28 @@ type RelationshipRequestInterfaceMock struct {
 			F *firestore.Client
 			// I is the i argument value.
 			I *model.RelationshipRequest
+		}
+		// DeleteByFollowedID holds details about calls to the DeleteByFollowedID method.
+		DeleteByFollowedID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// Batch is the batch argument value.
+			Batch *firestore.WriteBatch
+			// UserID is the userID argument value.
+			UserID string
+		}
+		// DeleteByFollowerID holds details about calls to the DeleteByFollowerID method.
+		DeleteByFollowerID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// Batch is the batch argument value.
+			Batch *firestore.WriteBatch
+			// UserID is the userID argument value.
+			UserID string
 		}
 		// Find holds details about calls to the Find method.
 		Find []struct {
@@ -97,10 +131,12 @@ type RelationshipRequestInterfaceMock struct {
 			I *model.RelationshipRequest
 		}
 	}
-	lockCreate           sync.RWMutex
-	lockFind             sync.RWMutex
-	lockFindByFollowedID sync.RWMutex
-	lockUpdate           sync.RWMutex
+	lockCreate             sync.RWMutex
+	lockDeleteByFollowedID sync.RWMutex
+	lockDeleteByFollowerID sync.RWMutex
+	lockFind               sync.RWMutex
+	lockFindByFollowedID   sync.RWMutex
+	lockUpdate             sync.RWMutex
 }
 
 // Create calls CreateFunc.
@@ -139,6 +175,92 @@ func (mock *RelationshipRequestInterfaceMock) CreateCalls() []struct {
 	mock.lockCreate.RLock()
 	calls = mock.calls.Create
 	mock.lockCreate.RUnlock()
+	return calls
+}
+
+// DeleteByFollowedID calls DeleteByFollowedIDFunc.
+func (mock *RelationshipRequestInterfaceMock) DeleteByFollowedID(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error {
+	if mock.DeleteByFollowedIDFunc == nil {
+		panic("RelationshipRequestInterfaceMock.DeleteByFollowedIDFunc: method is nil but RelationshipRequestInterface.DeleteByFollowedID was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		Batch  *firestore.WriteBatch
+		UserID string
+	}{
+		Ctx:    ctx,
+		F:      f,
+		Batch:  batch,
+		UserID: userID,
+	}
+	mock.lockDeleteByFollowedID.Lock()
+	mock.calls.DeleteByFollowedID = append(mock.calls.DeleteByFollowedID, callInfo)
+	mock.lockDeleteByFollowedID.Unlock()
+	return mock.DeleteByFollowedIDFunc(ctx, f, batch, userID)
+}
+
+// DeleteByFollowedIDCalls gets all the calls that were made to DeleteByFollowedID.
+// Check the length with:
+//     len(mockedRelationshipRequestInterface.DeleteByFollowedIDCalls())
+func (mock *RelationshipRequestInterfaceMock) DeleteByFollowedIDCalls() []struct {
+	Ctx    context.Context
+	F      *firestore.Client
+	Batch  *firestore.WriteBatch
+	UserID string
+} {
+	var calls []struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		Batch  *firestore.WriteBatch
+		UserID string
+	}
+	mock.lockDeleteByFollowedID.RLock()
+	calls = mock.calls.DeleteByFollowedID
+	mock.lockDeleteByFollowedID.RUnlock()
+	return calls
+}
+
+// DeleteByFollowerID calls DeleteByFollowerIDFunc.
+func (mock *RelationshipRequestInterfaceMock) DeleteByFollowerID(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error {
+	if mock.DeleteByFollowerIDFunc == nil {
+		panic("RelationshipRequestInterfaceMock.DeleteByFollowerIDFunc: method is nil but RelationshipRequestInterface.DeleteByFollowerID was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		Batch  *firestore.WriteBatch
+		UserID string
+	}{
+		Ctx:    ctx,
+		F:      f,
+		Batch:  batch,
+		UserID: userID,
+	}
+	mock.lockDeleteByFollowerID.Lock()
+	mock.calls.DeleteByFollowerID = append(mock.calls.DeleteByFollowerID, callInfo)
+	mock.lockDeleteByFollowerID.Unlock()
+	return mock.DeleteByFollowerIDFunc(ctx, f, batch, userID)
+}
+
+// DeleteByFollowerIDCalls gets all the calls that were made to DeleteByFollowerID.
+// Check the length with:
+//     len(mockedRelationshipRequestInterface.DeleteByFollowerIDCalls())
+func (mock *RelationshipRequestInterfaceMock) DeleteByFollowerIDCalls() []struct {
+	Ctx    context.Context
+	F      *firestore.Client
+	Batch  *firestore.WriteBatch
+	UserID string
+} {
+	var calls []struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		Batch  *firestore.WriteBatch
+		UserID string
+	}
+	mock.lockDeleteByFollowerID.RLock()
+	calls = mock.calls.DeleteByFollowerID
+	mock.lockDeleteByFollowerID.RUnlock()
 	return calls
 }
 

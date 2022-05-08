@@ -17,6 +17,7 @@ type UserRepositoryInterface interface {
 	Create(ctx context.Context, f *firestore.Client, u *model.User) error
 	Update(ctx context.Context, f *firestore.Client, u *model.User) error
 	UpdateFirebaseUID(ctx context.Context, f *firestore.Client, user *User) error
+	Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string)
 	FindByUID(ctx context.Context, f *firestore.Client, uid string) (*model.User, error)
 	FindDatabaseDataByUID(ctx context.Context, f *firestore.Client, uid string) (*User, error)
 	FindByFirebaseUID(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error)
@@ -61,6 +62,12 @@ func (re *UserRepository) Update(ctx context.Context, f *firestore.Client, u *mo
 	_, err := f.Collection("users").Doc(u.ID).Update(ctx, fu)
 
 	return ce.CustomError(err)
+}
+
+// Delete ユーザーを削除する
+func (re *UserRepository) Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string) {
+	ref := f.Collection("users").Doc(uid)
+	batch.Delete(ref)
 }
 
 // UpdateFirebaseUID ユーザーFirebaseUIを更新する

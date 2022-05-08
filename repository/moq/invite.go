@@ -27,6 +27,9 @@ var _ repository.InviteRepositoryInterface = &InviteRepositoryInterfaceMock{}
 // 			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, code string)  {
 // 				panic("mock out the Delete method")
 // 			},
+// 			DeleteByUserIDFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error {
+// 				panic("mock out the DeleteByUserID method")
+// 			},
 // 			FindFunc: func(ctx context.Context, f *firestore.Client, code string) (*model.Invite, error) {
 // 				panic("mock out the Find method")
 // 			},
@@ -45,6 +48,9 @@ type InviteRepositoryInterfaceMock struct {
 
 	// DeleteFunc mocks the Delete method.
 	DeleteFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, code string)
+
+	// DeleteByUserIDFunc mocks the DeleteByUserID method.
+	DeleteByUserIDFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error
 
 	// FindFunc mocks the Find method.
 	FindFunc func(ctx context.Context, f *firestore.Client, code string) (*model.Invite, error)
@@ -76,6 +82,17 @@ type InviteRepositoryInterfaceMock struct {
 			// Code is the code argument value.
 			Code string
 		}
+		// DeleteByUserID holds details about calls to the DeleteByUserID method.
+		DeleteByUserID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// Batch is the batch argument value.
+			Batch *firestore.WriteBatch
+			// UserID is the userID argument value.
+			UserID string
+		}
 		// Find holds details about calls to the Find method.
 		Find []struct {
 			// Ctx is the ctx argument value.
@@ -95,10 +112,11 @@ type InviteRepositoryInterfaceMock struct {
 			UserID string
 		}
 	}
-	lockCreate       sync.RWMutex
-	lockDelete       sync.RWMutex
-	lockFind         sync.RWMutex
-	lockFindByUserID sync.RWMutex
+	lockCreate         sync.RWMutex
+	lockDelete         sync.RWMutex
+	lockDeleteByUserID sync.RWMutex
+	lockFind           sync.RWMutex
+	lockFindByUserID   sync.RWMutex
 }
 
 // Create calls CreateFunc.
@@ -184,6 +202,49 @@ func (mock *InviteRepositoryInterfaceMock) DeleteCalls() []struct {
 	mock.lockDelete.RLock()
 	calls = mock.calls.Delete
 	mock.lockDelete.RUnlock()
+	return calls
+}
+
+// DeleteByUserID calls DeleteByUserIDFunc.
+func (mock *InviteRepositoryInterfaceMock) DeleteByUserID(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error {
+	if mock.DeleteByUserIDFunc == nil {
+		panic("InviteRepositoryInterfaceMock.DeleteByUserIDFunc: method is nil but InviteRepositoryInterface.DeleteByUserID was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		Batch  *firestore.WriteBatch
+		UserID string
+	}{
+		Ctx:    ctx,
+		F:      f,
+		Batch:  batch,
+		UserID: userID,
+	}
+	mock.lockDeleteByUserID.Lock()
+	mock.calls.DeleteByUserID = append(mock.calls.DeleteByUserID, callInfo)
+	mock.lockDeleteByUserID.Unlock()
+	return mock.DeleteByUserIDFunc(ctx, f, batch, userID)
+}
+
+// DeleteByUserIDCalls gets all the calls that were made to DeleteByUserID.
+// Check the length with:
+//     len(mockedInviteRepositoryInterface.DeleteByUserIDCalls())
+func (mock *InviteRepositoryInterfaceMock) DeleteByUserIDCalls() []struct {
+	Ctx    context.Context
+	F      *firestore.Client
+	Batch  *firestore.WriteBatch
+	UserID string
+} {
+	var calls []struct {
+		Ctx    context.Context
+		F      *firestore.Client
+		Batch  *firestore.WriteBatch
+		UserID string
+	}
+	mock.lockDeleteByUserID.RLock()
+	calls = mock.calls.DeleteByUserID
+	mock.lockDeleteByUserID.RUnlock()
 	return calls
 }
 

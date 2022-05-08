@@ -14,6 +14,7 @@ import (
 type InviteRepositoryInterface interface {
 	Create(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Invite)
 	Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, code string)
+	DeleteByUserID(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error
 	Find(ctx context.Context, f *firestore.Client, code string) (*model.Invite, error)
 	FindByUserID(ctx context.Context, f *firestore.Client, userID string) (*model.Invite, error)
 }
@@ -77,4 +78,24 @@ func (re *InviteRepository) Find(ctx context.Context, f *firestore.Client, code 
 	}
 
 	return i, ce.CustomError(err)
+}
+
+// DeleteByUserID ユーザーIDから削除する
+func (re *InviteRepository) DeleteByUserID(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error {
+	matchItem := f.Collection("invites").Where("UserID", "==", userID).OrderBy("CreatedAt", firestore.Desc).Documents(ctx)
+	docs, err := matchItem.GetAll()
+
+	if err != nil {
+		return ce.CustomError(err)
+	}
+
+	if len(docs) == 0 {
+		return nil
+	}
+
+	for _, doc := range docs {
+		batch.Delete(doc.Ref)
+	}
+
+	return nil
 }

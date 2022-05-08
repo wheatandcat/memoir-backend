@@ -21,6 +21,8 @@ const (
 type RelationshipRequestInterface interface {
 	Create(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) error
 	Update(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest)
+	DeleteByFollowedID(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error
+	DeleteByFollowerID(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error
 	Find(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) (*model.RelationshipRequest, error)
 	FindByFollowedID(ctx context.Context, f *firestore.Client, userID string, first int, cursor RelationshipRequestCursor) ([]*model.RelationshipRequest, error)
 }
@@ -71,6 +73,46 @@ func (re *RelationshipRequestRepository) Update(ctx context.Context, f *firestor
 
 	ref := f.Collection("relationshipRequests").Doc(i.FollowerID + "_" + i.FollowedID)
 	batch.Update(ref, u)
+}
+
+// DeleteByFollowedID ユーザーIDから削除する
+func (re *RelationshipRequestRepository) DeleteByFollowedID(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error {
+	matchItem := f.Collection("relationshipRequests").Where("FollowedID", "==", userID).OrderBy("CreatedAt", firestore.Desc).Documents(ctx)
+	docs, err := matchItem.GetAll()
+
+	if err != nil {
+		return ce.CustomError(err)
+	}
+
+	if len(docs) == 0 {
+		return nil
+	}
+
+	for _, doc := range docs {
+		batch.Delete(doc.Ref)
+	}
+
+	return nil
+}
+
+// DeleteByFollowerID ユーザーIDから削除する
+func (re *RelationshipRequestRepository) DeleteByFollowerID(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error {
+	matchItem := f.Collection("relationshipRequests").Where("FollowerID", "==", userID).OrderBy("CreatedAt", firestore.Desc).Documents(ctx)
+	docs, err := matchItem.GetAll()
+
+	if err != nil {
+		return ce.CustomError(err)
+	}
+
+	if len(docs) == 0 {
+		return nil
+	}
+
+	for _, doc := range docs {
+		batch.Delete(doc.Ref)
+	}
+
+	return nil
 }
 
 // Find 取得する

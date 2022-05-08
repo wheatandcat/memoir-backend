@@ -96,6 +96,7 @@ type ComplexityRoot struct {
 		CreateUser                func(childComplexity int, input model.NewUser) int
 		DeleteItem                func(childComplexity int, input model.DeleteItem) int
 		DeleteRelationship        func(childComplexity int, followedID string) int
+		DeleteUser                func(childComplexity int) int
 		NgRelationshipRequest     func(childComplexity int, followedID string) int
 		UpdateInvite              func(childComplexity int) int
 		UpdateItem                func(childComplexity int, input model.UpdateItem) int
@@ -180,6 +181,7 @@ type MutationResolver interface {
 	CreateUser(ctx context.Context, input model.NewUser) (*model.User, error)
 	CreateAuthUser(ctx context.Context, input model.NewAuthUser) (*model.AuthUser, error)
 	UpdateUser(ctx context.Context, input model.UpdateUser) (*model.User, error)
+	DeleteUser(ctx context.Context) (*model.User, error)
 	CreateItem(ctx context.Context, input model.NewItem) (*model.Item, error)
 	UpdateItem(ctx context.Context, input model.UpdateItem) (*model.Item, error)
 	DeleteItem(ctx context.Context, input model.DeleteItem) (*model.Item, error)
@@ -489,6 +491,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteRelationship(childComplexity, args["followedID"].(string)), true
+
+	case "Mutation.deleteUser":
+		if e.complexity.Mutation.DeleteUser == nil {
+			break
+		}
+
+		return e.complexity.Mutation.DeleteUser(childComplexity), true
 
 	case "Mutation.ngRelationshipRequest":
 		if e.complexity.Mutation.NgRelationshipRequest == nil {
@@ -1206,6 +1215,8 @@ type Mutation {
   createAuthUser(input: NewAuthUser!): AuthUser!
   "ユーザーを更新する"
   updateUser(input: UpdateUser!): User!
+  "ユーザーを削除する"
+  deleteUser: User!
   "アイテムを作成する"
   createItem(input: NewItem!): Item!
   "アイテムを更新する"
@@ -2539,6 +2550,41 @@ func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().UpdateUser(rctx, args["input"].(model.UpdateUser))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋwheatandcatᚋmemoirᚑbackendᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteUser(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6338,6 +6384,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "updateUser":
 			out.Values[i] = ec._Mutation_updateUser(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteUser":
+			out.Values[i] = ec._Mutation_deleteUser(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

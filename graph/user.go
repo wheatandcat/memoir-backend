@@ -112,3 +112,41 @@ func (g *Graph) UpdateUser(ctx context.Context, input *model.UpdateUser) (*model
 
 	return u, nil
 }
+
+// DeleteUser ユーザーを削除
+func (g *Graph) DeleteUser(ctx context.Context) (*model.User, error) {
+	uid := g.UserID
+	u := &model.User{ID: uid}
+
+	exist, err := g.App.RelationshipRepository.ExistByFollowedID(ctx, g.FirestoreClient, uid)
+	if err != nil {
+		return nil, ce.CustomError(err)
+	}
+
+	if exist {
+		return nil, ce.CustomError(ce.NewRequestError(ce.HasRelationshipByDeleteUser, "共有メンバーが設定されています"))
+	}
+
+	batch := g.FirestoreClient.Batch()
+	g.App.UserRepository.Delete(ctx, g.FirestoreClient, batch, uid)
+	if err := g.App.InviteRepository.DeleteByUserID(ctx, g.FirestoreClient, batch, uid); err != nil {
+		return nil, ce.CustomError(err)
+	}
+	if err := g.App.RelationshipRequestRepository.DeleteByFollowedID(ctx, g.FirestoreClient, batch, uid); err != nil {
+		return nil, ce.CustomError(err)
+	}
+	if err := g.App.RelationshipRequestRepository.DeleteByFollowerID(ctx, g.FirestoreClient, batch, uid); err != nil {
+		return nil, ce.CustomError(err)
+	}
+	if g.FirebaseUID != "" {
+		if err := g.App.AuthUseCase.DeleteAuthUser(ctx, g.FirestoreClient, uid); err != nil {
+			return nil, ce.CustomError(err)
+		}
+	}
+
+	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
+		return nil, ce.CustomError(err)
+	}
+
+	return u, nil
+}

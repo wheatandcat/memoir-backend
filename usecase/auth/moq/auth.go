@@ -25,6 +25,9 @@ var _ auth.UseCase = &UseCaseMock{}
 // 			CreateAuthUserFunc: func(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) (string, error) {
 // 				panic("mock out the CreateAuthUser method")
 // 			},
+// 			DeleteAuthUserFunc: func(ctx context.Context, f *firestore.Client, uid string) error {
+// 				panic("mock out the DeleteAuthUser method")
+// 			},
 // 		}
 //
 // 		// use mockedUseCase in code that requires auth.UseCase
@@ -34,6 +37,9 @@ var _ auth.UseCase = &UseCaseMock{}
 type UseCaseMock struct {
 	// CreateAuthUserFunc mocks the CreateAuthUser method.
 	CreateAuthUserFunc func(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) (string, error)
+
+	// DeleteAuthUserFunc mocks the DeleteAuthUser method.
+	DeleteAuthUserFunc func(ctx context.Context, f *firestore.Client, uid string) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -50,8 +56,18 @@ type UseCaseMock struct {
 			// Mu is the mu argument value.
 			Mu *model.AuthUser
 		}
+		// DeleteAuthUser holds details about calls to the DeleteAuthUser method.
+		DeleteAuthUser []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// UID is the uid argument value.
+			UID string
+		}
 	}
 	lockCreateAuthUser sync.RWMutex
+	lockDeleteAuthUser sync.RWMutex
 }
 
 // CreateAuthUser calls CreateAuthUserFunc.
@@ -98,5 +114,44 @@ func (mock *UseCaseMock) CreateAuthUserCalls() []struct {
 	mock.lockCreateAuthUser.RLock()
 	calls = mock.calls.CreateAuthUser
 	mock.lockCreateAuthUser.RUnlock()
+	return calls
+}
+
+// DeleteAuthUser calls DeleteAuthUserFunc.
+func (mock *UseCaseMock) DeleteAuthUser(ctx context.Context, f *firestore.Client, uid string) error {
+	if mock.DeleteAuthUserFunc == nil {
+		panic("UseCaseMock.DeleteAuthUserFunc: method is nil but UseCase.DeleteAuthUser was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		F   *firestore.Client
+		UID string
+	}{
+		Ctx: ctx,
+		F:   f,
+		UID: uid,
+	}
+	mock.lockDeleteAuthUser.Lock()
+	mock.calls.DeleteAuthUser = append(mock.calls.DeleteAuthUser, callInfo)
+	mock.lockDeleteAuthUser.Unlock()
+	return mock.DeleteAuthUserFunc(ctx, f, uid)
+}
+
+// DeleteAuthUserCalls gets all the calls that were made to DeleteAuthUser.
+// Check the length with:
+//     len(mockedUseCase.DeleteAuthUserCalls())
+func (mock *UseCaseMock) DeleteAuthUserCalls() []struct {
+	Ctx context.Context
+	F   *firestore.Client
+	UID string
+} {
+	var calls []struct {
+		Ctx context.Context
+		F   *firestore.Client
+		UID string
+	}
+	mock.lockDeleteAuthUser.RLock()
+	calls = mock.calls.DeleteAuthUser
+	mock.lockDeleteAuthUser.RUnlock()
 	return calls
 }

@@ -15,6 +15,7 @@ type RelationshipInterface interface {
 	Create(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)
 	Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)
 	FindByFollowedID(ctx context.Context, f *firestore.Client, userID string, first int, cursor RelationshipCursor) ([]*model.Relationship, error)
+	ExistByFollowedID(ctx context.Context, f *firestore.Client, userID string) (bool, error)
 }
 
 type RelationshipRepository struct {
@@ -103,4 +104,21 @@ func (re *RelationshipRepository) FindByFollowedID(ctx context.Context, f *fires
 	}
 
 	return items, nil
+}
+
+// ExistByFollowedID フォローしているか確認
+func (re *RelationshipRepository) ExistByFollowedID(ctx context.Context, f *firestore.Client, userID string) (bool, error) {
+	query := f.Collection("relationships").Where("FollowedID", "==", userID).OrderBy("CreatedAt", firestore.Desc)
+	matchItem := query.Documents(ctx)
+	docs, err := matchItem.GetAll()
+
+	if err != nil {
+		return false, ce.CustomError(err)
+	}
+
+	if len(docs) > 0 {
+		return true, nil
+	}
+
+	return false, nil
 }

@@ -12,4 +12,6 @@ const (
 	CodeAlreadyExists = "000004"
 	// 自身の招待コード
 	CodeMyInviteCode = "000005"
+	// ユーザー削除時に共有メンバーが存在する
+	HasRelationshipByDeleteUser = "000006"
 )

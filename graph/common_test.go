@@ -2,6 +2,7 @@ package graph_test
 
 import (
 	"errors"
+	"testing"
 
 	mock_authToken "github.com/wheatandcat/memoir-backend/client/authToken/mocks"
 	mock_task "github.com/wheatandcat/memoir-backend/client/task/mocks"
@@ -9,6 +10,7 @@ import (
 	mock_uuidgen "github.com/wheatandcat/memoir-backend/client/uuidgen/mocks"
 	"github.com/wheatandcat/memoir-backend/graph"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
+	"gopkg.in/go-playground/assert.v1"
 
 	moq_repository "github.com/wheatandcat/memoir-backend/repository/moq"
 	moq_usecase_auth "github.com/wheatandcat/memoir-backend/usecase/auth/moq"
@@ -51,4 +53,21 @@ func getErrorCode(err error) string {
 	}
 
 	return errorCode
+}
+
+func checkErrorCode(t *testing.T, err1 error, err2 error) {
+	code1 := ce.CodeDefault
+	code2 := ce.CodeDefault
+
+	var re1 ce.RequestError
+	if errors.As(err1, &re1) {
+		code1 = re1.Code
+	}
+	var re2 ce.RequestError
+	if errors.As(err2, &re2) {
+		code2 = re2.Code
+	}
+
+	assert.Equal(t, code1, code2)
+
 }
