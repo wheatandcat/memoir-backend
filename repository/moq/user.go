@@ -24,7 +24,7 @@ var _ repository.UserRepositoryInterface = &UserRepositoryInterfaceMock{}
 // 			CreateFunc: func(ctx context.Context, f *firestore.Client, u *model.User) error {
 // 				panic("mock out the Create method")
 // 			},
-// 			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string)  {
+// 			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string) error {
 // 				panic("mock out the Delete method")
 // 			},
 // 			ExistByFirebaseUIDFunc: func(ctx context.Context, f *firestore.Client, fUID string) (bool, error) {
@@ -59,7 +59,7 @@ type UserRepositoryInterfaceMock struct {
 	CreateFunc func(ctx context.Context, f *firestore.Client, u *model.User) error
 
 	// DeleteFunc mocks the Delete method.
-	DeleteFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string)
+	DeleteFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string) error
 
 	// ExistByFirebaseUIDFunc mocks the ExistByFirebaseUID method.
 	ExistByFirebaseUIDFunc func(ctx context.Context, f *firestore.Client, fUID string) (bool, error)
@@ -219,7 +219,7 @@ func (mock *UserRepositoryInterfaceMock) CreateCalls() []struct {
 }
 
 // Delete calls DeleteFunc.
-func (mock *UserRepositoryInterfaceMock) Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string) {
+func (mock *UserRepositoryInterfaceMock) Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string) error {
 	if mock.DeleteFunc == nil {
 		panic("UserRepositoryInterfaceMock.DeleteFunc: method is nil but UserRepositoryInterface.Delete was just called")
 	}
@@ -237,7 +237,7 @@ func (mock *UserRepositoryInterfaceMock) Delete(ctx context.Context, f *firestor
 	mock.lockDelete.Lock()
 	mock.calls.Delete = append(mock.calls.Delete, callInfo)
 	mock.lockDelete.Unlock()
-	mock.DeleteFunc(ctx, f, batch, uid)
+	return mock.DeleteFunc(ctx, f, batch, uid)
 }
 
 // DeleteCalls gets all the calls that were made to Delete.

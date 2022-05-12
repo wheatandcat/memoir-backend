@@ -16,7 +16,7 @@ type UserRepositoryInterface interface {
 	Create(ctx context.Context, f *firestore.Client, u *model.User) error
 	Update(ctx context.Context, f *firestore.Client, u *model.User) error
 	UpdateFirebaseUID(ctx context.Context, f *firestore.Client, user *User) error
-	Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string)
+	Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string) error
 	FindByUID(ctx context.Context, f *firestore.Client, uid string) (*model.User, error)
 	FindDatabaseDataByUID(ctx context.Context, f *firestore.Client, uid string) (*User, error)
 	FindByFirebaseUID(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error)
@@ -64,9 +64,29 @@ func (re *UserRepository) Update(ctx context.Context, f *firestore.Client, u *mo
 }
 
 // Delete ユーザーを削除する
-func (re *UserRepository) Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string) {
+func (re *UserRepository) Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string) error {
 	ref := f.Collection("users").Doc(uid)
 	batch.Delete(ref)
+
+	matchPushToken := ref.Collection("pushToken").Documents(ctx)
+	docPushTokens, err := matchPushToken.GetAll()
+	if err != nil {
+		return err
+	}
+	for _, doc := range docPushTokens {
+		batch.Delete(doc.Ref)
+	}
+
+	matchItems := ref.Collection("items").Documents(ctx)
+	docItems, err := matchItems.GetAll()
+	if err != nil {
+		return err
+	}
+	for _, doc := range docItems {
+		batch.Delete(doc.Ref)
+	}
+
+	return nil
 }
 
 // UpdateFirebaseUID ユーザーFirebaseUIを更新する
