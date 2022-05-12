@@ -281,8 +281,8 @@ func TestDeleteUser(t *testing.T) {
 	}
 
 	userRepositoryMock := &moq_repository.UserRepositoryInterfaceMock{
-		DeleteFunc: func(_ __, _ ___, _ ____, uid string) {
-			return
+		DeleteFunc: func(_ __, _ ___, _ ____, uid string) error {
+			return nil
 		},
 	}
 	authRepositoryMock := &moq_repository.AuthRepositoryInterfaceMock{

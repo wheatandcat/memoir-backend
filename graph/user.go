@@ -128,8 +128,11 @@ func (g *Graph) DeleteUser(ctx context.Context) (*model.User, error) {
 	}
 
 	batch := g.FirestoreClient.Batch()
-	g.App.UserRepository.Delete(ctx, g.FirestoreClient, batch, uid)
-	g.App.AuthRepository.Delete(ctx, g.FirestoreClient, batch, uid)
+	if err := g.App.UserRepository.Delete(ctx, g.FirestoreClient, batch, uid); err != nil {
+		return nil, ce.CustomError(err)
+	}
+
+	g.App.AuthRepository.Delete(ctx, g.FirestoreClient, batch, g.FirebaseUID)
 	if err := g.App.InviteRepository.DeleteByUserID(ctx, g.FirestoreClient, batch, uid); err != nil {
 		return nil, ce.CustomError(err)
 	}
@@ -140,7 +143,7 @@ func (g *Graph) DeleteUser(ctx context.Context) (*model.User, error) {
 		return nil, ce.CustomError(err)
 	}
 	if g.FirebaseUID != "" {
-		if err := g.App.AuthUseCase.DeleteAuthUser(ctx, g.FirestoreClient, uid); err != nil {
+		if err := g.App.AuthUseCase.DeleteAuthUser(ctx, g.FirestoreClient, g.FirebaseUID); err != nil {
 			return nil, ce.CustomError(err)
 		}
 	}
