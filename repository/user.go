@@ -12,7 +12,6 @@ import (
 
 //go:generate moq -out=moq/user.go -pkg=moqs . UserRepositoryInterface
 
-// UserRepositoryInterface is repository interface
 type UserRepositoryInterface interface {
 	Create(ctx context.Context, f *firestore.Client, u *model.User) error
 	Update(ctx context.Context, f *firestore.Client, u *model.User) error

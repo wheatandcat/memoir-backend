@@ -285,6 +285,11 @@ func TestDeleteUser(t *testing.T) {
 			return
 		},
 	}
+	authRepositoryMock := &moq_repository.AuthRepositoryInterfaceMock{
+		DeleteFunc: func(_ __, _ ___, _ ____, uid string) {
+			return
+		},
+	}
 
 	inviteRepositoryMock := &moq_repository.InviteRepositoryInterfaceMock{
 		DeleteByUserIDFunc: func(_ __, _ ___, _ ____, uid string) error {
@@ -314,6 +319,7 @@ func TestDeleteUser(t *testing.T) {
 	}
 
 	g.App.RelationshipRepository = relationshipMock
+	g.App.AuthRepository = authRepositoryMock
 	g.App.UserRepository = userRepositoryMock
 	g.App.InviteRepository = inviteRepositoryMock
 	g.App.RelationshipRequestRepository = relationshipRequestMock

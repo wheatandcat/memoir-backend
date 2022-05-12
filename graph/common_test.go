@@ -32,6 +32,7 @@ func newGraph() graph.Graph {
 		RelationshipRepository:        &moq_repository.RelationshipInterfaceMock{},
 		PushTokenRepository:           &moq_repository.PushTokenRepositoryInterfaceMock{},
 		CommonRepository:              &moq_repository.CommonRepositoryInterfaceMock{},
+		AuthRepository:                &moq_repository.AuthRepositoryInterfaceMock{},
 
 		AuthUseCase: &moq_usecase_auth.UseCaseMock{},
 	}

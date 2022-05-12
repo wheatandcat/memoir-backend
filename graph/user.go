@@ -129,6 +129,7 @@ func (g *Graph) DeleteUser(ctx context.Context) (*model.User, error) {
 
 	batch := g.FirestoreClient.Batch()
 	g.App.UserRepository.Delete(ctx, g.FirestoreClient, batch, uid)
+	g.App.AuthRepository.Delete(ctx, g.FirestoreClient, batch, uid)
 	if err := g.App.InviteRepository.DeleteByUserID(ctx, g.FirestoreClient, batch, uid); err != nil {
 		return nil, ce.CustomError(err)
 	}
