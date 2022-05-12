@@ -5,7 +5,6 @@ import (
 	"github.com/wheatandcat/memoir-backend/usecase/auth"
 )
 
-// Application is app interface
 type Application struct {
 	UserRepository                repository.UserRepositoryInterface
 	ItemRepository                repository.ItemRepositoryInterface
@@ -14,6 +13,7 @@ type Application struct {
 	RelationshipRepository        repository.RelationshipInterface
 	PushTokenRepository           repository.PushTokenRepositoryInterface
 	CommonRepository              repository.CommonRepositoryInterface
+	AuthRepository                repository.AuthRepositoryInterface
 
 	AuthUseCase auth.UseCase
 }
@@ -28,6 +28,7 @@ func NewApplication() *Application {
 		RelationshipRepository:        repository.NewRelationshipRepository(),
 		PushTokenRepository:           repository.NewPushTokenRepository(),
 		CommonRepository:              repository.NewCommonRepository(),
+		AuthRepository:                repository.NewAuthRepository(),
 
 		AuthUseCase: auth.New(),
 	}
