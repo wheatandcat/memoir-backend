@@ -31,10 +31,16 @@ func main() {
 		}
 	}
 
+	log.Println("--------------")
+	log.Println("ENV2:", os.Getenv("APP_ENV"))
+	log.Println("--------------")
+	log.Println("jkhkj")
+	log.Println("--------------")
+
 	sco := sentry.ClientOptions{
 		Dsn: os.Getenv("SENTRY_DSN"),
 	}
-	if os.Getenv("APP_ENV") != "local" {
+	if os.Getenv("APP_ENV") == "production" {
 		sco.Release = os.Getenv("RELEASE_INSTANCE_VERSION")
 	}
 

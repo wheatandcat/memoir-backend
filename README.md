@@ -137,4 +137,3 @@ $ base64 -i gcpServiceAccount.production.json | pbcopy
 ```zsh
 $ base64 -i app.production.yaml | pbcopy
 ```
-
