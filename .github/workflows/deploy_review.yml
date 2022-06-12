@@ -31,14 +31,17 @@ jobs:
         workload_identity_provider: ${{ secrets.REVIEW_WORKLOAD_IDENTITY_PROVIDER }}
         service_account: github-actions@${{ secrets.REVIEW_GCP_PROJECT_ID }}.iam.gserviceaccount.com
 
-#    - name: Build Submit
-#      run: gcloud builds submit --pack image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }}
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+
+    - name: Build Submit
+      run: gcloud builds submit --pack image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }}
 
     - name: Deploy to Cloud Run
       run: |-
         gcloud run deploy $SERVICE_NAME \
           --project=$PROJECT_ID \
-          --image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:latest  \
+          --image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }} \
           --region=$REGION \
           --service-account=github-actions@$PROJECT_ID.iam.gserviceaccount.com \
           --allow-unauthenticated
