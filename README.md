@@ -102,14 +102,6 @@ $ firebase login:ci
 $ base64 -i serviceAccount.review.json | pbcopy
 ```
 
-```zsh
-$ base64 -i gcpServiceAccount.review.json | pbcopy
-```
-
-```zsh
-$ base64 -i app.yaml | pbcopy
-```
-
 ### E2E
 
 ```zsh
@@ -128,12 +120,4 @@ $ base64 -i e2e/.env | pbcopy
 
 ```zsh
 $ base64 -i serviceAccount.production.json | pbcopy
-```
-
-```zsh
-$ base64 -i gcpServiceAccount.production.json | pbcopy
-```
-
-```zsh
-$ base64 -i app.production.yaml | pbcopy
 ```
