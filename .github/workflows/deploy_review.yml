@@ -23,7 +23,7 @@ jobs:
       name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v0.4.0'
       with:
-        workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+        workload_identity_provider: ${{ secrets.REVIEW_WORKLOAD_IDENTITY_PROVIDER }}
         service_account: github-actions@${{ secrets.REVIEW_GCP_PROJECT_ID }}.iam.gserviceaccount.com
 
     - name: Create serviceAccount.json file
