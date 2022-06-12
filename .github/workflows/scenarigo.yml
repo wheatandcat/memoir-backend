@@ -1,5 +1,8 @@
 name: e2e test
-on: [push]
+on:
+  push:
+    branches:
+      - main
 env:
   FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
   SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_SERVICE_ACCOUNT_JSON }}
