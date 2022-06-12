@@ -19,8 +19,6 @@ jobs:
       run: echo $APP_YAML | base64 --decode -i > ./app.yaml
     - name: Create serviceAccount.json file
       run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
-    - name: Create gcpServiceAccount.json file
-      run: echo $GCP_SERVICE_ACCOUNT_JSON | base64 --decode -i > ./gcpServiceAccount.json
     - name: set env 
       run: echo "release_version=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
