@@ -15,7 +15,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      id-token: 'write'
+      contents: read
+      id-token: write
     steps:
     - uses: 'actions/checkout@v3'
 
@@ -33,6 +34,9 @@ jobs:
 
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v0
+
+    - name: Authorize Docker push
+      run: gcloud auth configure-docker
 
     - name: Build Submit
       run: gcloud builds submit --pack image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }}
