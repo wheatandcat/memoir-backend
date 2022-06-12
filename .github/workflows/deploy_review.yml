@@ -11,7 +11,6 @@ env:
   PROJECT_ID:  ${{ secrets.REVIEW_GCP_PROJECT_ID }}
   SERVICE_NAME:  ${{ secrets.REVIEW_SERVICE_NAME }}
   REGION:  ${{ secrets.REGION }}
-  WORKLOAD_IDENTITY_PROVIDER:   ${{ secrets.REVIEW_WORKLOAD_IDENTITY_PROVIDER }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
