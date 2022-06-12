@@ -1,8 +1,6 @@
 name: Test
 on:
-  push:
-    branches:
-      - main
+  pull_request:
 env:
   OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS_JSON }}
 jobs:
@@ -10,13 +8,13 @@ jobs:
     name: test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-go@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-go@v3
       with:
-        go-version: '^1.16'
+        go-version: '^1.18'
     - run: go version
     - name: cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-memoir-backend-${{ hashFiles('**/go.sum') }}

@@ -26,3 +26,5 @@ firestore-debug.log
 envenb.go
 service-review.yaml
 build-config-review.yaml
+firestore.indexes.json
+firestore.rules

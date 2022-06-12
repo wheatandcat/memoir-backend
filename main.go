@@ -31,12 +31,6 @@ func main() {
 		}
 	}
 
-	log.Println("--------------")
-	log.Println("ENV2:", os.Getenv("APP_ENV"))
-	log.Println("--------------")
-	log.Println("jkhkj")
-	log.Println("--------------")
-
 	sco := sentry.ClientOptions{
 		Dsn: os.Getenv("SENTRY_DSN"),
 	}

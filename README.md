@@ -70,7 +70,7 @@ $ FIRESTORE_EMULATOR_HOST=localhost:3600 air
 
 ```zsh
 $ cd e2e
-$ make create_loggin_yaml
+$ make create_login_yaml
 $ make local_scenarigo
 ```
 

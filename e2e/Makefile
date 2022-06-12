@@ -1,4 +1,4 @@
-.PHONY: create_loggin_yaml
+.PHONY: create_login_yaml
 create_login_yaml: 
 	go run script/main.go
 .PHONY: scenarigo
