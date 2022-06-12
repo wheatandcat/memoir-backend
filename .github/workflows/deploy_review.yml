@@ -19,6 +19,11 @@ jobs:
     steps:
     - uses: 'actions/checkout@v3'
 
+    - name: Create serviceAccount.json file
+      run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
+    - name: Create gcpServiceAccount.json file
+      run: echo $GCP_SERVICE_ACCOUNT_JSON | base64 --decode -i > ./gcpServiceAccount.json
+
     - id: 'auth'
       name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v0.4.0'
@@ -26,18 +31,14 @@ jobs:
         workload_identity_provider: ${{ secrets.REVIEW_WORKLOAD_IDENTITY_PROVIDER }}
         service_account: github-actions@${{ secrets.REVIEW_GCP_PROJECT_ID }}.iam.gserviceaccount.com
 
-    - name: Create serviceAccount.json file
-      run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
-    - name: Create gcpServiceAccount.json file
-      run: echo $GCP_SERVICE_ACCOUNT_JSON | base64 --decode -i > ./gcpServiceAccount.json
+#    - name: Build Submit
+#      run: gcloud builds submit --pack image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }}
 
-    - name: Build Submit
-      run: gcloud builds submit --pack image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }}
     - name: Deploy to Cloud Run
       run: |-
         gcloud run deploy $SERVICE_NAME \
           --project=$PROJECT_ID \
-          --image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }} \
+          --image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:latest  \
           --region=$REGION \
           --service-account=github-actions@$PROJECT_ID.iam.gserviceaccount.com \
           --allow-unauthenticated
