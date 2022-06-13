@@ -40,8 +40,7 @@ jobs:
 
     - name: Build Submit
       run: |-
-        gcloud builds submit --pack image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }} \
-        --region=$REGION
+        gcloud builds submit --pack image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }}
 
     - name: Deploy to Cloud Run
       run: |-
