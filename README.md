@@ -70,14 +70,16 @@ $ FIRESTORE_EMULATOR_HOST=localhost:3600 air
 
 ```zsh
 $ cd e2e
-$ make create_loggin_yaml
+$ make create_login_yaml
 $ make local_scenarigo
 ```
 
-## 手動デプロイ
+## 環境変数を更新
 
 ```zsh
-$ gcloud app deploy
+$ gcloud run services describe SERVICE --format export > service.yaml
+# 環境変数を追加して以下を実行
+$ gcloud run services replace service.yaml
 ```
 
 ## 本番デプロイ
@@ -106,10 +108,6 @@ $ base64 -i serviceAccount.review.json | pbcopy
 $ base64 -i gcpServiceAccount.review.json | pbcopy
 ```
 
-```zsh
-$ base64 -i app.yaml | pbcopy
-```
-
 ### E2E
 
 ```zsh
@@ -133,8 +131,3 @@ $ base64 -i serviceAccount.production.json | pbcopy
 ```zsh
 $ base64 -i gcpServiceAccount.production.json | pbcopy
 ```
-
-```zsh
-$ base64 -i app.production.yaml | pbcopy
-```
-

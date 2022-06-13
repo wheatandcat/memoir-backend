@@ -24,3 +24,8 @@ e2e/serviceAccount.json
 ui-debug.log
 firestore-debug.log
 envenb.go
+service-review.yaml
+build-config-review.yaml
+firestore.indexes.json
+firestore.rules
+.vscode

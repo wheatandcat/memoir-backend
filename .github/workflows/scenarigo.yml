@@ -1,5 +1,6 @@
 name: e2e test
-on: [push]
+on:
+  pull_request:
 env:
   FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
   SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_SERVICE_ACCOUNT_JSON }}
@@ -12,50 +13,49 @@ jobs:
     name: test
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-    - name: Create serviceAccount.json file
-      run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
-    - name: Create gcpServiceAccount.json file
-      run: echo $GCP_SERVICE_ACCOUNT_JSON | base64 --decode -i > ./gcpServiceAccount.json
-    - name: Create .env file
-      run: echo $APP_LOCAL_EMV | base64 --decode -i > ./.env
-    - name: Create envenb.go file
-      run: echo $ENVENB_GO | base64 --decode -i > ./envenb.go
-    - name: Create e2e/.env file
-      run: echo $AUTH_CONFIG | base64 --decode -i > ./e2e/.env
-    - uses: actions/setup-go@v2
-      with:
-        go-version: '^1.16'
-    - run: go version
-    - name: cache
-      uses: actions/cache@v2
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-memoir-backend-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-memoir-backend-
-    - name: Run server
-      run: make ci_setup_server
-    - name: create auth token file
-      run: make create_login_yaml
-      working-directory: ./e2e
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '16'
-    - name: setup gcloud
-      uses: google-github-actions/setup-gcloud@v0
-      with:
-        version: "latest"
-    - name: setup firestore emulator
-      run: |
-        gcloud components install beta --quiet
-        gcloud components install cloud-firestore-emulator --quiet
-    - name: setup e2e
-      run: |
-        gcloud beta emulators firestore start --host-port localhost:3600 &
-        go install github.com/zoncoen/scenarigo/cmd/scenarigo@v0.8.1
-      working-directory: ./e2e
-    - name: run e2e
-      run: make scenarigo
-      working-directory: ./e2e
+      - uses: actions/checkout@v3
+      - name: Create serviceAccount.json file
+        run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
+      - name: Create gcpServiceAccount.json file
+        run: echo $GCP_SERVICE_ACCOUNT_JSON | base64 --decode -i > ./gcpServiceAccount.json
+      - name: Create .env file
+        run: echo $APP_LOCAL_EMV | base64 --decode -i > ./.env
+      - name: Create envenb.go file
+        run: echo $ENVENB_GO | base64 --decode -i > ./envenb.go
+      - name: Create e2e/.env file
+        run: echo $AUTH_CONFIG | base64 --decode -i > ./e2e/.env
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '^1.18'
+      - run: go version
+      - name: cache
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-memoir-backend-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-memoir-backend-
+      - name: Run server
+        run: make ci_setup_server
+      - name: create auth token file
+        run: make create_login_yaml
+        working-directory: ./e2e
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: setup gcloud
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          version: "latest"
+      - name: setup firestore emulator
+        run: |
+          gcloud components install beta --quiet
+          gcloud components install cloud-firestore-emulator --quiet
+      - name: setup e2e
+        run: |
+          gcloud beta emulators firestore start --host-port localhost:3600 &
+          go install github.com/zoncoen/scenarigo/cmd/scenarigo@v0.11.2
+        working-directory: ./e2e
+      - name: run e2e
+        run: make scenarigo
+        working-directory: ./e2e

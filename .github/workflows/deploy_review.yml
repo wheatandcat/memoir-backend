@@ -4,41 +4,48 @@ on:
   push:
     branches:
       - main
-
 env:
-  APP_YAML: ${{ secrets.REVIEW_APP_YAML }}
   SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_SERVICE_ACCOUNT_JSON }}
   GCP_SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_GCP_SERVICE_ACCOUNT_JSON }}
+  PROJECT_ID:  ${{ secrets.REVIEW_GCP_PROJECT_ID }}
+  SERVICE_NAME:  ${{ secrets.REVIEW_SERVICE_NAME }}
+  REGION:  ${{ secrets.REGION }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      id-token: write
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-    - name: Create .env file
-      run: echo $APP_YAML | base64 --decode -i > ./app.yaml
+    - uses: 'actions/checkout@v3'
+
     - name: Create serviceAccount.json file
       run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
     - name: Create gcpServiceAccount.json file
       run: echo $GCP_SERVICE_ACCOUNT_JSON | base64 --decode -i > ./gcpServiceAccount.json
 
-    - name: Get current date
-      id: date
-      run: echo "::set-output name=date::$(date +'%Y%m%d%H%M%S')"
-    - name: set env
-      run: echo "release_version=release${{ steps.date.outputs.date }}" >> $GITHUB_ENV
-
     - id: 'auth'
-      uses: 'google-github-actions/auth@v0'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v0.4.0'
       with:
-        credentials_json: '${{ secrets.REVIEW_GCP_SERVICE_ACCOUNT_JSON }}'
-    - name: 'Set up Cloud SDK'
-      uses: 'google-github-actions/setup-gcloud@v0'
+        workload_identity_provider: ${{ secrets.REVIEW_WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: github-actions@${{ secrets.REVIEW_GCP_PROJECT_ID }}.iam.gserviceaccount.com
 
-    - uses: FranzDiebold/github-env-vars-action@v1.2.1
-    - name: Use gcloud CLI
-      run: |
-        echo -e "env_variables:\n  RELEASE_INSTANCE_VERSION: ${{ env.release_version }}" >> release.yaml
-        cat release.yaml
-        gcloud app deploy --quiet app.yaml --version=${{ env.release_version }}
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+
+    - name: Authorize Docker push
+      run: gcloud auth configure-docker
+
+    - name: Build Submit
+      run: |-
+        gcloud builds submit --pack image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }}
+
+    - name: Deploy to Cloud Run
+      run: |-
+        gcloud run deploy $SERVICE_NAME \
+          --project=$PROJECT_ID \
+          --image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }} \
+          --region=$REGION \
+          --service-account=github-actions@$PROJECT_ID.iam.gserviceaccount.com \
+          --allow-unauthenticated
