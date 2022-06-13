@@ -39,13 +39,13 @@ jobs:
       run: gcloud auth configure-docker
 
     - name: Build Submit
-      run: gcloud builds submit --pack image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }}
+      run: gcloud builds submit --pack image=asia-docker.pkg.dev/$PROJECT_ID/asia.gcr.io/$SERVICE_NAME:${{ github.sha }}
 
     - name: Deploy to Cloud Run
       run: |-
         gcloud run deploy $SERVICE_NAME \
           --project=$PROJECT_ID \
-          --image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }} \
+          --image=asia-docker.pkg.dev/$PROJECT_ID/asia.gcr.io/$SERVICE_NAME:${{ github.sha }} \
           --region=$REGION \
           --service-account=github-actions@$PROJECT_ID.iam.gserviceaccount.com \
           --allow-unauthenticated
