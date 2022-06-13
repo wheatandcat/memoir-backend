@@ -39,7 +39,9 @@ jobs:
       run: gcloud auth configure-docker
 
     - name: Build Submit
-      run: gcloud builds submit --pack image=asia-docker.pkg.dev/$PROJECT_ID/asia.gcr.io/$SERVICE_NAME:${{ github.sha }}
+      run: |-
+        gcloud builds submit --pack image=asia-docker.pkg.dev/$PROJECT_ID/asia.gcr.io/$SERVICE_NAME:${{ github.sha }} \
+        --region=$REGION
 
     - name: Deploy to Cloud Run
       run: |-
