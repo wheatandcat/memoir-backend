@@ -74,10 +74,12 @@ $ make create_login_yaml
 $ make local_scenarigo
 ```
 
-## 手動デプロイ
+## 環境変数を更新
 
 ```zsh
-$ gcloud app deploy
+$ gcloud run services describe SERVICE --format export > service.yaml
+# 環境変数を追加して以下を実行
+$ gcloud run services replace service.yaml
 ```
 
 ## 本番デプロイ
@@ -102,6 +104,10 @@ $ firebase login:ci
 $ base64 -i serviceAccount.review.json | pbcopy
 ```
 
+```zsh
+$ base64 -i gcpServiceAccount.review.json | pbcopy
+```
+
 ### E2E
 
 ```zsh
@@ -120,4 +126,8 @@ $ base64 -i e2e/.env | pbcopy
 
 ```zsh
 $ base64 -i serviceAccount.production.json | pbcopy
+```
+
+```zsh
+$ base64 -i gcpServiceAccount.production.json | pbcopy
 ```
