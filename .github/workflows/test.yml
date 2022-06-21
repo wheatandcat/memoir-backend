@@ -8,18 +8,18 @@ jobs:
     name: test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-go@v3
-      with:
-        go-version: '^1.18'
-    - run: go version
-    - name: cache
-      uses: actions/cache@v3
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-memoir-backend-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-memoir-backend-
-    - name: Run tests with coverage report output
-      run: go test ./... -coverprofile=coverage.out
-    - uses: k1LoW/octocov-action@v0
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: "^1.18"
+      - run: go version
+      - name: cache
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-memoir-backend-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-memoir-backend-
+      - name: Run tests with coverage report output
+        run: go test ./... -coverprofile=coverage.out
+      - uses: k1LoW/octocov-action@v0

@@ -3,13 +3,13 @@ name: Deploy Production
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 env:
   SERVICE_ACCOUNT_JSON: ${{ secrets.PRODUCTION_SERVICE_ACCOUNT_JSON }}
   GCP_SERVICE_ACCOUNT_JSON: ${{ secrets.PRODUCTION_GCP_SERVICE_ACCOUNT_JSON }}
-  PROJECT_ID:  ${{ secrets.PRODUCTION_GCP_PROJECT_ID }}
-  SERVICE_NAME:  ${{ secrets.PRODUCTION_SERVICE_NAME }}
-  REGION:  ${{ secrets.REGION }}
+  PROJECT_ID: ${{ secrets.PRODUCTION_GCP_PROJECT_ID }}
+  SERVICE_NAME: ${{ secrets.PRODUCTION_SERVICE_NAME }}
+  REGION: ${{ secrets.REGION }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -17,38 +17,38 @@ jobs:
       contents: read
       id-token: write
     steps:
-    - uses: 'actions/checkout@v3'
+      - uses: "actions/checkout@v3"
 
-    - name: Create serviceAccount.json file
-      run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
-    - name: Create gcpServiceAccount.json file
-      run: echo $GCP_SERVICE_ACCOUNT_JSON | base64 --decode -i > ./gcpServiceAccount.json
-    - name: set env 
-      run: echo "release_version=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+      - name: Create serviceAccount.json file
+        run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
+      - name: Create gcpServiceAccount.json file
+        run: echo $GCP_SERVICE_ACCOUNT_JSON | base64 --decode -i > ./gcpServiceAccount.json
+      - name: set env
+        run: echo "release_version=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-    - id: 'auth'
-      name: 'Authenticate to Google Cloud'
-      uses: 'google-github-actions/auth@v0.4.0'
-      with:
-        workload_identity_provider: ${{ secrets.PRODUCTION_WORKLOAD_IDENTITY_PROVIDER }}
-        service_account: github-actions@${{ secrets.PRODUCTION_GCP_PROJECT_ID }}.iam.gserviceaccount.com
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v0.4.0"
+        with:
+          workload_identity_provider: ${{ secrets.PRODUCTION_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: github-actions@${{ secrets.PRODUCTION_GCP_PROJECT_ID }}.iam.gserviceaccount.com
 
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v0
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
 
-    - name: Authorize Docker push
-      run: gcloud auth configure-docker
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker
 
-    - name: Build Submit
-      run: |-
-        gcloud builds submit --pack image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }}
+      - name: Build Submit
+        run: |-
+          gcloud builds submit --pack image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:latest
 
-    - name: Deploy to Cloud Run
-      run: |-
-        gcloud run deploy $SERVICE_NAME \
-          --project=$PROJECT_ID \
-          --image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:${{ github.sha }} \
-          --region=$REGION \
-          --service-account=github-actions@$PROJECT_ID.iam.gserviceaccount.com \
-          --update-env-vars RELEASE_INSTANCE_VERSION=${{ env.release_version }} \
-          --allow-unauthenticated
+      - name: Deploy to Cloud Run
+        run: |-
+          gcloud run deploy $SERVICE_NAME \
+            --project=$PROJECT_ID \
+            --image=asia.gcr.io/$PROJECT_ID/$SERVICE_NAME:latest \
+            --region=$REGION \
+            --service-account=github-actions@$PROJECT_ID.iam.gserviceaccount.com \
+            --update-env-vars RELEASE_INSTANCE_VERSION=${{ env.release_version }} \
+            --allow-unauthenticated
