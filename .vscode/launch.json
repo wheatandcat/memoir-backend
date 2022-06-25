@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Remote",
+      "type": "go",
+      "request": "attach",
+      "mode": "remote",
+      "remotePath": "",
+      "port": 2345,
+      "host": "localhost",
+      "cwd": "${workspaceRoot}",
+      "env": {},
+      "args": []
+    }
+  ]
+}

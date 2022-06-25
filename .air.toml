@@ -3,14 +3,14 @@ tmp_dir = "tmp"
 
 [build]
   bin = "./tmp/main"
-  cmd = "go build -o ./tmp/main ."
+  cmd = "go build -gcflags \"all=-N -l\" -o ./tmp/main ."
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "node_modules", ".expo-shared"]
   exclude_file = []
   exclude_regex = []
   exclude_unchanged = false
   follow_symlink = false
-  full_bin = ""
+  full_bin = "dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec --continue tmp/main"
   include_dir = []
   include_ext = ["go", "tpl", "tmpl", "html"]
   kill_delay = "0s"
