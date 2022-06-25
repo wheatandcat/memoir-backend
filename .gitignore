@@ -28,5 +28,6 @@ service-review.yaml
 build-config-review.yaml
 firestore.indexes.json
 firestore.rules
-.vscode
+.vscode/settings.json
+.vscode/*.log
 service.yaml

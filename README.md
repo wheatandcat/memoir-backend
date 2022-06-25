@@ -5,7 +5,9 @@
 ## ローカル実行
 
 ### 導入
+
 ```
+$ go install github.com/go-delve/delve/cmd/dlv@latest
 $ go get -u github.com/cosmtrek/air
 ```
 
@@ -21,7 +23,7 @@ $ air
 $ yarn graphql-markdown http://localhost:8080/query > schema.md
 ```
 
-## GraphQLスキーマ更新
+## GraphQL スキーマ更新
 
 ```zsh
 $ go run github.com/99designs/gqlgen generate
@@ -30,12 +32,15 @@ $ go run github.com/99designs/gqlgen generate
 ## ユニットテスト
 
 ### 実行
-moqを生成
+
+moq を生成
+
 ```zsh
 $ make moqgen
 ```
 
 テストを実行
+
 ```zsh
 $ go test -race ./...
 ```
@@ -43,17 +48,20 @@ $ go test -race ./...
 ### カバレッジ表示
 
 ### インストール
+
 ```zsh
 $ brew install k1LoW/tap/octocov
 ```
 
 ### 実行
+
 ```zsh
 $ go test ./... -coverprofile=coverage.out
 $ octocov
 ```
 
 ### 各ファイルカバレッジ確認
+
 ```zsh
 $ octocov ls-files
 ```
@@ -62,7 +70,7 @@ $ octocov ls-files
 $ octocov view graph/invite.go
 ```
 
-## E2Eテスト
+## E2E テスト
 
 ```zsh
 $ FIRESTORE_EMULATOR_HOST=localhost:3600 air
@@ -91,13 +99,14 @@ $ git tag -a v1.0.0 -m 'リリース内容'
 $ git push origin v1.0.0
 ```
 
-## CI環境
+## CI 環境
 
 ### Firebase トークン
 
 ```zsh
 $ firebase login:ci
 ```
+
 ### レビュー環境
 
 ```zsh
