@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -20,7 +19,6 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/repository"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
-	"github.com/wheatandcat/memoir-backend/usecase/logging"
 )
 
 const defaultPort = "8080"
@@ -80,9 +78,9 @@ func main() {
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
 	srv.AroundOperations(func(ctx context.Context, next graphql.OperationHandler) graphql.ResponseHandler {
-		oc := graphql.GetOperationContext(ctx)
+		//oc := graphql.GetOperationContext(ctx)
 
-		log.Println(logging.InfoLogEntry(fmt.Sprintf("RawQuery: %s\n, Variables: %s\n", oc.RawQuery, oc.Variables)))
+		//log.Println(logging.InfoLogEntry(fmt.Sprintf("RawQuery: %s\n, Variables: %s\n", oc.RawQuery, oc.Variables)))
 
 		return next(ctx)
 	})
@@ -102,7 +100,7 @@ func main() {
 			"code": errorCode,
 		}
 
-		log.Println(logging.ErrorLogEntry(fmt.Sprintf("GraphQL err=%v", err)))
+		//log.Println(logging.ErrorLogEntry(fmt.Sprintf("GraphQL err=%v", err)))
 
 		sentry.WithScope(func(scope *sentry.Scope) {
 			scope.SetTag("kind", "GraphQL")
