@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -19,11 +20,14 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/repository"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
+	"github.com/wheatandcat/memoir-backend/usecase/logging"
 )
 
 const defaultPort = "8080"
 
 func main() {
+	log.SetFlags(0)
+
 	if os.Getenv("APP_ENV") == "local" {
 		err := godotenv.Load(".env")
 		if err != nil {
@@ -74,6 +78,15 @@ func main() {
 	}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
+
+	srv.AroundOperations(func(ctx context.Context, next graphql.OperationHandler) graphql.ResponseHandler {
+		oc := graphql.GetOperationContext(ctx)
+
+		log.Println(logging.InfoLogEntry(fmt.Sprintf("RawQuery: %s\n, Variables: %s\n", oc.RawQuery, oc.Variables)))
+
+		return next(ctx)
+	})
+
 	srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
 		err := graphql.DefaultErrorPresenter(ctx, e)
 		goc := graphql.GetOperationContext(ctx)
@@ -88,6 +101,8 @@ func main() {
 		err.Extensions = map[string]interface{}{
 			"code": errorCode,
 		}
+
+		log.Println(logging.ErrorLogEntry(fmt.Sprintf("GraphQL err=%v", err)))
 
 		sentry.WithScope(func(scope *sentry.Scope) {
 			scope.SetTag("kind", "GraphQL")

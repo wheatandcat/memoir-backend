@@ -2,11 +2,14 @@ package auth
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
 	firebase "firebase.google.com/go"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
+	"github.com/wheatandcat/memoir-backend/usecase/logging"
 )
 
 var UserCtxKey = &contextKey{"user"}
@@ -34,6 +37,8 @@ func NotLoginMiddleware() func(http.Handler) http.Handler {
 			u := &User{
 				ID: uid,
 			}
+
+			log.Println(logging.InfoLogEntry(fmt.Sprintf("[UserID]: %s", u.ID)))
 
 			ctx := context.WithValue(r.Context(), UserCtxKey, u)
 			r = r.WithContext(ctx)
@@ -70,6 +75,8 @@ func FirebaseLoginMiddleware(app *firebase.App) func(http.Handler) http.Handler 
 			u := &User{
 				FirebaseUID: token.UID,
 			}
+
+			log.Println(logging.InfoLogEntry(fmt.Sprintf("[UserID]: %s", token.UID)))
 
 			ctx := context.WithValue(r.Context(), UserCtxKey, u)
 			r = r.WithContext(ctx)
