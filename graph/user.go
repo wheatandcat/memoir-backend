@@ -6,6 +6,8 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
+	"github.com/wheatandcat/memoir-backend/usecase/logger"
+	"go.uber.org/zap"
 )
 
 // CreateUser ユーザー作成
@@ -73,6 +75,8 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewAuthUser) (*
 
 // GetUser ユーザー取得
 func (g *Graph) GetUser(ctx context.Context) (*model.User, error) {
+	logger.New(ctx).Info("Get User", zap.String("test", g.UserID))
+
 	u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, g.UserID)
 	if err != nil {
 		return nil, ce.CustomError(err)

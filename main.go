@@ -89,7 +89,11 @@ func main() {
 				bytes = []byte("{}")
 			}
 
-			logger.New(ctx).Info("graphql", zap.String("RawQuery", oc.RawQuery), zap.String("Variables", string(bytes)))
+			logger.New(ctx).Info("graphql info",
+				zap.String("RawQuery", oc.RawQuery),
+				zap.String("Variables", string(bytes)),
+				zap.String("OperationName", oc.Operation.Name),
+			)
 		}
 
 		return next(ctx)
@@ -110,7 +114,7 @@ func main() {
 			"code": errorCode,
 		}
 
-		logger.New(ctx).Error("graphql", zap.Error(e))
+		logger.New(ctx).Error("graphql error", zap.Error(e))
 
 		sentry.WithScope(func(scope *sentry.Scope) {
 			scope.SetTag("kind", "GraphQL")
