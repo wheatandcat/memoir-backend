@@ -26,7 +26,6 @@ import (
 const defaultPort = "8080"
 
 func main() {
-
 	if os.Getenv("APP_ENV") == "local" {
 		err := godotenv.Load(".env")
 		if err != nil {
