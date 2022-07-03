@@ -27,7 +27,7 @@ import (
 const defaultPort = "8080"
 
 func main() {
-	logger := zap.NewExample()
+	logger := tlogger.NewLogger()
 	defer func() {
 		err := logger.Sync()
 		if err != nil {

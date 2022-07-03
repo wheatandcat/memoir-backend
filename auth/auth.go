@@ -36,7 +36,7 @@ func NotLoginMiddleware() func(http.Handler) http.Handler {
 				ID: uid,
 			}
 
-			zap.L().Info("UseInfo", zap.String("UserID", u.ID))
+			zap.L().Info("useInfo", zap.String("ID", u.ID))
 
 			ctx := context.WithValue(r.Context(), UserCtxKey, u)
 			r = r.WithContext(ctx)
@@ -74,7 +74,7 @@ func FirebaseLoginMiddleware(app *firebase.App) func(http.Handler) http.Handler 
 				FirebaseUID: token.UID,
 			}
 
-			zap.L().Info("UseInfo", zap.String("FirebaseUID", u.FirebaseUID))
+			zap.L().Info("useInfo", zap.String("FirebaseUID", u.FirebaseUID))
 
 			ctx := context.WithValue(r.Context(), UserCtxKey, u)
 			r = r.WithContext(ctx)
