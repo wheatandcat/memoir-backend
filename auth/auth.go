@@ -2,14 +2,12 @@ package auth
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
 	firebase "firebase.google.com/go"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
-	"github.com/wheatandcat/memoir-backend/usecase/logging"
+	"go.uber.org/zap"
 )
 
 var UserCtxKey = &contextKey{"user"}
@@ -38,7 +36,7 @@ func NotLoginMiddleware() func(http.Handler) http.Handler {
 				ID: uid,
 			}
 
-			log.Println(logging.InfoLogEntry(fmt.Sprintf("[UserID]: %s", u.ID)))
+			zap.L().Info("UseInfo", zap.String("UserID", u.ID))
 
 			ctx := context.WithValue(r.Context(), UserCtxKey, u)
 			r = r.WithContext(ctx)
@@ -76,7 +74,7 @@ func FirebaseLoginMiddleware(app *firebase.App) func(http.Handler) http.Handler 
 				FirebaseUID: token.UID,
 			}
 
-			log.Println(logging.InfoLogEntry(fmt.Sprintf("[UserID]: %s", token.UID)))
+			zap.L().Info("UseInfo", zap.String("FirebaseUID", u.FirebaseUID))
 
 			ctx := context.WithValue(r.Context(), UserCtxKey, u)
 			r = r.WithContext(ctx)

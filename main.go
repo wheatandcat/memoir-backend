@@ -19,11 +19,23 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/repository"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
+	"go.uber.org/zap"
 )
 
 const defaultPort = "8080"
 
 func main() {
+	logger := zap.NewExample()
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	undo := zap.ReplaceGlobals(logger)
+	defer undo()
+
 	log.SetFlags(0)
 
 	if os.Getenv("APP_ENV") == "local" {
@@ -78,9 +90,11 @@ func main() {
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
 	srv.AroundOperations(func(ctx context.Context, next graphql.OperationHandler) graphql.ResponseHandler {
-		//oc := graphql.GetOperationContext(ctx)
+		oc := graphql.GetOperationContext(ctx)
 
-		//log.Println(logging.InfoLogEntry(fmt.Sprintf("RawQuery: %s\n, Variables: %s\n", oc.RawQuery, oc.Variables)))
+		if oc.Operation.Name != "IntrospectionQuery" {
+			zap.L().Info("graphql", zap.String("RawQuery", oc.RawQuery), zap.Any("Variables", oc.Variables))
+		}
 
 		return next(ctx)
 	})
@@ -100,7 +114,7 @@ func main() {
 			"code": errorCode,
 		}
 
-		//log.Println(logging.ErrorLogEntry(fmt.Sprintf("GraphQL err=%v", err)))
+		zap.L().Error("graphql", zap.Error(e))
 
 		sentry.WithScope(func(scope *sentry.Scope) {
 			scope.SetTag("kind", "GraphQL")
