@@ -15,6 +15,11 @@ func Middleware(ctx context.Context, logger *zap.Logger) func(http.Handler) http
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			sc := trace.SpanContextFromContext(r.Context())
+			traceID := sc.TraceID().String()
+			spanID := sc.SpanID().String()
+
+			zap.L().Info("request", zap.String("trace_id", traceID), zap.String("span_id", spanID))
+
 			if sc.IsValid() {
 				fields := zapdriver.TraceContext(sc.TraceID().String(), sc.SpanID().String(), sc.IsSampled(), os.Getenv("GCP_PROJECT_ID"))
 				logger = logger.With(fields...)
