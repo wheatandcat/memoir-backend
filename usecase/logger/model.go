@@ -23,7 +23,7 @@ func EncodeLevel(l zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(logLevelSeverity[l])
 }
 
-func newEncoderConfig() zapcore.EncoderConfig {
+func newProductionEncoderConfig() zapcore.EncoderConfig {
 	cfg := zap.NewProductionEncoderConfig()
 
 	cfg.TimeKey = "time"
@@ -35,9 +35,31 @@ func newEncoderConfig() zapcore.EncoderConfig {
 	return cfg
 }
 
-func New(ctx context.Context) *zap.Logger {
+func newDevelopmentConfig() zap.Config {
+	cfg := zap.NewDevelopmentConfig()
+	cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	cfg.Level.SetLevel(zap.InfoLevel)
+
+	return cfg
+}
+
+func newProductConfig() zap.Config {
 	cfg := zap.NewProductionConfig()
-	cfg.EncoderConfig = newEncoderConfig()
+	cfg.Level.SetLevel(zap.ErrorLevel)
+	cfg.EncoderConfig = newProductionEncoderConfig()
+
+	return cfg
+}
+
+func New(ctx context.Context) *zap.Logger {
+	if os.Getenv("APP_ENV") == "local" {
+		cfg := newDevelopmentConfig()
+		logger, _ := cfg.Build()
+
+		return logger
+	}
+
+	cfg := newProductConfig()
 	logger, _ := cfg.Build()
 
 	trace := ForContext(ctx)

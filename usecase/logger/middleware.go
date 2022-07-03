@@ -2,7 +2,6 @@ package logger
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"regexp"
 )
@@ -25,8 +24,6 @@ func Middleware() func(http.Handler) http.Handler {
 			header := r.Header.Get("X-Cloud-Trace-Context")
 			if len(header) > 0 {
 				traceID, spanID, sampled := deconstructXCloudTraceContext(header)
-
-				log.Printf("trace: %s, spanID: %s", traceID, spanID)
 
 				t := &Trace{
 					TraceID: traceID,

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -84,14 +83,8 @@ func main() {
 		oc := graphql.GetOperationContext(ctx)
 
 		if oc.Operation.Name != "IntrospectionQuery" {
-			bytes, err := json.Marshal(oc.Variables)
-			if err != nil {
-				bytes = []byte("{}")
-			}
-
 			logger.New(ctx).Info("graphql info",
 				zap.String("RawQuery", oc.RawQuery),
-				zap.String("Variables", string(bytes)),
 				zap.String("OperationName", oc.Operation.Name),
 			)
 		}
