@@ -11,6 +11,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/blendle/zapdriver"
 	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
@@ -21,6 +22,7 @@ import (
 	"github.com/wheatandcat/memoir-backend/repository"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	tlogger "github.com/wheatandcat/memoir-backend/usecase/logger"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 )
 
@@ -70,9 +72,15 @@ func main() {
 		panic(err)
 	}
 
-	router.Use(tlogger.Middleware(ctx, logger))
+	sc := trace.SpanContextFromContext(ctx)
+	fields := zapdriver.TraceContext(sc.TraceID().String(), sc.SpanID().String(), sc.IsSampled(), os.Getenv("GCP_PROJECT_ID"))
+	logger = logger.With(fields...)
+
 	router.Use(auth.NotLoginMiddleware())
 	router.Use(auth.FirebaseLoginMiddleware(f))
+
+	undo := zap.ReplaceGlobals(logger)
+	defer undo()
 
 	fc, err := f.Firestore(ctx)
 	if err != nil {

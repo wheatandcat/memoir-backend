@@ -25,7 +25,6 @@ func Middleware(ctx context.Context, logger *zap.Logger) func(http.Handler) http
 				logger = logger.With(fields...)
 			}
 
-			zap.ReplaceGlobals(logger)
 			next.ServeHTTP(w, r)
 		})
 	}
