@@ -1,6 +1,10 @@
 package logger
 
 import (
+	"context"
+	"os"
+
+	"github.com/blendle/zapdriver"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -31,10 +35,16 @@ func newEncoderConfig() zapcore.EncoderConfig {
 	return cfg
 }
 
-func NewLogger() *zap.Logger {
+func New(ctx context.Context) *zap.Logger {
 	cfg := zap.NewProductionConfig()
 	cfg.EncoderConfig = newEncoderConfig()
 	logger, _ := cfg.Build()
+
+	trace := ForContext(ctx)
+	if trace != nil {
+		fields := zapdriver.TraceContext(trace.TraceID, trace.SpanID, trace.Sampled, os.Getenv("GCP_PROJECT_ID"))
+		logger = logger.With(fields...)
+	}
 
 	return logger
 }

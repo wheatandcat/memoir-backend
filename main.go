@@ -20,20 +20,13 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/repository"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
-	tlogger "github.com/wheatandcat/memoir-backend/usecase/logger"
+	"github.com/wheatandcat/memoir-backend/usecase/logger"
 	"go.uber.org/zap"
 )
 
 const defaultPort = "8080"
 
 func main() {
-	logger := tlogger.NewLogger()
-	defer func() {
-		err := logger.Sync()
-		if err != nil {
-			panic(err)
-		}
-	}()
 
 	if os.Getenv("APP_ENV") == "local" {
 		err := godotenv.Load(".env")
@@ -70,12 +63,9 @@ func main() {
 		panic(err)
 	}
 
-	router.Use(tlogger.Middleware(ctx, logger))
+	router.Use(logger.Middleware())
 	router.Use(auth.NotLoginMiddleware())
 	router.Use(auth.FirebaseLoginMiddleware(f))
-
-	undo := zap.ReplaceGlobals(logger)
-	defer undo()
 
 	fc, err := f.Firestore(ctx)
 	if err != nil {
@@ -99,7 +89,7 @@ func main() {
 				bytes = []byte("{}")
 			}
 
-			zap.L().Info("graphql", zap.String("RawQuery", oc.RawQuery), zap.String("Variables", string(bytes)))
+			logger.New(ctx).Info("graphql", zap.String("RawQuery", oc.RawQuery), zap.String("Variables", string(bytes)))
 		}
 
 		return next(ctx)
@@ -120,7 +110,7 @@ func main() {
 			"code": errorCode,
 		}
 
-		zap.L().Error("graphql", zap.Error(e))
+		logger.New(ctx).Error("graphql", zap.Error(e))
 
 		sentry.WithScope(func(scope *sentry.Scope) {
 			scope.SetTag("kind", "GraphQL")

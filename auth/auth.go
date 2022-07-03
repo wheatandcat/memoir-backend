@@ -7,6 +7,7 @@ import (
 
 	firebase "firebase.google.com/go"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
+	"github.com/wheatandcat/memoir-backend/usecase/logger"
 	"go.uber.org/zap"
 )
 
@@ -16,7 +17,6 @@ type contextKey struct {
 	name string
 }
 
-// User ユーザータイプ
 type User struct {
 	ID          string
 	FirebaseUID string
@@ -36,7 +36,7 @@ func NotLoginMiddleware() func(http.Handler) http.Handler {
 				ID: uid,
 			}
 
-			zap.L().Info("useInfo", zap.String("ID", u.ID))
+			logger.New(r.Context()).Info("useInfo", zap.String("ID", u.ID))
 
 			ctx := context.WithValue(r.Context(), UserCtxKey, u)
 			r = r.WithContext(ctx)
@@ -74,7 +74,7 @@ func FirebaseLoginMiddleware(app *firebase.App) func(http.Handler) http.Handler 
 				FirebaseUID: token.UID,
 			}
 
-			zap.L().Info("useInfo", zap.String("FirebaseUID", u.FirebaseUID))
+			logger.New(r.Context()).Info("useInfo", zap.String("FirebaseUID", u.FirebaseUID))
 
 			ctx := context.WithValue(r.Context(), UserCtxKey, u)
 			r = r.WithContext(ctx)
@@ -83,7 +83,6 @@ func FirebaseLoginMiddleware(app *firebase.App) func(http.Handler) http.Handler 
 	}
 }
 
-// ForContext finds the user from the context. REQUIRES Middleware to have run.
 func ForContext(ctx context.Context) *User {
 	raw, _ := ctx.Value(UserCtxKey).(*User)
 	return raw

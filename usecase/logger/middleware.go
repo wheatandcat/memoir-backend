@@ -2,28 +2,42 @@ package logger
 
 import (
 	"context"
+	"log"
 	"net/http"
-	"os"
 	"regexp"
-
-	"github.com/blendle/zapdriver"
-	"go.opentelemetry.io/otel/trace"
-	"go.uber.org/zap"
 )
 
-func Middleware(ctx context.Context, logger *zap.Logger) func(http.Handler) http.Handler {
+var TraceCtxKey = &contextKey{"trace"}
+
+type contextKey struct {
+	name string
+}
+
+type Trace struct {
+	TraceID string
+	SpanID  string
+	Sampled bool
+}
+
+func Middleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			sc := trace.SpanContextFromContext(r.Context())
-			traceID := sc.TraceID().String()
-			spanID := sc.SpanID().String()
+			header := r.Header.Get("X-Cloud-Trace-Context")
+			if len(header) > 0 {
+				traceID, spanID, sampled := deconstructXCloudTraceContext(header)
 
-			zap.L().Info("request", zap.String("trace_id", traceID), zap.String("span_id", spanID))
+				log.Printf("trace: %s, spanID: %s", traceID, spanID)
 
-			if sc.IsValid() {
-				fields := zapdriver.TraceContext(sc.TraceID().String(), sc.SpanID().String(), sc.IsSampled(), os.Getenv("GCP_PROJECT_ID"))
-				logger = logger.With(fields...)
+				t := &Trace{
+					TraceID: traceID,
+					SpanID:  spanID,
+					Sampled: sampled,
+				}
+
+				ctx := context.WithValue(r.Context(), TraceCtxKey, t)
+				r = r.WithContext(ctx)
 			}
+
 			next.ServeHTTP(w, r)
 		})
 	}
@@ -48,4 +62,9 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 	}
 
 	return
+}
+
+func ForContext(ctx context.Context) *Trace {
+	raw, _ := ctx.Value(TraceCtxKey).(*Trace)
+	return raw
 }
