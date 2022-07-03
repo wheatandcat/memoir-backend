@@ -40,7 +40,7 @@ func GetCustomStackTrace(err error) errors.StackTrace {
 		}
 
 		fmt.Printf("■ stack trace: %+v\n", fs)
-		fmt.Print("-----------------------")
+		fmt.Print("-----------------------\n")
 	}
 
 	return fs
