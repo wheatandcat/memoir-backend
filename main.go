@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -73,9 +74,6 @@ func main() {
 	router.Use(auth.NotLoginMiddleware())
 	router.Use(auth.FirebaseLoginMiddleware(f))
 
-	undo := zap.ReplaceGlobals(logger)
-	defer undo()
-
 	fc, err := f.Firestore(ctx)
 	if err != nil {
 		panic(err)
@@ -93,7 +91,12 @@ func main() {
 		oc := graphql.GetOperationContext(ctx)
 
 		if oc.Operation.Name != "IntrospectionQuery" {
-			zap.L().Info("graphql", zap.String("RawQuery", oc.RawQuery), zap.Any("Variables", oc.Variables))
+			bytes, err := json.Marshal(oc.Variables)
+			if err != nil {
+				bytes = []byte("{}")
+			}
+
+			zap.L().Info("graphql", zap.String("RawQuery", oc.RawQuery), zap.String("Variables", string(bytes)))
 		}
 
 		return next(ctx)
