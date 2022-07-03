@@ -19,6 +19,7 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/repository"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
+	tlogger "github.com/wheatandcat/memoir-backend/usecase/logger"
 	"go.uber.org/zap"
 )
 
@@ -32,11 +33,6 @@ func main() {
 			panic(err)
 		}
 	}()
-
-	undo := zap.ReplaceGlobals(logger)
-	defer undo()
-
-	log.SetFlags(0)
 
 	if os.Getenv("APP_ENV") == "local" {
 		err := godotenv.Load(".env")
@@ -73,8 +69,12 @@ func main() {
 		panic(err)
 	}
 
+	router.Use(tlogger.Middleware(ctx, logger))
 	router.Use(auth.NotLoginMiddleware())
 	router.Use(auth.FirebaseLoginMiddleware(f))
+
+	undo := zap.ReplaceGlobals(logger)
+	defer undo()
 
 	fc, err := f.Firestore(ctx)
 	if err != nil {
