@@ -2,29 +2,23 @@ package logger
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"regexp"
 
 	"github.com/blendle/zapdriver"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 )
 
 func Middleware(ctx context.Context, logger *zap.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			header := r.Header.Get("X-Cloud-Trace-Context")
-
-			if len(header) > 0 {
-				traceID, spanID, sampled := deconstructXCloudTraceContext(header)
-
-				log.Printf("trace: %s, spanID: %s", traceID, spanID)
-
-				fields := zapdriver.TraceContext(traceID, spanID, sampled, os.Getenv("GCP_PROJECT_ID"))
+			sc := trace.SpanContextFromContext(r.Context())
+			if sc.IsValid() {
+				fields := zapdriver.TraceContext(sc.TraceID().String(), sc.SpanID().String(), sc.IsSampled(), os.Getenv("GCP_PROJECT_ID"))
 				logger = logger.With(fields...)
 			}
-
 			next.ServeHTTP(w, r)
 		})
 	}
