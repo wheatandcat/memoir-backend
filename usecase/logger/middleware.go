@@ -2,26 +2,27 @@ package logger
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"regexp"
-	"strings"
 
+	"github.com/blendle/zapdriver"
 	"go.uber.org/zap"
 )
 
 func Middleware(ctx context.Context, logger *zap.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			traceHeader := r.Header.Get("X-Cloud-Trace-Context")
-			traceParts := strings.Split(traceHeader, "/")
-			if len(traceParts) > 0 && traceParts[0] != "" {
-				trace, spanID := deconstructXCloudTraceContext(traceParts[0])
-				logger = logger.With(
-					zap.String("logging.googleapis.com/trace", fmt.Sprintf("projects/%s/traces/%s", os.Getenv("GCP_PROJECT_ID"), trace)),
-					zap.String("logging.googleapis.com/spanId", spanID),
-				)
+			header := r.Header.Get("X-Cloud-Trace-Context")
+
+			if len(header) > 0 {
+				traceID, spanID, sampled := deconstructXCloudTraceContext(header)
+
+				log.Printf("trace: %s, spanID: %s", traceID, spanID)
+
+				fields := zapdriver.TraceContext(traceID, spanID, sampled, os.Getenv("GCP_PROJECT_ID"))
+				logger = logger.With(fields...)
 			}
 
 			zap.ReplaceGlobals(logger)
@@ -31,20 +32,19 @@ func Middleware(ctx context.Context, logger *zap.Logger) func(http.Handler) http
 
 }
 
-var reCloudTraceContext = regexp.MustCompile(`([a-f\d]+)/([a-f\d]+)`)
+var reCloudTraceContext = regexp.MustCompile(
+	// Matches on "TRACE_ID"
+	`([a-f\d]+)?` +
+		// Matches on "/SPAN_ID"
+		`(?:/([a-f\d]+))?` +
+		// Matches on ";0=TRACE_TRUE"
+		`(?:;o=(\d))?`)
 
-func deconstructXCloudTraceContext(s string) (traceID, spanID string) {
-	matches := reCloudTraceContext.FindAllStringSubmatch(s, -1)
-	if len(matches) != 1 {
-		return
-	}
+func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampled bool) {
+	matches := reCloudTraceContext.FindStringSubmatch(s)
 
-	sub := matches[0]
-	if len(sub) != 3 {
-		return
-	}
+	traceID, spanID, traceSampled = matches[1], matches[2], matches[3] == "1"
 
-	traceID, spanID = sub[1], sub[2]
 	if spanID == "0" {
 		spanID = ""
 	}

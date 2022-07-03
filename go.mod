@@ -7,6 +7,7 @@ require (
 	cloud.google.com/go/firestore v1.5.0
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/99designs/gqlgen v0.17.10
+	github.com/blendle/zapdriver v1.3.1
 	github.com/getsentry/sentry-go v0.13.0
 	github.com/go-chi/chi v3.3.2+incompatible
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
