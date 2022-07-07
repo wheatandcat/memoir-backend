@@ -20,12 +20,19 @@ import (
 	"github.com/wheatandcat/memoir-backend/repository"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"github.com/wheatandcat/memoir-backend/usecase/logger"
+	"github.com/wheatandcat/memoir-backend/usecase/trace"
 	"go.uber.org/zap"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
 const defaultPort = "8080"
 
 func main() {
+	tracer.Start(
+		tracer.WithService("memoir"),
+		tracer.WithEnv(os.Getenv("APP_ENV")),
+	)
+	defer tracer.Stop()
 
 	if os.Getenv("APP_ENV") == "local" {
 		err := godotenv.Load(".env")
@@ -78,6 +85,8 @@ func main() {
 	}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
+
+	srv.Use(trace.NewGraphQLTracer())
 
 	srv.AroundOperations(func(ctx context.Context, next graphql.OperationHandler) graphql.ResponseHandler {
 		oc := graphql.GetOperationContext(ctx)
