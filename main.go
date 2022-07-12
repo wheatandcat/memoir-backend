@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"contrib.go.opencensus.io/exporter/stackdriver"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -18,21 +19,29 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph"
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/repository"
+	"github.com/wheatandcat/memoir-backend/usecase/app_trace"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"github.com/wheatandcat/memoir-backend/usecase/logger"
-	"github.com/wheatandcat/memoir-backend/usecase/trace"
+	"go.opencensus.io/trace"
 	"go.uber.org/zap"
-	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
 const defaultPort = "8080"
 
 func main() {
-	tracer.Start(
-		tracer.WithService("memoir"),
-		tracer.WithEnv(os.Getenv("APP_ENV")),
-	)
-	defer tracer.Stop()
+	exporter, err := stackdriver.NewExporter(stackdriver.Options{
+		ProjectID: os.Getenv("GCP_PROJECT_ID"),
+	})
+	if err != nil {
+		if os.Getenv("APP_ENV") != "local" {
+			log.Fatalf("stackdriver.NewExporter err: %v", err)
+		}
+	}
+	trace.RegisterExporter(exporter)
+
+	if os.Getenv("APP_ENV") != "local" {
+		trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
+	}
 
 	if os.Getenv("APP_ENV") == "local" {
 		err := godotenv.Load(".env")
@@ -86,7 +95,7 @@ func main() {
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
-	srv.Use(trace.NewGraphQLTracer())
+	srv.Use(app_trace.NewGraphQLTracer())
 
 	srv.AroundOperations(func(ctx context.Context, next graphql.OperationHandler) graphql.ResponseHandler {
 		oc := graphql.GetOperationContext(ctx)
