@@ -39,9 +39,9 @@ func main() {
 	}
 	trace.RegisterExporter(exporter)
 
-	if os.Getenv("APP_ENV") != "local" {
-		trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
-	}
+	//trace.ApplyConfig(trace.Config{
+	//	DefaultSampler: trace.AlwaysSample(),
+	//})
 
 	if os.Getenv("APP_ENV") == "local" {
 		err := godotenv.Load(".env")
