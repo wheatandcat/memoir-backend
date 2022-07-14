@@ -96,7 +96,9 @@ func main() {
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
-	srv.Use(app_trace.NewGraphQLTracer())
+	if os.Getenv("APP_ENV") != "local" {
+		srv.Use(app_trace.NewGraphQLTracer())
+	}
 
 	srv.AroundOperations(func(ctx context.Context, next graphql.OperationHandler) graphql.ResponseHandler {
 		oc := graphql.GetOperationContext(ctx)
