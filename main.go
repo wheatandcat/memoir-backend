@@ -29,17 +29,16 @@ import (
 const defaultPort = "8080"
 
 func main() {
-	exporter, err := stackdriver.NewExporter(stackdriver.Options{
-		ProjectID: os.Getenv("GCP_PROJECT_ID"),
-	})
-	if err != nil {
-		if os.Getenv("APP_ENV") != "local" {
-			log.Fatalf("stackdriver.NewExporter err: %v", err)
-		}
-	}
-	trace.RegisterExporter(exporter)
 
 	if os.Getenv("APP_ENV") != "local" {
+		exporter, err := stackdriver.NewExporter(stackdriver.Options{
+			ProjectID: os.Getenv("GCP_PROJECT_ID"),
+		})
+		if err != nil {
+			log.Fatalf("stackdriver.NewExporter err: %v", err)
+
+		}
+		trace.RegisterExporter(exporter)
 		trace.ApplyConfig(trace.Config{
 			DefaultSampler: trace.AlwaysSample(),
 		})
