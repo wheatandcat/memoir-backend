@@ -5,7 +5,7 @@ env:
   FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
   SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_SERVICE_ACCOUNT_JSON }}
   GCP_SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_GCP_SERVICE_ACCOUNT_JSON }}
-  APP_LOCAL_EMV: ${{ secrets.APP_LOCAL_EMV }}
+  APP_LOCAL_ENV: ${{ secrets.APP_LOCAL_ENV }}
   ENVENB_GO: ${{ secrets.ENVENB_GO }}
   AUTH_CONFIG: ${{ secrets.AUTH_CONFIG }}
 jobs:
@@ -19,7 +19,7 @@ jobs:
       - name: Create gcpServiceAccount.json file
         run: echo $GCP_SERVICE_ACCOUNT_JSON | base64 --decode -i > ./gcpServiceAccount.json
       - name: Create .env file
-        run: echo $APP_LOCAL_EMV | base64 --decode -i > ./.env
+        run: echo $APP_LOCAL_ENV | base64 --decode -i > ./.env
       - name: Create envenb.go file
         run: echo $ENVENB_GO | base64 --decode -i > ./envenb.go
       - name: Create e2e/.env file
