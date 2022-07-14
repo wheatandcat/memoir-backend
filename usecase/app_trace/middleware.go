@@ -3,6 +3,7 @@ package app_trace
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/99designs/gqlgen/graphql"
 	"go.opencensus.io/trace"
@@ -34,7 +35,9 @@ func (t graphqlTracer) InterceptResponse(
 ) *graphql.Response {
 
 	rc := graphql.GetOperationContext(ctx)
-	sctx, span := trace.StartSpan(ctx, rc.OperationName)
+	q := strings.Split(rc.RawQuery, " ")[0]
+
+	sctx, span := trace.StartSpan(ctx, q+":"+rc.OperationName)
 	defer span.End()
 
 	if !span.IsRecordingEvents() {
