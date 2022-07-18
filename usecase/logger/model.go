@@ -45,7 +45,7 @@ func newDevelopmentConfig() zap.Config {
 
 func newProductConfig() zap.Config {
 	cfg := zap.NewProductionConfig()
-	cfg.Level.SetLevel(zap.ErrorLevel)
+	cfg.Level.SetLevel(zap.InfoLevel)
 	cfg.EncoderConfig = newProductionEncoderConfig()
 
 	return cfg
