@@ -7,6 +7,7 @@ require (
 	cloud.google.com/go/firestore v1.5.0
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/99designs/gqlgen v0.17.10
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go v0.32.3
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.8.3
 	github.com/blendle/zapdriver v1.3.1
 	github.com/getsentry/sentry-go v0.13.0
