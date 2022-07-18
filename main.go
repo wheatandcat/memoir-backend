@@ -41,9 +41,9 @@ func main() {
 		trace.RegisterExporter(exporter)
 
 		// NOTE: トレースのテストの際のみコメントアウトを外して有効にする
-		//trace.ApplyConfig(trace.Config{
-		//	DefaultSampler: trace.AlwaysSample(),
-		//})
+		trace.ApplyConfig(trace.Config{
+			DefaultSampler: trace.AlwaysSample(),
+		})
 	}
 
 	if os.Getenv("APP_ENV") == "local" {

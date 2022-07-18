@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - "123-1"
 
 env:
   SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_SERVICE_ACCOUNT_JSON }}
