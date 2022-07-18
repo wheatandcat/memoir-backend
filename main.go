@@ -57,7 +57,7 @@ func main() {
 		}
 
 		tp := sdktrace.NewTracerProvider(
-			sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.1)),
+			sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.01)),
 			//sdktrace.WithSampler(sdktrace.AlwaysSample()),
 			sdktrace.WithBatcher(exporter),
 		)
