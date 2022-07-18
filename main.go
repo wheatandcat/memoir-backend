@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"os"
 
-	"contrib.go.opencensus.io/exporter/stackdriver"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
@@ -22,7 +22,9 @@ import (
 	"github.com/wheatandcat/memoir-backend/usecase/app_trace"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"github.com/wheatandcat/memoir-backend/usecase/logger"
-	"go.opencensus.io/trace"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 )
 
@@ -30,20 +32,26 @@ const defaultPort = "8080"
 
 func main() {
 
+	ctx := context.Background()
+
+	var tr trace.Tracer
+
 	if os.Getenv("APP_ENV") != "local" {
-		exporter, err := stackdriver.NewExporter(stackdriver.Options{
-			ProjectID: os.Getenv("GCP_PROJECT_ID"),
-		})
+		projectID := os.Getenv("GCP_PROJECT_ID")
+		exporter, err := texporter.New(texporter.WithProjectID(projectID))
 		if err != nil {
-			log.Fatalf("stackdriver.NewExporter err: %v", err)
-
+			log.Fatalf("texporter.NewExporter: %v", err)
 		}
-		trace.RegisterExporter(exporter)
 
-		// NOTE: トレースのテストの際のみコメントアウトを外して有効にする
-		trace.ApplyConfig(trace.Config{
-			DefaultSampler: trace.AlwaysSample(),
-		})
+		tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
+
+		defer func() {
+			if err := tp.ForceFlush(ctx); err != nil {
+				log.Fatal(err)
+			}
+		}()
+		otel.SetTracerProvider(tp)
+		tr = otel.GetTracerProvider().Tracer("example.com/trace")
 	}
 
 	if os.Getenv("APP_ENV") == "local" {
@@ -75,7 +83,6 @@ func main() {
 
 	router := chi.NewRouter()
 
-	ctx := context.Background()
 	f, err := repository.FirebaseApp(ctx)
 	if err != nil {
 		panic(err)
@@ -99,7 +106,7 @@ func main() {
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
 	if os.Getenv("APP_ENV") != "local" {
-		srv.Use(app_trace.NewGraphQLTracer())
+		srv.Use(app_trace.NewGraphQLTracer(tr))
 	}
 
 	srv.AroundOperations(func(ctx context.Context, next graphql.OperationHandler) graphql.ResponseHandler {
