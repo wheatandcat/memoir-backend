@@ -42,7 +42,7 @@ func (t graphqlTracer) InterceptResponse(
 ) *graphql.Response {
 	oc := graphql.GetOperationContext(ctx)
 
-	if oc.Operation.Name != "IntrospectionQuery" {
+	if oc.Operation.Name == "IntrospectionQuery" {
 		return next(ctx)
 	}
 
