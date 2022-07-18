@@ -8,7 +8,6 @@ import (
 	firebase "firebase.google.com/go"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"github.com/wheatandcat/memoir-backend/usecase/logger"
-	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 )
 
@@ -24,27 +23,16 @@ type User struct {
 }
 
 type Auth struct {
-	TraceClient trace.Tracer
-	TraceCtx    context.Context
 }
 
-func New(tr trace.Tracer, ctx context.Context) *Auth {
-	return &Auth{
-		TraceClient: tr,
-		TraceCtx:    ctx,
-	}
+func New() *Auth {
+	return &Auth{}
 }
 
 // NotLoginMiddleware ログイン前の時のMiddleware
 func (a Auth) NotLoginMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			_, span := a.TraceClient.Start(a.TraceCtx,
-				"NotLoginMiddleware",
-				trace.WithSpanKind(trace.SpanKindServer),
-			)
-			defer span.End()
-
 			uid := r.Header.Get("Userid")
 			if uid == "" {
 				next.ServeHTTP(w, r)
@@ -68,12 +56,6 @@ func (a Auth) NotLoginMiddleware() func(http.Handler) http.Handler {
 func (a Auth) FirebaseLoginMiddleware(app *firebase.App) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			_, span := a.TraceClient.Start(a.TraceCtx,
-				"FirebaseLoginMiddleware",
-				trace.WithSpanKind(trace.SpanKindServer),
-			)
-			defer span.End()
-
 			client, err := app.Auth(r.Context())
 			if err != nil {
 				e := ce.CustomErrorWrap(err, "Firebase not initialize:")

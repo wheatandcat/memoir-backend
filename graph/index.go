@@ -14,6 +14,7 @@ import (
 	"github.com/wheatandcat/memoir-backend/client/timegen"
 	"github.com/wheatandcat/memoir-backend/client/uuidgen"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -36,6 +37,12 @@ type Client struct {
 
 // NewGraph Graphを作成
 func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Graph, error) {
+	_, span := app.TraceClient.Start(ctx,
+		"NewGraph",
+		trace.WithSpanKind(trace.SpanKindServer),
+	)
+	defer span.End()
+
 	user := auth.ForContext(ctx)
 	if user == nil {
 		return nil, ce.CustomError(fmt.Errorf("access denied"))

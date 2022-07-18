@@ -107,7 +107,7 @@ func main() {
 
 	router.Use(logger.Middleware())
 
-	a := auth.New(tr, ctx)
+	a := auth.New()
 	router.Use(a.NotLoginMiddleware())
 	router.Use(a.FirebaseLoginMiddleware(f))
 
