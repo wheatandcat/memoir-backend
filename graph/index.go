@@ -83,11 +83,17 @@ func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Grap
 		return nil, ce.CustomError(fmt.Errorf("UserID Invalid"))
 	}
 
-	return NewGraphWithSetUserID(app, f, user.ID, user.FirebaseUID), nil
+	return NewGraphWithSetUserID(ctx, app, f, user.ID, user.FirebaseUID), nil
 }
 
 // NewGraphWithSetUserID Graphを作成（ログイン前）
-func NewGraphWithSetUserID(app *Application, f *firestore.Client, uid, fuid string) *Graph {
+func NewGraphWithSetUserID(ctx context.Context, app *Application, f *firestore.Client, uid, fuid string) *Graph {
+	_, span := app.TraceClient.Start(ctx,
+		"NewGraph",
+		trace.WithSpanKind(trace.SpanKindServer),
+	)
+	defer span.End()
+
 	sentry.ConfigureScope(func(scope *sentry.Scope) {
 		scope.SetUser(sentry.User{ID: uid})
 	})
