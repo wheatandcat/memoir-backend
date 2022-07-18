@@ -73,6 +73,7 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewAuthUser) (*
 
 // GetUser ユーザー取得
 func (g *Graph) GetUser(ctx context.Context) (*model.User, error) {
+
 	u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, g.UserID)
 	if err != nil {
 		return nil, ce.CustomError(err)

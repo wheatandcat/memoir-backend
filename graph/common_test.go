@@ -10,10 +10,12 @@ import (
 	mock_uuidgen "github.com/wheatandcat/memoir-backend/client/uuidgen/mocks"
 	"github.com/wheatandcat/memoir-backend/graph"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
+	"go.opentelemetry.io/otel/trace"
 	"gopkg.in/go-playground/assert.v1"
 
 	moq_repository "github.com/wheatandcat/memoir-backend/repository/moq"
 	moq_usecase_auth "github.com/wheatandcat/memoir-backend/usecase/auth/moq"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func newGraph() graph.Graph {
@@ -24,6 +26,8 @@ func newGraph() graph.Graph {
 		Task:      mock_task.NewNotificationTask(),
 	}
 
+	var tr trace.Tracer = sdktrace.NewTracerProvider().Tracer("memoir-backend")
+
 	app := &graph.Application{
 		UserRepository:                &moq_repository.UserRepositoryInterfaceMock{},
 		ItemRepository:                &moq_repository.ItemRepositoryInterfaceMock{},
@@ -33,6 +37,8 @@ func newGraph() graph.Graph {
 		PushTokenRepository:           &moq_repository.PushTokenRepositoryInterfaceMock{},
 		CommonRepository:              &moq_repository.CommonRepositoryInterfaceMock{},
 		AuthRepository:                &moq_repository.AuthRepositoryInterfaceMock{},
+
+		TraceClient: tr,
 
 		AuthUseCase: &moq_usecase_auth.UseCaseMock{},
 	}

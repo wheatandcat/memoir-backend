@@ -3,6 +3,7 @@ package graph
 import (
 	"github.com/wheatandcat/memoir-backend/repository"
 	"github.com/wheatandcat/memoir-backend/usecase/auth"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type Application struct {
@@ -16,10 +17,11 @@ type Application struct {
 	AuthRepository                repository.AuthRepositoryInterface
 
 	AuthUseCase auth.UseCase
+	TraceClient trace.Tracer
 }
 
 // NewApplication アプリケーションを作成する
-func NewApplication() *Application {
+func NewApplication(tr trace.Tracer) *Application {
 	return &Application{
 		UserRepository:                repository.NewUserRepository(),
 		ItemRepository:                repository.NewItemRepository(),
@@ -31,5 +33,6 @@ func NewApplication() *Application {
 		AuthRepository:                repository.NewAuthRepository(),
 
 		AuthUseCase: auth.New(),
+		TraceClient: tr,
 	}
 }

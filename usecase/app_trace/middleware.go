@@ -6,10 +6,15 @@ import (
 	"strings"
 
 	"github.com/99designs/gqlgen/graphql"
-	"go.opencensus.io/trace"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
-type graphqlTracer struct{}
+type graphqlTracer struct {
+	tracer trace.Tracer
+}
 
 var _ interface {
 	graphql.HandlerExtension
@@ -17,8 +22,10 @@ var _ interface {
 	graphql.FieldInterceptor
 } = &graphqlTracer{}
 
-func NewGraphQLTracer() graphql.HandlerExtension {
-	return &graphqlTracer{}
+func NewGraphQLTracer(tracer trace.Tracer) graphql.HandlerExtension {
+	return &graphqlTracer{
+		tracer: tracer,
+	}
 }
 
 func (t graphqlTracer) ExtensionName() string {
@@ -33,29 +40,33 @@ func (t graphqlTracer) InterceptResponse(
 	ctx context.Context,
 	next graphql.ResponseHandler,
 ) *graphql.Response {
-
-	rc := graphql.GetOperationContext(ctx)
-	q := strings.Split(rc.RawQuery, " ")[0]
-
-	sctx, span := trace.StartSpan(ctx, q+":"+rc.OperationName)
-	defer span.End()
-
-	if !span.IsRecordingEvents() {
-		return next(sctx)
+	oc := graphql.GetOperationContext(ctx)
+	if oc.Operation.Name == "IntrospectionQuery" {
+		return next(ctx)
 	}
 
-	span.AddAttributes(
-		trace.StringAttribute("request.query", rc.RawQuery),
+	q := strings.Split(oc.RawQuery, " ")[0]
+	ctx, span := t.tracer.Start(ctx, q+":"+oc.OperationName, trace.WithSpanKind(trace.SpanKindServer))
+	defer span.End()
+	if !span.IsRecording() {
+		return next(ctx)
+	}
+
+	span.SetAttributes(
+		attribute.Key("request.query").String(oc.RawQuery),
 	)
 
-	res := next(sctx)
+	res := next(ctx)
 	if res == nil {
 		return res
 	}
 
-	if res.Errors != nil {
+	if len(res.Errors) > 0 {
+		span.SetStatus(codes.Error, res.Errors.Error())
+		span.RecordError(fmt.Errorf(res.Errors.Error()))
 		err := res.Errors[0]
-		span.AddAttributes(trace.StringAttribute("error.message", err.Message))
+		span.SetAttributes(attribute.Key("error.message").String(err.Message))
+
 	}
 	return res
 }
@@ -64,49 +75,52 @@ func (t graphqlTracer) InterceptField(
 	ctx context.Context,
 	next graphql.Resolver,
 ) (interface{}, error) {
-	fc := graphql.GetFieldContext(ctx)
-	sctx, span := trace.StartSpan(ctx, fc.Field.ObjectDefinition.Name+"/"+fc.Field.Name)
-	defer span.End()
-	if !span.IsRecordingEvents() {
-		return next(sctx)
+	oc := graphql.GetOperationContext(ctx)
+	if oc.Operation.Name == "IntrospectionQuery" {
+		return next(ctx)
 	}
-	span.AddAttributes(
-		trace.StringAttribute("resolver.path", fc.Path().String()),
-		trace.StringAttribute("resolver.object", fc.Field.ObjectDefinition.Name),
-		trace.StringAttribute("resolver.field", fc.Field.Name),
-		trace.StringAttribute("resolver.alias", fc.Field.Alias),
+
+	fc := graphql.GetFieldContext(ctx)
+
+	ctx, span := t.tracer.Start(ctx,
+		fc.Field.ObjectDefinition.Name+"/"+fc.Field.Name,
+		trace.WithSpanKind(trace.SpanKindServer),
 	)
+	defer span.End()
+	if !span.IsRecording() {
+		return next(ctx)
+	}
+
+	span.SetAttributes(
+		attribute.Key("resolver.path").String(fc.Path().String()),
+		attribute.Key("resolver.object").String(fc.Field.ObjectDefinition.Name),
+		attribute.Key("resolver.field").String(fc.Field.Name),
+		attribute.Key("resolver.alias").String(fc.Field.Alias),
+	)
+
+	argKV := []attribute.KeyValue{}
 	for _, arg := range fc.Field.Arguments {
 		if arg.Value != nil {
-			span.AddAttributes(
-				trace.StringAttribute(fmt.Sprintf("resolver.args.%s", arg.Name), arg.Value.String()),
-			)
+			argKV = append(argKV, attribute.Key(fmt.Sprintf("resolver.args.%s", arg.Name)).String(arg.Value.String()))
 		}
 	}
 
-	res, err := next(sctx)
+	if len(argKV) > 0 {
+		span.SetAttributes(argKV...)
+	}
+
+	res, err := next(ctx)
 
 	if err != nil {
-		span.AddAttributes(trace.StringAttribute("error.message", err.Error()))
-
+		span.SetAttributes(attribute.Key("error.message").String(err.Error()))
 	}
 
-	errList := graphql.GetFieldErrors(sctx, fc)
+	errList := graphql.GetFieldErrors(ctx, fc)
 	if len(errList) != 0 {
-		span.SetStatus(trace.Status{
-			Code:    2,
-			Message: errList.Error(),
-		})
-		span.AddAttributes(
-			trace.BoolAttribute("resolver.hasError", true),
-			trace.Int64Attribute("resolver.errorCount", int64(len(errList))),
-		)
-		for idx, err := range errList {
-			span.AddAttributes(
-				trace.StringAttribute(fmt.Sprintf("resolver.error.%d.message", idx), err.Error()),
-				trace.StringAttribute(fmt.Sprintf("resolver.error.%d.kind", idx), fmt.Sprintf("%T", err)),
-			)
-		}
+		span.SetStatus(codes.Error, errList.Error())
+		span.RecordError(fmt.Errorf(errList.Error()))
+		err := errList[0]
+		span.SetAttributes(attribute.Key("error.message").String(err.Message))
 	}
 
 	return res, err

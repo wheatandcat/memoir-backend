@@ -14,7 +14,7 @@ import (
 )
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	g := NewGraphWithSetUserID(r.App, r.FirestoreClient, input.ID, "")
+	g := NewGraphWithSetUserID(ctx, r.App, r.FirestoreClient, input.ID, "")
 	result, err := g.CreateUser(ctx, &input)
 
 	if err != nil {
@@ -25,7 +25,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 }
 
 func (r *mutationResolver) CreateAuthUser(ctx context.Context, input model.NewAuthUser) (*model.AuthUser, error) {
-	g := NewGraphWithSetUserID(r.App, r.FirestoreClient, "", "")
+	g := NewGraphWithSetUserID(ctx, r.App, r.FirestoreClient, "", "")
 	result, err := g.CreateAuthUser(ctx, &input)
 	if err != nil {
 		return nil, ce.CustomError(err)
@@ -228,7 +228,7 @@ func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
 }
 
 func (r *queryResolver) ExistAuthUser(ctx context.Context) (*model.ExistAuthUser, error) {
-	g := NewGraphWithSetUserID(r.App, r.FirestoreClient, "", "")
+	g := NewGraphWithSetUserID(ctx, r.App, r.FirestoreClient, "", "")
 
 	result, err := g.ExistAuthUser(ctx)
 	if err != nil {

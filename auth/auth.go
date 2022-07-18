@@ -22,8 +22,15 @@ type User struct {
 	FirebaseUID string
 }
 
+type Auth struct {
+}
+
+func New() *Auth {
+	return &Auth{}
+}
+
 // NotLoginMiddleware ログイン前の時のMiddleware
-func NotLoginMiddleware() func(http.Handler) http.Handler {
+func (a Auth) NotLoginMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			uid := r.Header.Get("Userid")
@@ -46,7 +53,7 @@ func NotLoginMiddleware() func(http.Handler) http.Handler {
 }
 
 // FirebaseLoginMiddleware ログイン後の時のMiddleware
-func FirebaseLoginMiddleware(app *firebase.App) func(http.Handler) http.Handler {
+func (a Auth) FirebaseLoginMiddleware(app *firebase.App) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			client, err := app.Auth(r.Context())
