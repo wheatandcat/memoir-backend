@@ -67,6 +67,7 @@ func main() {
 			// To see Profiler agent spans in APM backend,
 			// set EnableOCTelemetry to true
 			EnableOCTelemetry: true,
+			DebugLogging:      true,
 		}
 
 		if err := profiler.Start(cfg); err != nil {
