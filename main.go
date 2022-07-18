@@ -106,8 +106,10 @@ func main() {
 	}
 
 	router.Use(logger.Middleware())
-	router.Use(auth.NotLoginMiddleware())
-	router.Use(auth.FirebaseLoginMiddleware(f))
+
+	a := auth.New(tr)
+	router.Use(a.NotLoginMiddleware())
+	router.Use(a.FirebaseLoginMiddleware(f))
 
 	fc, err := f.Firestore(ctx)
 	if err != nil {

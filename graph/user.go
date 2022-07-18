@@ -2,7 +2,6 @@ package graph
 
 import (
 	"context"
-	"log"
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
@@ -76,7 +75,6 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewAuthUser) (*
 
 // GetUser ユーザー取得
 func (g *Graph) GetUser(ctx context.Context) (*model.User, error) {
-	log.Println("GetUser")
 	_, span := g.App.TraceClient.Start(ctx,
 		"GetUser",
 		trace.WithAttributes(attribute.String("id", g.UserID)),

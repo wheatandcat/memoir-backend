@@ -41,7 +41,6 @@ func (t graphqlTracer) InterceptResponse(
 	next graphql.ResponseHandler,
 ) *graphql.Response {
 	oc := graphql.GetOperationContext(ctx)
-
 	if oc.Operation.Name == "IntrospectionQuery" {
 		return next(ctx)
 	}
@@ -76,7 +75,13 @@ func (t graphqlTracer) InterceptField(
 	ctx context.Context,
 	next graphql.Resolver,
 ) (interface{}, error) {
+	oc := graphql.GetOperationContext(ctx)
+	if oc.Operation.Name == "IntrospectionQuery" {
+		return next(ctx)
+	}
+
 	fc := graphql.GetFieldContext(ctx)
+
 	ctx, span := t.tracer.Start(ctx,
 		fc.Field.ObjectDefinition.Name+"/"+fc.Field.Name,
 		trace.WithSpanKind(trace.SpanKindServer),
