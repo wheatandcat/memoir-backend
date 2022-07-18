@@ -89,7 +89,7 @@ func NewGraph(ctx context.Context, app *Application, f *firestore.Client) (*Grap
 // NewGraphWithSetUserID Graphを作成（ログイン前）
 func NewGraphWithSetUserID(ctx context.Context, app *Application, f *firestore.Client, uid, fuid string) *Graph {
 	_, span := app.TraceClient.Start(ctx,
-		"NewGraph",
+		"NewGraphWithSetUserID",
 		trace.WithSpanKind(trace.SpanKindServer),
 	)
 	defer span.End()
