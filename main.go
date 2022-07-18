@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"cloud.google.com/go/profiler"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -44,6 +45,10 @@ func installPropagators() {
 }
 
 func main() {
+	v := "1.0.0"
+	if os.Getenv("RELEASE_INSTANCE_VERSION") != "" {
+		v = os.Getenv("RELEASE_INSTANCE_VERSION")
+	}
 
 	ctx := context.Background()
 
@@ -51,13 +56,30 @@ func main() {
 
 	if os.Getenv("APP_ENV") != "local" {
 		projectID := os.Getenv("GCP_PROJECT_ID")
+
+		cfg := profiler.Config{
+			Service:        "memoir-backend",
+			ServiceVersion: v,
+			// ProjectID must be set if not running on GCP.
+			ProjectID: projectID,
+
+			// For OpenCensus users:
+			// To see Profiler agent spans in APM backend,
+			// set EnableOCTelemetry to true
+			EnableOCTelemetry: true,
+		}
+
+		if err := profiler.Start(cfg); err != nil {
+			log.Fatalf("profiler.Start: %v", err)
+		}
+
 		exporter, err := texporter.New(texporter.WithProjectID(projectID))
 		if err != nil {
 			log.Fatalf("texporter.NewExporter: %v", err)
 		}
 
 		tp := sdktrace.NewTracerProvider(
-			sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.01)),
+			sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.05)),
 			//sdktrace.WithSampler(sdktrace.AlwaysSample()),
 			sdktrace.WithBatcher(exporter),
 		)

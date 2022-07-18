@@ -5,6 +5,7 @@ go 1.18
 require (
 	cloud.google.com/go/cloudtasks v1.4.0
 	cloud.google.com/go/firestore v1.5.0
+	cloud.google.com/go/profiler v0.3.0
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/99designs/gqlgen v0.17.10
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go v0.32.3
@@ -42,6 +43,7 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/google/pprof v0.0.0-20220412212628-83db2b799d1f // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.4.0 // indirect
 	github.com/googleapis/go-type-adapters v1.0.0 // indirect
