@@ -47,7 +47,7 @@ func main() {
 
 	ctx := context.Background()
 
-	var tr trace.Tracer
+	var tr trace.Tracer = sdktrace.NewTracerProvider().Tracer("memoir-backend")
 
 	if os.Getenv("APP_ENV") != "local" {
 		projectID := os.Getenv("GCP_PROJECT_ID")
@@ -57,6 +57,7 @@ func main() {
 		}
 
 		tp := sdktrace.NewTracerProvider(
+			//sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.1)),
 			sdktrace.WithSampler(sdktrace.AlwaysSample()),
 			sdktrace.WithBatcher(exporter),
 		)
@@ -112,7 +113,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	app := graph.NewApplication()
+	app := graph.NewApplication(tr)
 
 	resolver := &graph.Resolver{
 		FirestoreClient: fc,
@@ -121,9 +122,7 @@ func main() {
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
-	if os.Getenv("APP_ENV") != "local" {
-		srv.Use(app_trace.NewGraphQLTracer(tr))
-	}
+	srv.Use(app_trace.NewGraphQLTracer(tr))
 
 	srv.AroundOperations(func(ctx context.Context, next graphql.OperationHandler) graphql.ResponseHandler {
 		oc := graphql.GetOperationContext(ctx)
