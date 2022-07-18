@@ -7,6 +7,7 @@ import (
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -76,10 +77,11 @@ func (g *Graph) CreateAuthUser(ctx context.Context, input *model.NewAuthUser) (*
 // GetUser ユーザー取得
 func (g *Graph) GetUser(ctx context.Context) (*model.User, error) {
 	log.Println("GetUser")
-	g.App.TraceClient.Start(ctx,
+	_, span := g.App.TraceClient.Start(ctx,
 		"GetUser",
-		trace.WithSpanKind(trace.SpanKindServer),
+		trace.WithAttributes(attribute.String("id", g.UserID)),
 	)
+	defer span.End()
 
 	u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, g.UserID)
 	if err != nil {

@@ -68,7 +68,7 @@ func main() {
 			}
 		}()
 		otel.SetTracerProvider(tp)
-		tr = otel.GetTracerProvider().Tracer("example.com/trace")
+		tr = otel.GetTracerProvider().Tracer("memoir-backend")
 	}
 
 	if os.Getenv("APP_ENV") == "local" {

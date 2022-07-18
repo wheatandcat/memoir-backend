@@ -41,6 +41,11 @@ func (t graphqlTracer) InterceptResponse(
 	next graphql.ResponseHandler,
 ) *graphql.Response {
 	oc := graphql.GetOperationContext(ctx)
+
+	if oc.Operation.Name != "IntrospectionQuery" {
+		return next(ctx)
+	}
+
 	q := strings.Split(oc.RawQuery, " ")[0]
 	ctx, span := t.tracer.Start(ctx, q+":"+oc.OperationName, trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
