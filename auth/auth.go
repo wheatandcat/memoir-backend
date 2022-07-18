@@ -25,11 +25,13 @@ type User struct {
 
 type Auth struct {
 	TraceClient trace.Tracer
+	TraceCtx    context.Context
 }
 
-func New(tr trace.Tracer) *Auth {
+func New(tr trace.Tracer, ctx context.Context) *Auth {
 	return &Auth{
 		TraceClient: tr,
+		TraceCtx:    ctx,
 	}
 }
 
@@ -37,7 +39,7 @@ func New(tr trace.Tracer) *Auth {
 func (a Auth) NotLoginMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			_, span := a.TraceClient.Start(r.Context(),
+			_, span := a.TraceClient.Start(a.TraceCtx,
 				"NotLoginMiddleware",
 				trace.WithSpanKind(trace.SpanKindServer),
 			)
@@ -66,7 +68,7 @@ func (a Auth) NotLoginMiddleware() func(http.Handler) http.Handler {
 func (a Auth) FirebaseLoginMiddleware(app *firebase.App) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			_, span := a.TraceClient.Start(r.Context(),
+			_, span := a.TraceClient.Start(a.TraceCtx,
 				"FirebaseLoginMiddleware",
 				trace.WithSpanKind(trace.SpanKindServer),
 			)
