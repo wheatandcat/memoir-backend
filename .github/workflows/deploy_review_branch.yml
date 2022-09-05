@@ -2,8 +2,6 @@ name: Deploy Review Branch
 
 on: pull_request
 
-permissions:
-  pull-requests: write
 env:
   SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_SERVICE_ACCOUNT_JSON }}
   GCP_SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_GCP_SERVICE_ACCOUNT_JSON }}
@@ -11,11 +9,12 @@ env:
   SERVICE_NAME: ${{ secrets.REVIEW_SERVICE_NAME }}
   REGION: ${{ secrets.REGION }}
 jobs:
-  deploy:
+  deploy-branch:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       id-token: write
+      contents: read
+      pull-requests: write
     steps:
       - uses: "actions/checkout@v3"
 
