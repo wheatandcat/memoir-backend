@@ -47,7 +47,7 @@ jobs:
             --region=$REGION \
             --service-account=github-actions@$PROJECT_ID.iam.gserviceaccount.com \
             --allow-unauthenticated
-            --tag pr-${{ github.event.pull_request.number }}
+            --tag=pr-${{ github.event.pull_request.number }}
             --no-traffic
       - name: Find Comment
         uses: peter-evans/find-comment@v1
