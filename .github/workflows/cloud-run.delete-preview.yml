@@ -2,6 +2,8 @@ name: Cloud Run (Delete Preview)
 
 on: pull_request
 
+env:
+  REGION: ${{ secrets.REGION }}
 jobs:
   delete-preview:
     runs-on: ubuntu-latest
@@ -27,11 +29,12 @@ jobs:
 
       - name: Deploy revision with tag
         run: >
-          gcloud alpha run services update-traffic ${{ matrix.service }}
-          --region ${{ secrets.GCP_REGION }}
+          gcloud alpha run services update-traffic ${{ matrix.service }} \
+          --region=$REGION \
           --remove-tags pr-${{ github.event.pull_request.number }}
+
       - name: Find Comment
-        uses: peter-evans/find-comment@v1
+        uses: peter-evans/find-comment@v2
         id: fc
         with:
           issue-number: ${{ github.event.pull_request.number }}
@@ -49,7 +52,7 @@ jobs:
           TZ: Asia/Tokyo
 
       - name: Create or update comment
-        uses: peter-evans/create-or-update-comment@v1
+        uses: peter-evans/create-or-update-comment@v2
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
