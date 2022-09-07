@@ -4,6 +4,7 @@ on: pull_request
 
 env:
   PROJECT_ID: ${{ secrets.REVIEW_GCP_PROJECT_ID }}
+  SERVICE_NAME: ${{ secrets.REVIEW_SERVICE_NAME }}
   REGION: ${{ secrets.REGION }}
 jobs:
   delete-preview:
@@ -27,7 +28,7 @@ jobs:
 
       - name: Deploy revision with tag
         run: |-
-          gcloud run services update-traffic $PROJECT_ID \
+          gcloud run services update-traffic $SERVICE_NAME \
           --region=$REGION \
           --remove-tags=pr-${{ github.event.pull_request.number }}
 
