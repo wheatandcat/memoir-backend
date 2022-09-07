@@ -3,6 +3,7 @@ name: Cloud Run (Delete Preview)
 on: pull_request
 
 env:
+  PROJECT_ID: ${{ secrets.REVIEW_GCP_PROJECT_ID }}
   REGION: ${{ secrets.REGION }}
 jobs:
   delete-preview:
