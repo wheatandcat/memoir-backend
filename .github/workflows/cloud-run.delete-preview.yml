@@ -24,14 +24,11 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0
 
-      - name: Install alpha component
-        run: gcloud components install --quiet alpha
-
       - name: Deploy revision with tag
         run: |-
-          gcloud alpha run services update-traffic ${{ matrix.service }} \
+          gcloud run services update-traffic $PROJECT_ID \
           --region=$REGION \
-          --remove-tags pr-${{ github.event.pull_request.number }}
+          --remove-tags=pr-${{ github.event.pull_request.number }}
 
       - name: Find Comment
         uses: peter-evans/find-comment@v2
