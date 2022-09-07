@@ -28,7 +28,7 @@ jobs:
         run: gcloud components install --quiet alpha
 
       - name: Deploy revision with tag
-        run: >
+        run: |-
           gcloud alpha run services update-traffic ${{ matrix.service }} \
           --region=$REGION \
           --remove-tags pr-${{ github.event.pull_request.number }}
