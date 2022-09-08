@@ -1,6 +1,8 @@
 name: Cloud Run (Delete Preview)2
 
-on: pull_request
+on:
+  pull_request:
+    types: [closed]
 
 env:
   PROJECT_ID: ${{ secrets.REVIEW_GCP_PROJECT_ID }}

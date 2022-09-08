@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"cloud.google.com/go/profiler"
 	"github.com/99designs/gqlgen/graphql"
@@ -202,7 +203,15 @@ func main() {
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", srv)
 
-	err = http.ListenAndServe(":"+port, router)
+	httpsrv := &http.Server{
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
+		Handler:      router,
+		Addr:         ":" + port,
+	}
+
+	err = httpsrv.ListenAndServe()
 	if err != nil {
 		panic(err)
 	}

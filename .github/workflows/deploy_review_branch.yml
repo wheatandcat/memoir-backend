@@ -1,8 +1,6 @@
 name: Deploy Review Branch
 
-on:
-  pull_request:
-    types: [closed]
+on: pull_request
 
 env:
   SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_SERVICE_ACCOUNT_JSON }}
