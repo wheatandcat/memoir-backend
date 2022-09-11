@@ -1,0 +1,12 @@
+{
+  "name": "memoir-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/wheatandcat/memoir-backend.git",
+  "author": "wheatandcat",
+  "license": "MIT",
+  "devDependencies": {
+    "graphql": "^15.5.0",
+    "graphql-markdown": "^6.0.0"
+  }
+}

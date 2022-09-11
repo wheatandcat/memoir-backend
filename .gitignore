@@ -8,8 +8,8 @@ serviceAccount.production.json
 gcpServiceAccount.review.json
 gcpServiceAccount.production.json
 gcpServiceAccount.json
-package.json
-yarn.lock
+./package.json
+./yarn.lock
 node_modules
 .expo-shared
 .DS_Store
