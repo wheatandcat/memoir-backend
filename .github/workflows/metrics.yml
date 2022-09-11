@@ -1,0 +1,46 @@
+name: metrics
+on:
+  schedule:
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+
+env:
+  METRICS_SERVICE_ACCOUNT_JSON: ${{ secrets.METRICS_SERVICE_ACCOUNT_JSON }}
+jobs:
+  metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: "^1.18"
+      - run: go version
+      - name: cache
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-memoir-backend-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-memoir-backend-
+      - name: Run tests with coverage report output
+        run: go test ./... -coverprofile=coverage.out
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: yarn
+      - name: Cache metrics node_modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-memoir-backend-metrics-${{ hashFiles(format('{0}{1}', github.workspace, '/scripts/send-metrics/yarn.lock')) }}
+          restore-keys: ${{ runner.os }}-memoir-backend-metrics
+      - name: Install metrics node_modules
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install
+        working-directory: scripts/send-metrics
+      - name: Create serviceAccount.json file
+        run: echo $METRICS_SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
+        working-directory: scripts/send-metrics
+      - name: send metrics
+        run: TZ=Asia/Tokyo yarn send
+        working-directory: scripts/send-metrics
