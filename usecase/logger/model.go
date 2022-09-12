@@ -2,7 +2,6 @@ package logger
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/blendle/zapdriver"
@@ -60,8 +59,6 @@ func New(ctx context.Context) *zap.Logger {
 		return logger
 	}
 
-	fmt.Println("logger: production")
-
 	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl >= zapcore.ErrorLevel
 	})
@@ -71,7 +68,7 @@ func New(ctx context.Context) *zap.Logger {
 	stdoutSink := zapcore.Lock(os.Stdout)
 	stderrSink := zapcore.Lock(os.Stderr)
 
-	enc := zapcore.NewConsoleEncoder(newProductionEncoderConfig())
+	enc := zapcore.NewJSONEncoder(newProductionEncoderConfig())
 
 	core := zapcore.NewTee(
 		zapcore.NewCore(enc, stderrSink, highPriority),
