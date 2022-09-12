@@ -43,14 +43,6 @@ func newDevelopmentConfig() zap.Config {
 	return cfg
 }
 
-func newProductConfig() zap.Config {
-	cfg := zap.NewProductionConfig()
-	cfg.Level.SetLevel(zap.InfoLevel)
-	cfg.EncoderConfig = newProductionEncoderConfig()
-
-	return cfg
-}
-
 func New(ctx context.Context) *zap.Logger {
 	if os.Getenv("APP_ENV") == "local" {
 		cfg := newDevelopmentConfig()
