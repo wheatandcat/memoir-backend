@@ -43,14 +43,6 @@ func newDevelopmentConfig() zap.Config {
 	return cfg
 }
 
-func newProductConfig() zap.Config {
-	cfg := zap.NewProductionConfig()
-	cfg.Level.SetLevel(zap.InfoLevel)
-	cfg.EncoderConfig = newProductionEncoderConfig()
-
-	return cfg
-}
-
 func New(ctx context.Context) *zap.Logger {
 	if os.Getenv("APP_ENV") == "local" {
 		cfg := newDevelopmentConfig()
@@ -59,8 +51,23 @@ func New(ctx context.Context) *zap.Logger {
 		return logger
 	}
 
-	cfg := newProductConfig()
-	logger, _ := cfg.Build()
+	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl >= zapcore.ErrorLevel
+	})
+	lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl < zapcore.ErrorLevel
+	})
+	stdoutSink := zapcore.Lock(os.Stdout)
+	stderrSink := zapcore.Lock(os.Stderr)
+
+	enc := zapcore.NewJSONEncoder(newProductionEncoderConfig())
+
+	core := zapcore.NewTee(
+		zapcore.NewCore(enc, stderrSink, highPriority),
+		zapcore.NewCore(enc, stdoutSink, lowPriority),
+	)
+
+	logger := zap.New(core)
 
 	trace := ForContext(ctx)
 	if trace != nil {
