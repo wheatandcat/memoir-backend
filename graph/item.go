@@ -37,7 +37,7 @@ func (g *Graph) UpdateItem(ctx context.Context, input *model.UpdateItem) (*model
 	i := &model.Item{
 		ID:        input.ID,
 		UserID:    g.UserID,
-		Date:      input.Date,
+		Date:      *input.Date,
 		UpdatedAt: g.Client.Time.Now(),
 	}
 
