@@ -28,6 +28,7 @@ type ___ = *firestore.Client
 type ____ = *firestore.WriteBatch
 
 func TestUpdateUser(t *testing.T) {
+	t.Parallel()
 	u := &auth.User{
 		ID:          "test",
 		FirebaseUID: "test",
@@ -67,10 +68,13 @@ func TestUpdateUser(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			r, _ := g.UpdateUser(ctx, td.param)
-			diff := cmp.Diff(r, td.result)
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			r, _ := g.UpdateUser(ctx, tt.param)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {
@@ -134,6 +138,7 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestCreateAuthUser(t *testing.T) {
+	t.Parallel()
 	u := &auth.User{
 		ID:          "test",
 		FirebaseUID: "test",
@@ -214,11 +219,13 @@ func TestCreateAuthUser(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			td.mock()
-			r, _ := g.CreateAuthUser(ctx, td.param)
-			diff := cmp.Diff(r, td.result)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.mock()
+			r, _ := g.CreateAuthUser(ctx, tt.param)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {
@@ -229,6 +236,7 @@ func TestCreateAuthUser(t *testing.T) {
 }
 
 func TestGetUser(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	g := newGraph()
@@ -256,10 +264,13 @@ func TestGetUser(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			r, _ := g.GetUser(ctx)
-			diff := cmp.Diff(r, td.result)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {
@@ -270,6 +281,7 @@ func TestGetUser(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	g := newGraph()
@@ -355,18 +367,21 @@ func TestDeleteUser(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			td.mock()
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.mock()
 			r, err := g.DeleteUser(ctx)
-			diff := cmp.Diff(r, td.result)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {
 				assert.Equal(t, diff, "")
 			}
-			if td.err != nil {
-				checkErrorCode(t, err, td.err)
+			if tt.err != nil {
+				checkErrorCode(t, err, tt.err)
 			}
 		})
 	}

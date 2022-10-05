@@ -161,11 +161,13 @@ func TestUpdateInvite(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			r, _ := g.UpdateInvite(ctx)
-			diff := cmp.Diff(r, td.result)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {
@@ -212,11 +214,12 @@ func TestGetInviteByUseID(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		td := td
-		t.Run(td.name, func(t *testing.T) {
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
 			r, _ := g.GetInviteByUseID(ctx)
-			diff := cmp.Diff(r, td.result)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {
@@ -277,11 +280,13 @@ func TestGetInviteByCode(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			r, _ := g.GetInviteByCode(ctx, td.param)
-			diff := cmp.Diff(r, td.result)
+
+			r, _ := g.GetInviteByCode(ctx, tt.param)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {

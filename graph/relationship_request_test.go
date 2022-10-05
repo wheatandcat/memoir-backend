@@ -19,6 +19,7 @@ import (
 )
 
 func TestCreateRelationshipRequest(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	client := &graph.Client{
@@ -100,10 +101,13 @@ func TestCreateRelationshipRequest(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			r, _ := g.CreateRelationshipRequest(ctx, td.param)
-			diff := cmp.Diff(r, td.result)
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			r, _ := g.CreateRelationshipRequest(ctx, tt.param)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {
@@ -114,6 +118,7 @@ func TestCreateRelationshipRequest(t *testing.T) {
 }
 
 func TestAcceptRelationshipRequest(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	client := &graph.Client{
@@ -183,10 +188,13 @@ func TestAcceptRelationshipRequest(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			r, _ := g.AcceptRelationshipRequest(ctx, td.param)
-			diff := cmp.Diff(r, td.result)
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			r, _ := g.AcceptRelationshipRequest(ctx, tt.param)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {
@@ -197,6 +205,7 @@ func TestAcceptRelationshipRequest(t *testing.T) {
 }
 
 func TestNgRelationshipRequest(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	client := &graph.Client{
@@ -240,10 +249,12 @@ func TestNgRelationshipRequest(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			r, _ := g.NgRelationshipRequest(ctx, td.param)
-			diff := cmp.Diff(r, td.result)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			r, _ := g.NgRelationshipRequest(ctx, tt.param)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {
@@ -254,6 +265,7 @@ func TestNgRelationshipRequest(t *testing.T) {
 }
 
 func TestGetRelationshipRequests(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	client := &graph.Client{
@@ -346,10 +358,14 @@ func TestGetRelationshipRequests(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			r, _ := g.GetRelationshipRequests(ctx, td.param, td.userSkip)
-			diff := cmp.Diff(r, td.result)
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			r, _ := g.GetRelationshipRequests(ctx, tt.param, tt.userSkip)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {

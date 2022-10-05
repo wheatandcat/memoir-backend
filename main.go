@@ -34,6 +34,7 @@ import (
 
 const defaultPort = "8080"
 
+//nolint:unused
 func installPropagators() {
 	otel.SetTextMapPropagator(
 		propagation.NewCompositeTextMapPropagator(

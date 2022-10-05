@@ -1,16 +1,10 @@
 run:
-  skip-files:
-    - graph/generated/generated.go
-  skip-dirs:
-    - e2e/
   issues-exit-code: 0
   tests: false
 
 issues:
-  exclude-rules:
-    - linters:
-        - paralleltest
-      text: "does not use range value in test Run"
+  exclude-use-default: false
+
 linters-settings:
   gosec:
     config:
@@ -23,6 +17,7 @@ linters-settings:
         truncate: "32"
 
 linters:
+  disable-all: true
   enable:
     - staticcheck
     - errcheck
@@ -32,5 +27,3 @@ linters:
     - unparam
     - prealloc
     - gosec
-    - exportloopref
-    - paralleltest
