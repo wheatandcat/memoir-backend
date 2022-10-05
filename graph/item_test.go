@@ -18,6 +18,7 @@ import (
 )
 
 func TestGetItemsInDate(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	client := &graph.Client{
@@ -60,6 +61,7 @@ func TestGetItemsInDate(t *testing.T) {
 
 	for _, td := range tests {
 		t.Run(td.name, func(t *testing.T) {
+			t.Parallel()
 			r, _ := g.GetItemsInDate(ctx, td.param)
 			diff := cmp.Diff(r, td.result)
 			if diff != "" {
@@ -72,6 +74,7 @@ func TestGetItemsInDate(t *testing.T) {
 }
 
 func TestGetItemsInPeriod(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	client := &graph.Client{

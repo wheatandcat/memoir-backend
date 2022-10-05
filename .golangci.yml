@@ -1,10 +1,16 @@
 run:
+  skip-files:
+    - graph/generated/generated.go
+  skip-dirs:
+    - e2e/
   issues-exit-code: 0
   tests: false
 
 issues:
-  exclude-use-default: false
-
+  exclude-rules:
+    - linters:
+        - paralleltest
+      text: "does not use range value in test Run"
 linters-settings:
   gosec:
     config:
@@ -15,15 +21,13 @@ linters-settings:
         entropy_threshold: "80.0"
         per_char_threshold: "3.0"
         truncate: "32"
+  gci:
+    local-prefixes: github.com/favonia/cloudflare-ddns-go
+  maligned:
+    suggest-new: true
+  exhaustive:
+    default-signifies-exhaustive: true
 
 linters:
-  disable-all: true
-  enable:
-    - staticcheck
-    - errcheck
-    - ineffassign
-    - unconvert
-    - misspell
-    - unparam
-    - prealloc
-    - gosec
+  enable-all: true
+  disable: maligned,interfacer,nlreturn,wsl,scopelint,golint

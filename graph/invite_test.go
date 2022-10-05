@@ -17,6 +17,8 @@ import (
 )
 
 func TestCreateInvite(t *testing.T) {
+	t.Parallel()
+
 	ctx := context.Background()
 
 	client := &graph.Client{
@@ -84,6 +86,7 @@ func TestCreateInvite(t *testing.T) {
 	}
 
 	for _, td := range tests {
+		td := td
 		t.Run(td.name, func(t *testing.T) {
 			g := appFunc(td.param)
 			r, err := g.CreateInvite(ctx)
@@ -107,6 +110,7 @@ func TestCreateInvite(t *testing.T) {
 }
 
 func TestUpdateInvite(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	client := &graph.Client{
@@ -159,6 +163,7 @@ func TestUpdateInvite(t *testing.T) {
 
 	for _, td := range tests {
 		t.Run(td.name, func(t *testing.T) {
+			t.Parallel()
 			r, _ := g.UpdateInvite(ctx)
 			diff := cmp.Diff(r, td.result)
 			if diff != "" {
@@ -208,6 +213,7 @@ func TestGetInviteByUseID(t *testing.T) {
 	}
 
 	for _, td := range tests {
+		td := td
 		t.Run(td.name, func(t *testing.T) {
 			r, _ := g.GetInviteByUseID(ctx)
 			diff := cmp.Diff(r, td.result)
@@ -221,6 +227,7 @@ func TestGetInviteByUseID(t *testing.T) {
 }
 
 func TestGetInviteByCode(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	client := &graph.Client{
@@ -272,6 +279,7 @@ func TestGetInviteByCode(t *testing.T) {
 
 	for _, td := range tests {
 		t.Run(td.name, func(t *testing.T) {
+			t.Parallel()
 			r, _ := g.GetInviteByCode(ctx, td.param)
 			diff := cmp.Diff(r, td.result)
 			if diff != "" {

@@ -14,7 +14,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	gcppropagator "github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator"
-	"github.com/getsentry/sentry-go"
+	sentry "github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
 	"github.com/vektah/gqlparser/v2/gqlerror"
