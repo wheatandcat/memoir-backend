@@ -21,13 +21,16 @@ linters-settings:
         entropy_threshold: "80.0"
         per_char_threshold: "3.0"
         truncate: "32"
-  gci:
-    local-prefixes: github.com/favonia/cloudflare-ddns-go
-  maligned:
-    suggest-new: true
-  exhaustive:
-    default-signifies-exhaustive: true
 
 linters:
-  enable-all: true
-  disable: maligned,interfacer,nlreturn,wsl,scopelint,golint
+  enable:
+    - staticcheck
+    - errcheck
+    - ineffassign
+    - unconvert
+    - misspell
+    - unparam
+    - prealloc
+    - gosec
+    - exportloopref
+    - paralleltest
