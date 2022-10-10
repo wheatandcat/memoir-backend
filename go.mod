@@ -48,8 +48,11 @@ require (
 	github.com/googleapis/gax-go/v2 v2.4.0 // indirect
 	github.com/googleapis/go-type-adapters v1.0.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/gostaticanalysis/analysisutil v0.4.1 // indirect
+	github.com/gostaticanalysis/comment v1.4.1 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/kulti/thelper v0.6.3 // indirect
 	github.com/kunwardeep/paralleltest v1.0.6 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect

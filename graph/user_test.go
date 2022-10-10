@@ -346,7 +346,14 @@ func TestDeleteUser(t *testing.T) {
 	}{
 		{
 			name: "ユーザーを削除する",
-			mock: func() {},
+			mock: func() {
+				relationshipMock := &moq_repository.RelationshipInterfaceMock{
+					ExistByFollowedIDFunc: func(_ __, _ ___, _ string) (bool, error) {
+						return false, nil
+					},
+				}
+				g.App.RelationshipRepository = relationshipMock
+			},
 			result: &model.User{
 				ID: "test",
 			},
