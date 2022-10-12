@@ -1,6 +1,6 @@
 name: e2e test
 on:
-  pull_request:
+  push:
 env:
   FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
   SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_SERVICE_ACCOUNT_JSON }}

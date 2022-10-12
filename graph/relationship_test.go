@@ -17,6 +17,7 @@ import (
 )
 
 func TestDeleteRelationship(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	rr := &model.Relationship{
@@ -51,10 +52,13 @@ func TestDeleteRelationship(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			r, _ := g.DeleteRelationship(ctx, td.param)
-			diff := cmp.Diff(r, td.result)
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			r, _ := g.DeleteRelationship(ctx, tt.param)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {
@@ -66,6 +70,7 @@ func TestDeleteRelationship(t *testing.T) {
 }
 
 func TestGetRelationships(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	client := &graph.Client{
@@ -156,10 +161,14 @@ func TestGetRelationships(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			r, _ := g.GetRelationships(ctx, td.param, td.userSkip)
-			diff := cmp.Diff(r, td.result)
+	for _, tt := range tests {
+		tt := tt
+
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			r, _ := g.GetRelationships(ctx, tt.param, tt.userSkip)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {

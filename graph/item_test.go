@@ -18,6 +18,7 @@ import (
 )
 
 func TestGetItemsInDate(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	client := &graph.Client{
@@ -58,10 +59,13 @@ func TestGetItemsInDate(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			r, _ := g.GetItemsInDate(ctx, td.param)
-			diff := cmp.Diff(r, td.result)
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			r, _ := g.GetItemsInDate(ctx, tt.param)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {
@@ -72,6 +76,7 @@ func TestGetItemsInDate(t *testing.T) {
 }
 
 func TestGetItemsInPeriod(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	client := &graph.Client{
@@ -172,10 +177,13 @@ func TestGetItemsInPeriod(t *testing.T) {
 		},
 	}
 
-	for _, td := range tests {
-		t.Run(td.name, func(t *testing.T) {
-			r, _ := g.GetItemsInPeriod(ctx, td.param)
-			diff := cmp.Diff(r, td.result)
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			r, _ := g.GetItemsInPeriod(ctx, tt.param)
+			diff := cmp.Diff(r, tt.result)
 			if diff != "" {
 				t.Errorf("differs: (-got +want)\n%s", diff)
 			} else {

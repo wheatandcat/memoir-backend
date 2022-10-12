@@ -1,6 +1,6 @@
 name: Test
 on:
-  pull_request:
+  push:
 env:
   OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.OCTOCOV_GOOGLE_APPLICATION_CREDENTIALS_JSON }}
 jobs:
