@@ -85,7 +85,7 @@ func (re *ItemRepository) GetItem(ctx context.Context, f *firestore.Client, user
 	}
 
 	if err = ds.DataTo(&i); err != nil {
-		return nil, err
+		return nil, ce.CustomError(err)
 	}
 
 	return i, nil

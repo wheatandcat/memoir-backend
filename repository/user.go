@@ -71,7 +71,7 @@ func (re *UserRepository) Delete(ctx context.Context, f *firestore.Client, batch
 	matchPushToken := ref.Collection("pushToken").Documents(ctx)
 	docPushTokens, err := matchPushToken.GetAll()
 	if err != nil {
-		return err
+		return ce.CustomError(err)
 	}
 	for _, doc := range docPushTokens {
 		batch.Delete(doc.Ref)
@@ -80,7 +80,7 @@ func (re *UserRepository) Delete(ctx context.Context, f *firestore.Client, batch
 	matchItems := ref.Collection("items").Documents(ctx)
 	docItems, err := matchItems.GetAll()
 	if err != nil {
-		return err
+		return ce.CustomError(err)
 	}
 	for _, doc := range docItems {
 		batch.Delete(doc.Ref)

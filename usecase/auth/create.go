@@ -23,15 +23,15 @@ func (uci *useCaseImpl) CreateAuthUser(ctx context.Context, f *firestore.Client,
 
 	app, err := repository.FirebaseApp(ctx)
 	if err != nil {
-		return displayName, err
+		return displayName, ce.CustomError(err)
 	}
 	client, err := app.Auth(ctx)
 	if err != nil {
-		return displayName, err
+		return displayName, ce.CustomError(err)
 	}
 	user, err := client.GetUser(ctx, u.FirebaseUID)
 	if err != nil {
-		return displayName, err
+		return displayName, ce.CustomError(err)
 	}
 
 	arr1 := strings.Split(user.UserInfo.Email, "@")
@@ -93,5 +93,5 @@ func (uci *useCaseImpl) CreateAuthUser(ctx context.Context, f *firestore.Client,
 		return nil
 	})
 
-	return displayName, err
+	return displayName, ce.CustomError(err)
 }

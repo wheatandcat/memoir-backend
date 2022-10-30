@@ -50,26 +50,26 @@ func CustomError(err error) error {
 	// 既にスタックトレースの設定がある場合は、そのままエラーを返す
 	_, ok := err.(interface{ StackTrace() errors.StackTrace })
 	if ok {
-		return err
+		return err // nocheck:checkcustomerror
 	}
 
 	e := errors.WithStack(err)
 	GetCustomStackTrace(e)
 
-	return e
+	return e // nocheck:checkcustomerror
 }
 
 func CustomErrorWrap(err error, message string) error {
 	// 既にスタックトレースの設定がある場合は、そのままエラーを返す
 	_, ok := err.(interface{ StackTrace() errors.StackTrace })
 	if ok {
-		return err
+		return err // nocheck:checkcustomerror
 	}
 
 	e := errors.Wrap(err, message)
 	GetCustomStackTrace(e)
 
-	return e
+	return e // nocheck:checkcustomerror
 }
 
 type RequestError struct {
