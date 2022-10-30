@@ -7,6 +7,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
@@ -123,5 +124,5 @@ func (t graphqlTracer) InterceptField(
 		span.SetAttributes(attribute.Key("error.message").String(err.Message))
 	}
 
-	return res, err
+	return res, ce.CustomError(err)
 }

@@ -140,3 +140,10 @@ $ base64 -i serviceAccount.production.json | pbcopy
 ```zsh
 $ base64 -i gcpServiceAccount.production.json | pbcopy
 ```
+
+## 静的解析
+
+```zsh
+$ go install github.com/wheatandcat/memoir-static-analytics/checkcustomerror/cmd/checkcustomerror@v0.0.7
+$ go vet -vettool=$(which checkcustomerror) ./...
+```
