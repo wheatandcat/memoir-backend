@@ -18,22 +18,22 @@ var _ auth.UseCase = &UseCaseMock{}
 
 // UseCaseMock is a mock implementation of auth.UseCase.
 //
-// 	func TestSomethingThatUsesUseCase(t *testing.T) {
+//	func TestSomethingThatUsesUseCase(t *testing.T) {
 //
-// 		// make and configure a mocked auth.UseCase
-// 		mockedUseCase := &UseCaseMock{
-// 			CreateAuthUserFunc: func(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) (string, error) {
-// 				panic("mock out the CreateAuthUser method")
-// 			},
-// 			DeleteAuthUserFunc: func(ctx context.Context, f *firestore.Client, uid string) error {
-// 				panic("mock out the DeleteAuthUser method")
-// 			},
-// 		}
+//		// make and configure a mocked auth.UseCase
+//		mockedUseCase := &UseCaseMock{
+//			CreateAuthUserFunc: func(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) (string, error) {
+//				panic("mock out the CreateAuthUser method")
+//			},
+//			DeleteAuthUserFunc: func(ctx context.Context, f *firestore.Client, uid string) error {
+//				panic("mock out the DeleteAuthUser method")
+//			},
+//		}
 //
-// 		// use mockedUseCase in code that requires auth.UseCase
-// 		// and then make assertions.
+//		// use mockedUseCase in code that requires auth.UseCase
+//		// and then make assertions.
 //
-// 	}
+//	}
 type UseCaseMock struct {
 	// CreateAuthUserFunc mocks the CreateAuthUser method.
 	CreateAuthUserFunc func(ctx context.Context, f *firestore.Client, input *model.NewAuthUser, u *repository.User, mu *model.AuthUser) (string, error)
@@ -96,7 +96,8 @@ func (mock *UseCaseMock) CreateAuthUser(ctx context.Context, f *firestore.Client
 
 // CreateAuthUserCalls gets all the calls that were made to CreateAuthUser.
 // Check the length with:
-//     len(mockedUseCase.CreateAuthUserCalls())
+//
+//	len(mockedUseCase.CreateAuthUserCalls())
 func (mock *UseCaseMock) CreateAuthUserCalls() []struct {
 	Ctx   context.Context
 	F     *firestore.Client
@@ -139,7 +140,8 @@ func (mock *UseCaseMock) DeleteAuthUser(ctx context.Context, f *firestore.Client
 
 // DeleteAuthUserCalls gets all the calls that were made to DeleteAuthUser.
 // Check the length with:
-//     len(mockedUseCase.DeleteAuthUserCalls())
+//
+//	len(mockedUseCase.DeleteAuthUserCalls())
 func (mock *UseCaseMock) DeleteAuthUserCalls() []struct {
 	Ctx context.Context
 	F   *firestore.Client

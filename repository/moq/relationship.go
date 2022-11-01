@@ -17,28 +17,28 @@ var _ repository.RelationshipInterface = &RelationshipInterfaceMock{}
 
 // RelationshipInterfaceMock is a mock implementation of repository.RelationshipInterface.
 //
-// 	func TestSomethingThatUsesRelationshipInterface(t *testing.T) {
+//	func TestSomethingThatUsesRelationshipInterface(t *testing.T) {
 //
-// 		// make and configure a mocked repository.RelationshipInterface
-// 		mockedRelationshipInterface := &RelationshipInterfaceMock{
-// 			CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)  {
-// 				panic("mock out the Create method")
-// 			},
-// 			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)  {
-// 				panic("mock out the Delete method")
-// 			},
-// 			ExistByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (bool, error) {
-// 				panic("mock out the ExistByFollowedID method")
-// 			},
-// 			FindByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string, first int, cursor repository.RelationshipCursor) ([]*model.Relationship, error) {
-// 				panic("mock out the FindByFollowedID method")
-// 			},
-// 		}
+//		// make and configure a mocked repository.RelationshipInterface
+//		mockedRelationshipInterface := &RelationshipInterfaceMock{
+//			CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)  {
+//				panic("mock out the Create method")
+//			},
+//			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)  {
+//				panic("mock out the Delete method")
+//			},
+//			ExistByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (bool, error) {
+//				panic("mock out the ExistByFollowedID method")
+//			},
+//			FindByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string, first int, cursor repository.RelationshipCursor) ([]*model.Relationship, error) {
+//				panic("mock out the FindByFollowedID method")
+//			},
+//		}
 //
-// 		// use mockedRelationshipInterface in code that requires repository.RelationshipInterface
-// 		// and then make assertions.
+//		// use mockedRelationshipInterface in code that requires repository.RelationshipInterface
+//		// and then make assertions.
 //
-// 	}
+//	}
 type RelationshipInterfaceMock struct {
 	// CreateFunc mocks the Create method.
 	CreateFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship)
@@ -129,7 +129,8 @@ func (mock *RelationshipInterfaceMock) Create(ctx context.Context, f *firestore.
 
 // CreateCalls gets all the calls that were made to Create.
 // Check the length with:
-//     len(mockedRelationshipInterface.CreateCalls())
+//
+//	len(mockedRelationshipInterface.CreateCalls())
 func (mock *RelationshipInterfaceMock) CreateCalls() []struct {
 	Ctx   context.Context
 	F     *firestore.Client
@@ -172,7 +173,8 @@ func (mock *RelationshipInterfaceMock) Delete(ctx context.Context, f *firestore.
 
 // DeleteCalls gets all the calls that were made to Delete.
 // Check the length with:
-//     len(mockedRelationshipInterface.DeleteCalls())
+//
+//	len(mockedRelationshipInterface.DeleteCalls())
 func (mock *RelationshipInterfaceMock) DeleteCalls() []struct {
 	Ctx   context.Context
 	F     *firestore.Client
@@ -213,7 +215,8 @@ func (mock *RelationshipInterfaceMock) ExistByFollowedID(ctx context.Context, f 
 
 // ExistByFollowedIDCalls gets all the calls that were made to ExistByFollowedID.
 // Check the length with:
-//     len(mockedRelationshipInterface.ExistByFollowedIDCalls())
+//
+//	len(mockedRelationshipInterface.ExistByFollowedIDCalls())
 func (mock *RelationshipInterfaceMock) ExistByFollowedIDCalls() []struct {
 	Ctx    context.Context
 	F      *firestore.Client
@@ -256,7 +259,8 @@ func (mock *RelationshipInterfaceMock) FindByFollowedID(ctx context.Context, f *
 
 // FindByFollowedIDCalls gets all the calls that were made to FindByFollowedID.
 // Check the length with:
-//     len(mockedRelationshipInterface.FindByFollowedIDCalls())
+//
+//	len(mockedRelationshipInterface.FindByFollowedIDCalls())
 func (mock *RelationshipInterfaceMock) FindByFollowedIDCalls() []struct {
 	Ctx    context.Context
 	F      *firestore.Client

@@ -17,43 +17,43 @@ var _ repository.UserRepositoryInterface = &UserRepositoryInterfaceMock{}
 
 // UserRepositoryInterfaceMock is a mock implementation of repository.UserRepositoryInterface.
 //
-// 	func TestSomethingThatUsesUserRepositoryInterface(t *testing.T) {
+//	func TestSomethingThatUsesUserRepositoryInterface(t *testing.T) {
 //
-// 		// make and configure a mocked repository.UserRepositoryInterface
-// 		mockedUserRepositoryInterface := &UserRepositoryInterfaceMock{
-// 			CreateFunc: func(ctx context.Context, f *firestore.Client, u *model.User) error {
-// 				panic("mock out the Create method")
-// 			},
-// 			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string) error {
-// 				panic("mock out the Delete method")
-// 			},
-// 			ExistByFirebaseUIDFunc: func(ctx context.Context, f *firestore.Client, fUID string) (bool, error) {
-// 				panic("mock out the ExistByFirebaseUID method")
-// 			},
-// 			FindByFirebaseUIDFunc: func(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error) {
-// 				panic("mock out the FindByFirebaseUID method")
-// 			},
-// 			FindByUIDFunc: func(ctx context.Context, f *firestore.Client, uid string) (*model.User, error) {
-// 				panic("mock out the FindByUID method")
-// 			},
-// 			FindDatabaseDataByUIDFunc: func(ctx context.Context, f *firestore.Client, uid string) (*repository.User, error) {
-// 				panic("mock out the FindDatabaseDataByUID method")
-// 			},
-// 			FindInUIDFunc: func(ctx context.Context, f *firestore.Client, uid []string) ([]*model.User, error) {
-// 				panic("mock out the FindInUID method")
-// 			},
-// 			UpdateFunc: func(ctx context.Context, f *firestore.Client, u *model.User) error {
-// 				panic("mock out the Update method")
-// 			},
-// 			UpdateFirebaseUIDFunc: func(ctx context.Context, f *firestore.Client, user *repository.User) error {
-// 				panic("mock out the UpdateFirebaseUID method")
-// 			},
-// 		}
+//		// make and configure a mocked repository.UserRepositoryInterface
+//		mockedUserRepositoryInterface := &UserRepositoryInterfaceMock{
+//			CreateFunc: func(ctx context.Context, f *firestore.Client, u *model.User) error {
+//				panic("mock out the Create method")
+//			},
+//			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string) error {
+//				panic("mock out the Delete method")
+//			},
+//			ExistByFirebaseUIDFunc: func(ctx context.Context, f *firestore.Client, fUID string) (bool, error) {
+//				panic("mock out the ExistByFirebaseUID method")
+//			},
+//			FindByFirebaseUIDFunc: func(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error) {
+//				panic("mock out the FindByFirebaseUID method")
+//			},
+//			FindByUIDFunc: func(ctx context.Context, f *firestore.Client, uid string) (*model.User, error) {
+//				panic("mock out the FindByUID method")
+//			},
+//			FindDatabaseDataByUIDFunc: func(ctx context.Context, f *firestore.Client, uid string) (*repository.User, error) {
+//				panic("mock out the FindDatabaseDataByUID method")
+//			},
+//			FindInUIDFunc: func(ctx context.Context, f *firestore.Client, uid []string) ([]*model.User, error) {
+//				panic("mock out the FindInUID method")
+//			},
+//			UpdateFunc: func(ctx context.Context, f *firestore.Client, u *model.User) error {
+//				panic("mock out the Update method")
+//			},
+//			UpdateFirebaseUIDFunc: func(ctx context.Context, f *firestore.Client, user *repository.User) error {
+//				panic("mock out the UpdateFirebaseUID method")
+//			},
+//		}
 //
-// 		// use mockedUserRepositoryInterface in code that requires repository.UserRepositoryInterface
-// 		// and then make assertions.
+//		// use mockedUserRepositoryInterface in code that requires repository.UserRepositoryInterface
+//		// and then make assertions.
 //
-// 	}
+//	}
 type UserRepositoryInterfaceMock struct {
 	// CreateFunc mocks the Create method.
 	CreateFunc func(ctx context.Context, f *firestore.Client, u *model.User) error
@@ -201,7 +201,8 @@ func (mock *UserRepositoryInterfaceMock) Create(ctx context.Context, f *firestor
 
 // CreateCalls gets all the calls that were made to Create.
 // Check the length with:
-//     len(mockedUserRepositoryInterface.CreateCalls())
+//
+//	len(mockedUserRepositoryInterface.CreateCalls())
 func (mock *UserRepositoryInterfaceMock) CreateCalls() []struct {
 	Ctx context.Context
 	F   *firestore.Client
@@ -242,7 +243,8 @@ func (mock *UserRepositoryInterfaceMock) Delete(ctx context.Context, f *firestor
 
 // DeleteCalls gets all the calls that were made to Delete.
 // Check the length with:
-//     len(mockedUserRepositoryInterface.DeleteCalls())
+//
+//	len(mockedUserRepositoryInterface.DeleteCalls())
 func (mock *UserRepositoryInterfaceMock) DeleteCalls() []struct {
 	Ctx   context.Context
 	F     *firestore.Client
@@ -283,7 +285,8 @@ func (mock *UserRepositoryInterfaceMock) ExistByFirebaseUID(ctx context.Context,
 
 // ExistByFirebaseUIDCalls gets all the calls that were made to ExistByFirebaseUID.
 // Check the length with:
-//     len(mockedUserRepositoryInterface.ExistByFirebaseUIDCalls())
+//
+//	len(mockedUserRepositoryInterface.ExistByFirebaseUIDCalls())
 func (mock *UserRepositoryInterfaceMock) ExistByFirebaseUIDCalls() []struct {
 	Ctx  context.Context
 	F    *firestore.Client
@@ -322,7 +325,8 @@ func (mock *UserRepositoryInterfaceMock) FindByFirebaseUID(ctx context.Context, 
 
 // FindByFirebaseUIDCalls gets all the calls that were made to FindByFirebaseUID.
 // Check the length with:
-//     len(mockedUserRepositoryInterface.FindByFirebaseUIDCalls())
+//
+//	len(mockedUserRepositoryInterface.FindByFirebaseUIDCalls())
 func (mock *UserRepositoryInterfaceMock) FindByFirebaseUIDCalls() []struct {
 	Ctx  context.Context
 	F    *firestore.Client
@@ -361,7 +365,8 @@ func (mock *UserRepositoryInterfaceMock) FindByUID(ctx context.Context, f *fires
 
 // FindByUIDCalls gets all the calls that were made to FindByUID.
 // Check the length with:
-//     len(mockedUserRepositoryInterface.FindByUIDCalls())
+//
+//	len(mockedUserRepositoryInterface.FindByUIDCalls())
 func (mock *UserRepositoryInterfaceMock) FindByUIDCalls() []struct {
 	Ctx context.Context
 	F   *firestore.Client
@@ -400,7 +405,8 @@ func (mock *UserRepositoryInterfaceMock) FindDatabaseDataByUID(ctx context.Conte
 
 // FindDatabaseDataByUIDCalls gets all the calls that were made to FindDatabaseDataByUID.
 // Check the length with:
-//     len(mockedUserRepositoryInterface.FindDatabaseDataByUIDCalls())
+//
+//	len(mockedUserRepositoryInterface.FindDatabaseDataByUIDCalls())
 func (mock *UserRepositoryInterfaceMock) FindDatabaseDataByUIDCalls() []struct {
 	Ctx context.Context
 	F   *firestore.Client
@@ -439,7 +445,8 @@ func (mock *UserRepositoryInterfaceMock) FindInUID(ctx context.Context, f *fires
 
 // FindInUIDCalls gets all the calls that were made to FindInUID.
 // Check the length with:
-//     len(mockedUserRepositoryInterface.FindInUIDCalls())
+//
+//	len(mockedUserRepositoryInterface.FindInUIDCalls())
 func (mock *UserRepositoryInterfaceMock) FindInUIDCalls() []struct {
 	Ctx context.Context
 	F   *firestore.Client
@@ -478,7 +485,8 @@ func (mock *UserRepositoryInterfaceMock) Update(ctx context.Context, f *firestor
 
 // UpdateCalls gets all the calls that were made to Update.
 // Check the length with:
-//     len(mockedUserRepositoryInterface.UpdateCalls())
+//
+//	len(mockedUserRepositoryInterface.UpdateCalls())
 func (mock *UserRepositoryInterfaceMock) UpdateCalls() []struct {
 	Ctx context.Context
 	F   *firestore.Client
@@ -517,7 +525,8 @@ func (mock *UserRepositoryInterfaceMock) UpdateFirebaseUID(ctx context.Context, 
 
 // UpdateFirebaseUIDCalls gets all the calls that were made to UpdateFirebaseUID.
 // Check the length with:
-//     len(mockedUserRepositoryInterface.UpdateFirebaseUIDCalls())
+//
+//	len(mockedUserRepositoryInterface.UpdateFirebaseUIDCalls())
 func (mock *UserRepositoryInterfaceMock) UpdateFirebaseUIDCalls() []struct {
 	Ctx  context.Context
 	F    *firestore.Client

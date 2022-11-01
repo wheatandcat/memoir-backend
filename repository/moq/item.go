@@ -18,37 +18,37 @@ var _ repository.ItemRepositoryInterface = &ItemRepositoryInterfaceMock{}
 
 // ItemRepositoryInterfaceMock is a mock implementation of repository.ItemRepositoryInterface.
 //
-// 	func TestSomethingThatUsesItemRepositoryInterface(t *testing.T) {
+//	func TestSomethingThatUsesItemRepositoryInterface(t *testing.T) {
 //
-// 		// make and configure a mocked repository.ItemRepositoryInterface
-// 		mockedItemRepositoryInterface := &ItemRepositoryInterfaceMock{
-// 			CreateFunc: func(ctx context.Context, f *firestore.Client, userID string, i *model.Item) error {
-// 				panic("mock out the Create method")
-// 			},
-// 			DeleteFunc: func(ctx context.Context, f *firestore.Client, userID string, i *model.DeleteItem) error {
-// 				panic("mock out the Delete method")
-// 			},
-// 			GetItemFunc: func(ctx context.Context, f *firestore.Client, userID string, id string) (*model.Item, error) {
-// 				panic("mock out the GetItem method")
-// 			},
-// 			GetItemUserMultipleInPeriodFunc: func(ctx context.Context, f *firestore.Client, sip repository.SearchItemParam, first int, cursor repository.ItemsInPeriodCursor) ([]*model.Item, error) {
-// 				panic("mock out the GetItemUserMultipleInPeriod method")
-// 			},
-// 			GetItemsInDateFunc: func(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error) {
-// 				panic("mock out the GetItemsInDate method")
-// 			},
-// 			GetItemsInPeriodFunc: func(ctx context.Context, f *firestore.Client, userID string, stertDate time.Time, endDate time.Time, first int, cursor repository.ItemsInPeriodCursor) ([]*model.Item, error) {
-// 				panic("mock out the GetItemsInPeriod method")
-// 			},
-// 			UpdateFunc: func(ctx context.Context, f *firestore.Client, userID string, i *model.UpdateItem, updatedAt time.Time) error {
-// 				panic("mock out the Update method")
-// 			},
-// 		}
+//		// make and configure a mocked repository.ItemRepositoryInterface
+//		mockedItemRepositoryInterface := &ItemRepositoryInterfaceMock{
+//			CreateFunc: func(ctx context.Context, f *firestore.Client, userID string, i *model.Item) error {
+//				panic("mock out the Create method")
+//			},
+//			DeleteFunc: func(ctx context.Context, f *firestore.Client, userID string, i *model.DeleteItem) error {
+//				panic("mock out the Delete method")
+//			},
+//			GetItemFunc: func(ctx context.Context, f *firestore.Client, userID string, id string) (*model.Item, error) {
+//				panic("mock out the GetItem method")
+//			},
+//			GetItemUserMultipleInPeriodFunc: func(ctx context.Context, f *firestore.Client, sip repository.SearchItemParam, first int, cursor repository.ItemsInPeriodCursor) ([]*model.Item, error) {
+//				panic("mock out the GetItemUserMultipleInPeriod method")
+//			},
+//			GetItemsInDateFunc: func(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error) {
+//				panic("mock out the GetItemsInDate method")
+//			},
+//			GetItemsInPeriodFunc: func(ctx context.Context, f *firestore.Client, userID string, stertDate time.Time, endDate time.Time, first int, cursor repository.ItemsInPeriodCursor) ([]*model.Item, error) {
+//				panic("mock out the GetItemsInPeriod method")
+//			},
+//			UpdateFunc: func(ctx context.Context, f *firestore.Client, userID string, i *model.UpdateItem, updatedAt time.Time) error {
+//				panic("mock out the Update method")
+//			},
+//		}
 //
-// 		// use mockedItemRepositoryInterface in code that requires repository.ItemRepositoryInterface
-// 		// and then make assertions.
+//		// use mockedItemRepositoryInterface in code that requires repository.ItemRepositoryInterface
+//		// and then make assertions.
 //
-// 	}
+//	}
 type ItemRepositoryInterfaceMock struct {
 	// CreateFunc mocks the Create method.
 	CreateFunc func(ctx context.Context, f *firestore.Client, userID string, i *model.Item) error
@@ -194,7 +194,8 @@ func (mock *ItemRepositoryInterfaceMock) Create(ctx context.Context, f *firestor
 
 // CreateCalls gets all the calls that were made to Create.
 // Check the length with:
-//     len(mockedItemRepositoryInterface.CreateCalls())
+//
+//	len(mockedItemRepositoryInterface.CreateCalls())
 func (mock *ItemRepositoryInterfaceMock) CreateCalls() []struct {
 	Ctx    context.Context
 	F      *firestore.Client
@@ -237,7 +238,8 @@ func (mock *ItemRepositoryInterfaceMock) Delete(ctx context.Context, f *firestor
 
 // DeleteCalls gets all the calls that were made to Delete.
 // Check the length with:
-//     len(mockedItemRepositoryInterface.DeleteCalls())
+//
+//	len(mockedItemRepositoryInterface.DeleteCalls())
 func (mock *ItemRepositoryInterfaceMock) DeleteCalls() []struct {
 	Ctx    context.Context
 	F      *firestore.Client
@@ -280,7 +282,8 @@ func (mock *ItemRepositoryInterfaceMock) GetItem(ctx context.Context, f *firesto
 
 // GetItemCalls gets all the calls that were made to GetItem.
 // Check the length with:
-//     len(mockedItemRepositoryInterface.GetItemCalls())
+//
+//	len(mockedItemRepositoryInterface.GetItemCalls())
 func (mock *ItemRepositoryInterfaceMock) GetItemCalls() []struct {
 	Ctx    context.Context
 	F      *firestore.Client
@@ -325,7 +328,8 @@ func (mock *ItemRepositoryInterfaceMock) GetItemUserMultipleInPeriod(ctx context
 
 // GetItemUserMultipleInPeriodCalls gets all the calls that were made to GetItemUserMultipleInPeriod.
 // Check the length with:
-//     len(mockedItemRepositoryInterface.GetItemUserMultipleInPeriodCalls())
+//
+//	len(mockedItemRepositoryInterface.GetItemUserMultipleInPeriodCalls())
 func (mock *ItemRepositoryInterfaceMock) GetItemUserMultipleInPeriodCalls() []struct {
 	Ctx    context.Context
 	F      *firestore.Client
@@ -370,7 +374,8 @@ func (mock *ItemRepositoryInterfaceMock) GetItemsInDate(ctx context.Context, f *
 
 // GetItemsInDateCalls gets all the calls that were made to GetItemsInDate.
 // Check the length with:
-//     len(mockedItemRepositoryInterface.GetItemsInDateCalls())
+//
+//	len(mockedItemRepositoryInterface.GetItemsInDateCalls())
 func (mock *ItemRepositoryInterfaceMock) GetItemsInDateCalls() []struct {
 	Ctx    context.Context
 	F      *firestore.Client
@@ -419,7 +424,8 @@ func (mock *ItemRepositoryInterfaceMock) GetItemsInPeriod(ctx context.Context, f
 
 // GetItemsInPeriodCalls gets all the calls that were made to GetItemsInPeriod.
 // Check the length with:
-//     len(mockedItemRepositoryInterface.GetItemsInPeriodCalls())
+//
+//	len(mockedItemRepositoryInterface.GetItemsInPeriodCalls())
 func (mock *ItemRepositoryInterfaceMock) GetItemsInPeriodCalls() []struct {
 	Ctx       context.Context
 	F         *firestore.Client
@@ -470,7 +476,8 @@ func (mock *ItemRepositoryInterfaceMock) Update(ctx context.Context, f *firestor
 
 // UpdateCalls gets all the calls that were made to Update.
 // Check the length with:
-//     len(mockedItemRepositoryInterface.UpdateCalls())
+//
+//	len(mockedItemRepositoryInterface.UpdateCalls())
 func (mock *ItemRepositoryInterfaceMock) UpdateCalls() []struct {
 	Ctx       context.Context
 	F         *firestore.Client

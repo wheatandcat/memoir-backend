@@ -7,8 +7,9 @@
 ### 導入
 
 ```
+$ go install github.com/matryer/moq@latest
 $ go install github.com/go-delve/delve/cmd/dlv@latest
-$ go get -u github.com/cosmtrek/air
+$ go install github.com/cosmtrek/air@latest
 ```
 
 ### 起動
@@ -42,7 +43,7 @@ $ make moqgen
 テストを実行
 
 ```zsh
-$ go test -race ./...
+$ go test ./...
 ```
 
 ### カバレッジ表示
