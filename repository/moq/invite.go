@@ -17,31 +17,31 @@ var _ repository.InviteRepositoryInterface = &InviteRepositoryInterfaceMock{}
 
 // InviteRepositoryInterfaceMock is a mock implementation of repository.InviteRepositoryInterface.
 //
-// 	func TestSomethingThatUsesInviteRepositoryInterface(t *testing.T) {
+//	func TestSomethingThatUsesInviteRepositoryInterface(t *testing.T) {
 //
-// 		// make and configure a mocked repository.InviteRepositoryInterface
-// 		mockedInviteRepositoryInterface := &InviteRepositoryInterfaceMock{
-// 			CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Invite)  {
-// 				panic("mock out the Create method")
-// 			},
-// 			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, code string)  {
-// 				panic("mock out the Delete method")
-// 			},
-// 			DeleteByUserIDFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error {
-// 				panic("mock out the DeleteByUserID method")
-// 			},
-// 			FindFunc: func(ctx context.Context, f *firestore.Client, code string) (*model.Invite, error) {
-// 				panic("mock out the Find method")
-// 			},
-// 			FindByUserIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (*model.Invite, error) {
-// 				panic("mock out the FindByUserID method")
-// 			},
-// 		}
+//		// make and configure a mocked repository.InviteRepositoryInterface
+//		mockedInviteRepositoryInterface := &InviteRepositoryInterfaceMock{
+//			CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Invite)  {
+//				panic("mock out the Create method")
+//			},
+//			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, code string)  {
+//				panic("mock out the Delete method")
+//			},
+//			DeleteByUserIDFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error {
+//				panic("mock out the DeleteByUserID method")
+//			},
+//			FindFunc: func(ctx context.Context, f *firestore.Client, code string) (*model.Invite, error) {
+//				panic("mock out the Find method")
+//			},
+//			FindByUserIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (*model.Invite, error) {
+//				panic("mock out the FindByUserID method")
+//			},
+//		}
 //
-// 		// use mockedInviteRepositoryInterface in code that requires repository.InviteRepositoryInterface
-// 		// and then make assertions.
+//		// use mockedInviteRepositoryInterface in code that requires repository.InviteRepositoryInterface
+//		// and then make assertions.
 //
-// 	}
+//	}
 type InviteRepositoryInterfaceMock struct {
 	// CreateFunc mocks the Create method.
 	CreateFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Invite)
@@ -143,7 +143,8 @@ func (mock *InviteRepositoryInterfaceMock) Create(ctx context.Context, f *firest
 
 // CreateCalls gets all the calls that were made to Create.
 // Check the length with:
-//     len(mockedInviteRepositoryInterface.CreateCalls())
+//
+//	len(mockedInviteRepositoryInterface.CreateCalls())
 func (mock *InviteRepositoryInterfaceMock) CreateCalls() []struct {
 	Ctx   context.Context
 	F     *firestore.Client
@@ -186,7 +187,8 @@ func (mock *InviteRepositoryInterfaceMock) Delete(ctx context.Context, f *firest
 
 // DeleteCalls gets all the calls that were made to Delete.
 // Check the length with:
-//     len(mockedInviteRepositoryInterface.DeleteCalls())
+//
+//	len(mockedInviteRepositoryInterface.DeleteCalls())
 func (mock *InviteRepositoryInterfaceMock) DeleteCalls() []struct {
 	Ctx   context.Context
 	F     *firestore.Client
@@ -229,7 +231,8 @@ func (mock *InviteRepositoryInterfaceMock) DeleteByUserID(ctx context.Context, f
 
 // DeleteByUserIDCalls gets all the calls that were made to DeleteByUserID.
 // Check the length with:
-//     len(mockedInviteRepositoryInterface.DeleteByUserIDCalls())
+//
+//	len(mockedInviteRepositoryInterface.DeleteByUserIDCalls())
 func (mock *InviteRepositoryInterfaceMock) DeleteByUserIDCalls() []struct {
 	Ctx    context.Context
 	F      *firestore.Client
@@ -270,7 +273,8 @@ func (mock *InviteRepositoryInterfaceMock) Find(ctx context.Context, f *firestor
 
 // FindCalls gets all the calls that were made to Find.
 // Check the length with:
-//     len(mockedInviteRepositoryInterface.FindCalls())
+//
+//	len(mockedInviteRepositoryInterface.FindCalls())
 func (mock *InviteRepositoryInterfaceMock) FindCalls() []struct {
 	Ctx  context.Context
 	F    *firestore.Client
@@ -309,7 +313,8 @@ func (mock *InviteRepositoryInterfaceMock) FindByUserID(ctx context.Context, f *
 
 // FindByUserIDCalls gets all the calls that were made to FindByUserID.
 // Check the length with:
-//     len(mockedInviteRepositoryInterface.FindByUserIDCalls())
+//
+//	len(mockedInviteRepositoryInterface.FindByUserIDCalls())
 func (mock *InviteRepositoryInterfaceMock) FindByUserIDCalls() []struct {
 	Ctx    context.Context
 	F      *firestore.Client

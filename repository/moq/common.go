@@ -16,19 +16,19 @@ var _ repository.CommonRepositoryInterface = &CommonRepositoryInterfaceMock{}
 
 // CommonRepositoryInterfaceMock is a mock implementation of repository.CommonRepositoryInterface.
 //
-// 	func TestSomethingThatUsesCommonRepositoryInterface(t *testing.T) {
+//	func TestSomethingThatUsesCommonRepositoryInterface(t *testing.T) {
 //
-// 		// make and configure a mocked repository.CommonRepositoryInterface
-// 		mockedCommonRepositoryInterface := &CommonRepositoryInterfaceMock{
-// 			CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
-// 				panic("mock out the Commit method")
-// 			},
-// 		}
+//		// make and configure a mocked repository.CommonRepositoryInterface
+//		mockedCommonRepositoryInterface := &CommonRepositoryInterfaceMock{
+//			CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
+//				panic("mock out the Commit method")
+//			},
+//		}
 //
-// 		// use mockedCommonRepositoryInterface in code that requires repository.CommonRepositoryInterface
-// 		// and then make assertions.
+//		// use mockedCommonRepositoryInterface in code that requires repository.CommonRepositoryInterface
+//		// and then make assertions.
 //
-// 	}
+//	}
 type CommonRepositoryInterfaceMock struct {
 	// CommitFunc mocks the Commit method.
 	CommitFunc func(ctx context.Context, batch *firestore.WriteBatch) error
@@ -66,7 +66,8 @@ func (mock *CommonRepositoryInterfaceMock) Commit(ctx context.Context, batch *fi
 
 // CommitCalls gets all the calls that were made to Commit.
 // Check the length with:
-//     len(mockedCommonRepositoryInterface.CommitCalls())
+//
+//	len(mockedCommonRepositoryInterface.CommitCalls())
 func (mock *CommonRepositoryInterfaceMock) CommitCalls() []struct {
 	Ctx   context.Context
 	Batch *firestore.WriteBatch

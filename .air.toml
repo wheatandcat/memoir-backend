@@ -5,7 +5,7 @@ tmp_dir = "tmp"
   bin = "./tmp/main"
   cmd = "go build -gcflags \"all=-N -l\" -o ./tmp/main ."
   delay = 1000
-  exclude_dir = ["assets", "tmp", "vendor", "node_modules", ".expo-shared","scripts"]
+  exclude_dir = ["assets", "tmp", "vendor", "node_modules", ".expo-shared", "scripts", "e2e", "docs"]
   exclude_file = []
   exclude_regex = []
   exclude_unchanged = false

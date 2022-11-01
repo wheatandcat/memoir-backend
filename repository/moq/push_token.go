@@ -17,25 +17,25 @@ var _ repository.PushTokenRepositoryInterface = &PushTokenRepositoryInterfaceMoc
 
 // PushTokenRepositoryInterfaceMock is a mock implementation of repository.PushTokenRepositoryInterface.
 //
-// 	func TestSomethingThatUsesPushTokenRepositoryInterface(t *testing.T) {
+//	func TestSomethingThatUsesPushTokenRepositoryInterface(t *testing.T) {
 //
-// 		// make and configure a mocked repository.PushTokenRepositoryInterface
-// 		mockedPushTokenRepositoryInterface := &PushTokenRepositoryInterfaceMock{
-// 			CreateFunc: func(ctx context.Context, f *firestore.Client, userID string, i *model.PushToken) error {
-// 				panic("mock out the Create method")
-// 			},
-// 			GetItemsFunc: func(ctx context.Context, f *firestore.Client, userID string) ([]*model.PushToken, error) {
-// 				panic("mock out the GetItems method")
-// 			},
-// 			GetTokensFunc: func(ctx context.Context, f *firestore.Client, userID string) []string {
-// 				panic("mock out the GetTokens method")
-// 			},
-// 		}
+//		// make and configure a mocked repository.PushTokenRepositoryInterface
+//		mockedPushTokenRepositoryInterface := &PushTokenRepositoryInterfaceMock{
+//			CreateFunc: func(ctx context.Context, f *firestore.Client, userID string, i *model.PushToken) error {
+//				panic("mock out the Create method")
+//			},
+//			GetItemsFunc: func(ctx context.Context, f *firestore.Client, userID string) ([]*model.PushToken, error) {
+//				panic("mock out the GetItems method")
+//			},
+//			GetTokensFunc: func(ctx context.Context, f *firestore.Client, userID string) []string {
+//				panic("mock out the GetTokens method")
+//			},
+//		}
 //
-// 		// use mockedPushTokenRepositoryInterface in code that requires repository.PushTokenRepositoryInterface
-// 		// and then make assertions.
+//		// use mockedPushTokenRepositoryInterface in code that requires repository.PushTokenRepositoryInterface
+//		// and then make assertions.
 //
-// 	}
+//	}
 type PushTokenRepositoryInterfaceMock struct {
 	// CreateFunc mocks the Create method.
 	CreateFunc func(ctx context.Context, f *firestore.Client, userID string, i *model.PushToken) error
@@ -107,7 +107,8 @@ func (mock *PushTokenRepositoryInterfaceMock) Create(ctx context.Context, f *fir
 
 // CreateCalls gets all the calls that were made to Create.
 // Check the length with:
-//     len(mockedPushTokenRepositoryInterface.CreateCalls())
+//
+//	len(mockedPushTokenRepositoryInterface.CreateCalls())
 func (mock *PushTokenRepositoryInterfaceMock) CreateCalls() []struct {
 	Ctx    context.Context
 	F      *firestore.Client
@@ -148,7 +149,8 @@ func (mock *PushTokenRepositoryInterfaceMock) GetItems(ctx context.Context, f *f
 
 // GetItemsCalls gets all the calls that were made to GetItems.
 // Check the length with:
-//     len(mockedPushTokenRepositoryInterface.GetItemsCalls())
+//
+//	len(mockedPushTokenRepositoryInterface.GetItemsCalls())
 func (mock *PushTokenRepositoryInterfaceMock) GetItemsCalls() []struct {
 	Ctx    context.Context
 	F      *firestore.Client
@@ -187,7 +189,8 @@ func (mock *PushTokenRepositoryInterfaceMock) GetTokens(ctx context.Context, f *
 
 // GetTokensCalls gets all the calls that were made to GetTokens.
 // Check the length with:
-//     len(mockedPushTokenRepositoryInterface.GetTokensCalls())
+//
+//	len(mockedPushTokenRepositoryInterface.GetTokensCalls())
 func (mock *PushTokenRepositoryInterfaceMock) GetTokensCalls() []struct {
 	Ctx    context.Context
 	F      *firestore.Client

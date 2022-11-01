@@ -16,19 +16,19 @@ var _ repository.AuthRepositoryInterface = &AuthRepositoryInterfaceMock{}
 
 // AuthRepositoryInterfaceMock is a mock implementation of repository.AuthRepositoryInterface.
 //
-// 	func TestSomethingThatUsesAuthRepositoryInterface(t *testing.T) {
+//	func TestSomethingThatUsesAuthRepositoryInterface(t *testing.T) {
 //
-// 		// make and configure a mocked repository.AuthRepositoryInterface
-// 		mockedAuthRepositoryInterface := &AuthRepositoryInterfaceMock{
-// 			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string)  {
-// 				panic("mock out the Delete method")
-// 			},
-// 		}
+//		// make and configure a mocked repository.AuthRepositoryInterface
+//		mockedAuthRepositoryInterface := &AuthRepositoryInterfaceMock{
+//			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string)  {
+//				panic("mock out the Delete method")
+//			},
+//		}
 //
-// 		// use mockedAuthRepositoryInterface in code that requires repository.AuthRepositoryInterface
-// 		// and then make assertions.
+//		// use mockedAuthRepositoryInterface in code that requires repository.AuthRepositoryInterface
+//		// and then make assertions.
 //
-// 	}
+//	}
 type AuthRepositoryInterfaceMock struct {
 	// DeleteFunc mocks the Delete method.
 	DeleteFunc func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string)
@@ -74,7 +74,8 @@ func (mock *AuthRepositoryInterfaceMock) Delete(ctx context.Context, f *firestor
 
 // DeleteCalls gets all the calls that were made to Delete.
 // Check the length with:
-//     len(mockedAuthRepositoryInterface.DeleteCalls())
+//
+//	len(mockedAuthRepositoryInterface.DeleteCalls())
 func (mock *AuthRepositoryInterfaceMock) DeleteCalls() []struct {
 	Ctx   context.Context
 	F     *firestore.Client
