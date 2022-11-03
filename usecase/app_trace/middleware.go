@@ -7,10 +7,11 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 
-	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
+
+	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
 
 type graphqlTracer struct {

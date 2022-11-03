@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
+
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"

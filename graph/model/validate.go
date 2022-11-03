@@ -2,6 +2,7 @@ package model
 
 import (
 	validation "github.com/go-ozzo/ozzo-validation"
+
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
 

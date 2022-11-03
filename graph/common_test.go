@@ -4,18 +4,20 @@ import (
 	"errors"
 	"testing"
 
+	"go.opentelemetry.io/otel/trace"
+	"gopkg.in/go-playground/assert.v1"
+
 	mock_authToken "github.com/wheatandcat/memoir-backend/client/authToken/mocks"
 	mock_task "github.com/wheatandcat/memoir-backend/client/task/mocks"
 	mock_timegen "github.com/wheatandcat/memoir-backend/client/timegen/mocks"
 	mock_uuidgen "github.com/wheatandcat/memoir-backend/client/uuidgen/mocks"
 	"github.com/wheatandcat/memoir-backend/graph"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
-	"go.opentelemetry.io/otel/trace"
-	"gopkg.in/go-playground/assert.v1"
+
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 
 	moq_repository "github.com/wheatandcat/memoir-backend/repository/moq"
 	moq_usecase_auth "github.com/wheatandcat/memoir-backend/usecase/auth/moq"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func newGraph() graph.Graph {

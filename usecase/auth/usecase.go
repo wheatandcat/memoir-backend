@@ -6,6 +6,7 @@ import (
 	"context"
 
 	"cloud.google.com/go/firestore"
+
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
 )

@@ -5,8 +5,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
-	"github.com/wheatandcat/memoir-backend/graph/model"
+
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
+
+	"github.com/wheatandcat/memoir-backend/graph/model"
 )
 
 //go:generate moq -out=moq/relationship.go -pkg=moqs . RelationshipInterface
