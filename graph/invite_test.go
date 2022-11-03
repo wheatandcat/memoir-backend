@@ -6,12 +6,13 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/google/go-cmp/cmp"
+	"gopkg.in/go-playground/assert.v1"
+
 	"github.com/wheatandcat/memoir-backend/client/timegen"
 	"github.com/wheatandcat/memoir-backend/client/uuidgen"
 	"github.com/wheatandcat/memoir-backend/graph"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
-	"gopkg.in/go-playground/assert.v1"
 
 	moq_repository "github.com/wheatandcat/memoir-backend/repository/moq"
 )

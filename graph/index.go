@@ -8,15 +8,16 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	sentry "github.com/getsentry/sentry-go"
 	"github.com/pkg/errors"
+	"go.opentelemetry.io/otel/trace"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/wheatandcat/memoir-backend/auth"
 	"github.com/wheatandcat/memoir-backend/client/authToken"
 	"github.com/wheatandcat/memoir-backend/client/task"
 	"github.com/wheatandcat/memoir-backend/client/timegen"
 	"github.com/wheatandcat/memoir-backend/client/uuidgen"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
-	"go.opentelemetry.io/otel/trace"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 // Graph Graph struct

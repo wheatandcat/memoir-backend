@@ -6,13 +6,14 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/google/go-cmp/cmp"
+	"gopkg.in/go-playground/assert.v1"
+
 	"github.com/wheatandcat/memoir-backend/auth"
 	"github.com/wheatandcat/memoir-backend/client/timegen"
 	"github.com/wheatandcat/memoir-backend/client/uuidgen"
 	"github.com/wheatandcat/memoir-backend/graph"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
-	"gopkg.in/go-playground/assert.v1"
 
 	moq_repository "github.com/wheatandcat/memoir-backend/repository/moq"
 	moq_usecase_auth "github.com/wheatandcat/memoir-backend/usecase/auth/moq"
@@ -299,7 +300,6 @@ func TestDeleteUser(t *testing.T) {
 	}
 	authRepositoryMock := &moq_repository.AuthRepositoryInterfaceMock{
 		DeleteFunc: func(_ __, _ ___, _ ____, uid string) {
-			return
 		},
 	}
 

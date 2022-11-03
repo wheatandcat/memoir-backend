@@ -6,9 +6,10 @@ import (
 	"strings"
 
 	firebase "firebase.google.com/go"
+	"go.uber.org/zap"
+
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"github.com/wheatandcat/memoir-backend/usecase/logger"
-	"go.uber.org/zap"
 )
 
 var UserCtxKey = &contextKey{"user"}

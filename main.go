@@ -18,6 +18,12 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
 	"github.com/vektah/gqlparser/v2/gqlerror"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/trace"
+	"go.uber.org/zap"
+
 	"github.com/wheatandcat/memoir-backend/auth"
 	"github.com/wheatandcat/memoir-backend/graph"
 	"github.com/wheatandcat/memoir-backend/graph/generated"
@@ -25,16 +31,11 @@ import (
 	"github.com/wheatandcat/memoir-backend/usecase/app_trace"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 	"github.com/wheatandcat/memoir-backend/usecase/logger"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/propagation"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	"go.opentelemetry.io/otel/trace"
-	"go.uber.org/zap"
 )
 
 const defaultPort = "8080"
 
-//nolint:unused
+//lint:ignore U1000 is used in graphql generated code
 func installPropagators() {
 	otel.SetTextMapPropagator(
 		propagation.NewCompositeTextMapPropagator(

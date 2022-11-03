@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -99,7 +99,7 @@ func postRequest(url string, req []byte) ([]byte, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected http status code: %d", resp.StatusCode)
 	}
-	return ioutil.ReadAll(resp.Body)
+	return io.ReadAll(resp.Body)
 }
 
 func WriteOnFile(fileName string, data interface{}) error {
@@ -109,7 +109,7 @@ func WriteOnFile(fileName string, data interface{}) error {
 		return err
 	}
 	// []byte をファイルに上書きしています。
-	err = ioutil.WriteFile(fileName, buf, os.ModeExclusive)
+	err = os.WriteFile(fileName, buf, os.ModeExclusive)
 	if err != nil {
 		return err
 	}

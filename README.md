@@ -7,9 +7,7 @@
 ### 導入
 
 ```
-$ go install github.com/matryer/moq@latest
-$ go install github.com/go-delve/delve/cmd/dlv@latest
-$ go install github.com/cosmtrek/air@latest
+$ make install
 ```
 
 ### 起動

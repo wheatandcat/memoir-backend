@@ -1,9 +1,10 @@
 package graph
 
 import (
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/wheatandcat/memoir-backend/repository"
 	"github.com/wheatandcat/memoir-backend/usecase/auth"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type Application struct {

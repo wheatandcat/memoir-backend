@@ -3,8 +3,9 @@ package mock_task
 import (
 	"os"
 
-	"github.com/wheatandcat/memoir-backend/client/task"
 	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
+
+	"github.com/wheatandcat/memoir-backend/client/task"
 )
 
 type HTTPTask struct {
