@@ -4,10 +4,12 @@
 package moqs
 
 import (
-	"cloud.google.com/go/firestore"
 	"context"
-	"github.com/wheatandcat/memoir-backend/repository"
 	"sync"
+
+	"cloud.google.com/go/firestore"
+
+	"github.com/wheatandcat/memoir-backend/repository"
 )
 
 // Ensure, that CommonRepositoryInterfaceMock does implement repository.CommonRepositoryInterface.

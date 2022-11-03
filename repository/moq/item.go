@@ -4,12 +4,14 @@
 package moqs
 
 import (
-	"cloud.google.com/go/firestore"
 	"context"
-	"github.com/wheatandcat/memoir-backend/graph/model"
-	"github.com/wheatandcat/memoir-backend/repository"
 	"sync"
 	"time"
+
+	"cloud.google.com/go/firestore"
+
+	"github.com/wheatandcat/memoir-backend/graph/model"
+	"github.com/wheatandcat/memoir-backend/repository"
 )
 
 // Ensure, that ItemRepositoryInterfaceMock does implement repository.ItemRepositoryInterface.

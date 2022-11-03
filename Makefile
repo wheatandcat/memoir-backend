@@ -17,7 +17,7 @@ moqgen:
 ci_setup_server:
 	FIRESTORE_EMULATOR_HOST=localhost:3600 APP_ENV=local go run main.go &
 .PHONY: precommit
-precommit: goimports fmt errcheck staticcheck
+precommit: goimports fmt vet errcheck staticcheck
 .PHONY: goimports
 goimports:
 	find . -print | grep --regex '.*\.go' | grep -v "./.go-version"  | grep -v "./.golangci.yml" | xargs goimports -w -local "github.com/wheatandcat/memoir-backend" 
