@@ -4,13 +4,11 @@
 package moqs
 
 import (
-	"context"
-	"sync"
-
 	"cloud.google.com/go/firestore"
-
+	"context"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
+	"sync"
 )
 
 // Ensure, that PushTokenRepositoryInterfaceMock does implement repository.PushTokenRepositoryInterface.

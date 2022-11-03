@@ -4,12 +4,10 @@
 package moqs
 
 import (
-	"context"
-	"sync"
-
 	"cloud.google.com/go/firestore"
-
+	"context"
 	"github.com/wheatandcat/memoir-backend/repository"
+	"sync"
 )
 
 // Ensure, that AuthRepositoryInterfaceMock does implement repository.AuthRepositoryInterface.

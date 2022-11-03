@@ -20,7 +20,7 @@ ci_setup_server:
 precommit: goimports fmt vet errcheck staticcheck
 .PHONY: goimports
 goimports:
-	find . -print | grep --regex '.*\.go' | grep -v "./.go-version"  | grep -v "./.golangci.yml" | xargs goimports -w -local "github.com/wheatandcat/memoir-backend" 
+	find . -print | grep --regex '.*\.go' | grep -v "./.go-version"  | grep -v "./.golangci.yml" | grep -v "moq" | xargs goimports -w -local "github.com/wheatandcat/memoir-backend" 
 fmt:
 	go fmt ./...
 vet:

@@ -4,14 +4,12 @@
 package moq
 
 import (
-	"context"
-	"sync"
-
 	"cloud.google.com/go/firestore"
-
+	"context"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
 	"github.com/wheatandcat/memoir-backend/usecase/auth"
+	"sync"
 )
 
 // Ensure, that UseCaseMock does implement auth.UseCase.
