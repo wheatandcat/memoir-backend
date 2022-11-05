@@ -111,6 +111,9 @@ func TestGetItemsInPeriod(t *testing.T) {
 		GetItemUserMultipleInPeriodFunc: func(_ context.Context, _ *firestore.Client, _ repository.SearchItemParam, _ int, _ repository.ItemsInPeriodCursor) ([]*model.Item, error) {
 			return items, nil
 		},
+		GetCountUserMultipleInPeriodFunc: func(ctx context.Context, f *firestore.Client, sip repository.SearchItemParam) (int, error) {
+			return len(items), nil
+		},
 	}
 
 	relationshipRepositoryMock := &moq_repository.RelationshipInterfaceMock{
@@ -141,7 +144,8 @@ func TestGetItemsInPeriod(t *testing.T) {
 			EndCursor:   "test-user/test1",
 			HasNextPage: false,
 		},
-		Edges: iipe,
+		Edges:      iipe,
+		TotalCount: len(iipe),
 	}
 
 	like := true

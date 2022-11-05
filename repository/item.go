@@ -8,6 +8,7 @@ import (
 
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
+	firestorev1 "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 //go:generate moq -out=moq/item.go -pkg=moqs . ItemRepositoryInterface
@@ -20,6 +21,7 @@ type ItemRepositoryInterface interface {
 	GetItemsInDate(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error)
 	GetItemsInPeriod(ctx context.Context, f *firestore.Client, userID string, stertDate time.Time, endDate time.Time, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error)
 	GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, sip SearchItemParam, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error)
+	GetCountUserMultipleInPeriod(ctx context.Context, f *firestore.Client, sip SearchItemParam) (int, error)
 }
 
 type ItemKey struct {
@@ -161,8 +163,7 @@ type SearchItemParam struct {
 	CategoryID int
 }
 
-// GetItemUserMultipleInPeriod 期間でアイテムを取得する
-func (re *ItemRepository) GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, sip SearchItemParam, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error) {
+func getQueryUserMultipleInPeriod(f *firestore.Client, sip SearchItemParam) firestore.Query {
 	query := f.CollectionGroup("items").Where("UserID", "in", sip.UserID).Where("Date", ">=", sip.StartDate).Where("Date", "<=", sip.EndDate)
 
 	if sip.Like && !sip.Dislike {
@@ -176,6 +177,13 @@ func (re *ItemRepository) GetItemUserMultipleInPeriod(ctx context.Context, f *fi
 	}
 
 	query = query.OrderBy("Date", firestore.Asc).OrderBy("CreatedAt", firestore.Asc)
+
+	return query
+}
+
+// GetItemUserMultipleInPeriod 期間でアイテムを取得する
+func (re *ItemRepository) GetItemUserMultipleInPeriod(ctx context.Context, f *firestore.Client, sip SearchItemParam, first int, cursor ItemsInPeriodCursor) ([]*model.Item, error) {
+	query := getQueryUserMultipleInPeriod(f, sip)
 
 	if cursor.ID != "" {
 		ds, err := getItemCollection(f, cursor.UserID).Doc(cursor.ID).Get(ctx)
@@ -204,4 +212,24 @@ func (re *ItemRepository) GetItemUserMultipleInPeriod(ctx context.Context, f *fi
 	}
 
 	return items, nil
+}
+
+// GetCountUserMultipleInPeriod 期間でアイテムの総数を取得する
+func (re *ItemRepository) GetCountUserMultipleInPeriod(ctx context.Context, f *firestore.Client, sip SearchItemParam) (int, error) {
+	query := getQueryUserMultipleInPeriod(f, sip)
+
+	alias := "items"
+	ar, err := query.NewAggregationQuery().WithCount(alias).Get(ctx)
+	if err != nil {
+		return 0, ce.CustomError(err)
+	}
+
+	count, ok := ar[alias]
+	if !ok {
+		return 0, nil
+	}
+
+	ce := count.(*firestorev1.Value)
+
+	return int(ce.GetIntegerValue()), nil
 }

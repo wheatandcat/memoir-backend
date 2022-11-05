@@ -88,8 +88,9 @@ type Item struct {
 }
 
 type ItemsInPeriod struct {
-	PageInfo *PageInfo            `json:"pageInfo"`
-	Edges    []*ItemsInPeriodEdge `json:"edges"`
+	PageInfo   *PageInfo            `json:"pageInfo"`
+	Edges      []*ItemsInPeriodEdge `json:"edges"`
+	TotalCount int                  `json:"totalCount"`
 }
 
 type ItemsInPeriodEdge struct {
