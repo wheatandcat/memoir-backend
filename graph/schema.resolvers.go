@@ -8,12 +8,12 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
-
 	"github.com/wheatandcat/memoir-backend/graph/generated"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
 
+// CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
 	g := NewGraphWithSetUserID(ctx, r.App, r.FirestoreClient, input.ID, "")
 	result, err := g.CreateUser(ctx, &input)
@@ -25,6 +25,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	return result, nil
 }
 
+// CreateAuthUser is the resolver for the createAuthUser field.
 func (r *mutationResolver) CreateAuthUser(ctx context.Context, input model.NewAuthUser) (*model.AuthUser, error) {
 	g := NewGraphWithSetUserID(ctx, r.App, r.FirestoreClient, "", "")
 	result, err := g.CreateAuthUser(ctx, &input)
@@ -35,6 +36,7 @@ func (r *mutationResolver) CreateAuthUser(ctx context.Context, input model.NewAu
 	return result, nil
 }
 
+// UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUser) (*model.User, error) {
 	if err := input.Validate(); err != nil {
 		return nil, ce.CustomError(err)
@@ -53,6 +55,7 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUse
 	return result, nil
 }
 
+// DeleteUser is the resolver for the deleteUser field.
 func (r *mutationResolver) DeleteUser(ctx context.Context) (*model.User, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -66,6 +69,7 @@ func (r *mutationResolver) DeleteUser(ctx context.Context) (*model.User, error) 
 	return result, nil
 }
 
+// CreateItem is the resolver for the createItem field.
 func (r *mutationResolver) CreateItem(ctx context.Context, input model.NewItem) (*model.Item, error) {
 	if err := input.Validate(); err != nil {
 		return nil, ce.CustomError(err)
@@ -84,6 +88,7 @@ func (r *mutationResolver) CreateItem(ctx context.Context, input model.NewItem) 
 	return result, nil
 }
 
+// UpdateItem is the resolver for the updateItem field.
 func (r *mutationResolver) UpdateItem(ctx context.Context, input model.UpdateItem) (*model.Item, error) {
 	if err := input.Validate(); err != nil {
 		return nil, ce.CustomError(err)
@@ -102,6 +107,7 @@ func (r *mutationResolver) UpdateItem(ctx context.Context, input model.UpdateIte
 	return result, nil
 }
 
+// DeleteItem is the resolver for the deleteItem field.
 func (r *mutationResolver) DeleteItem(ctx context.Context, input model.DeleteItem) (*model.Item, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -116,6 +122,7 @@ func (r *mutationResolver) DeleteItem(ctx context.Context, input model.DeleteIte
 	return result, nil
 }
 
+// CreateInvite is the resolver for the createInvite field.
 func (r *mutationResolver) CreateInvite(ctx context.Context) (*model.Invite, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -130,6 +137,7 @@ func (r *mutationResolver) CreateInvite(ctx context.Context) (*model.Invite, err
 	return result, nil
 }
 
+// UpdateInvite is the resolver for the updateInvite field.
 func (r *mutationResolver) UpdateInvite(ctx context.Context) (*model.Invite, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -144,6 +152,7 @@ func (r *mutationResolver) UpdateInvite(ctx context.Context) (*model.Invite, err
 	return result, nil
 }
 
+// CreateRelationshipRequest is the resolver for the createRelationshipRequest field.
 func (r *mutationResolver) CreateRelationshipRequest(ctx context.Context, input model.NewRelationshipRequest) (*model.RelationshipRequest, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -158,6 +167,7 @@ func (r *mutationResolver) CreateRelationshipRequest(ctx context.Context, input 
 	return result, nil
 }
 
+// AcceptRelationshipRequest is the resolver for the acceptRelationshipRequest field.
 func (r *mutationResolver) AcceptRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -172,6 +182,7 @@ func (r *mutationResolver) AcceptRelationshipRequest(ctx context.Context, follow
 	return result, nil
 }
 
+// NgRelationshipRequest is the resolver for the ngRelationshipRequest field.
 func (r *mutationResolver) NgRelationshipRequest(ctx context.Context, followedID string) (*model.RelationshipRequest, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -186,6 +197,7 @@ func (r *mutationResolver) NgRelationshipRequest(ctx context.Context, followedID
 	return result, nil
 }
 
+// DeleteRelationship is the resolver for the deleteRelationship field.
 func (r *mutationResolver) DeleteRelationship(ctx context.Context, followedID string) (*model.Relationship, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -200,6 +212,7 @@ func (r *mutationResolver) DeleteRelationship(ctx context.Context, followedID st
 	return result, nil
 }
 
+// CreatePushToken is the resolver for the createPushToken field.
 func (r *mutationResolver) CreatePushToken(ctx context.Context, input model.NewPushToken) (*model.PushToken, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -214,6 +227,7 @@ func (r *mutationResolver) CreatePushToken(ctx context.Context, input model.NewP
 	return result, nil
 }
 
+// User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -228,6 +242,7 @@ func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
 	return result, nil
 }
 
+// ExistAuthUser is the resolver for the existAuthUser field.
 func (r *queryResolver) ExistAuthUser(ctx context.Context) (*model.ExistAuthUser, error) {
 	g := NewGraphWithSetUserID(ctx, r.App, r.FirestoreClient, "", "")
 
@@ -239,6 +254,7 @@ func (r *queryResolver) ExistAuthUser(ctx context.Context) (*model.ExistAuthUser
 	return result, nil
 }
 
+// Item is the resolver for the item field.
 func (r *queryResolver) Item(ctx context.Context, id string) (*model.Item, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -253,6 +269,7 @@ func (r *queryResolver) Item(ctx context.Context, id string) (*model.Item, error
 	return result, nil
 }
 
+// ItemsByDate is the resolver for the itemsByDate field.
 func (r *queryResolver) ItemsByDate(ctx context.Context, date time.Time) ([]*model.Item, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -267,6 +284,7 @@ func (r *queryResolver) ItemsByDate(ctx context.Context, date time.Time) ([]*mod
 	return result, nil
 }
 
+// ItemsInDate is the resolver for the itemsInDate field.
 func (r *queryResolver) ItemsInDate(ctx context.Context, date time.Time) ([]*model.Item, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -281,6 +299,7 @@ func (r *queryResolver) ItemsInDate(ctx context.Context, date time.Time) ([]*mod
 	return result, nil
 }
 
+// ItemsInPeriod is the resolver for the itemsInPeriod field.
 func (r *queryResolver) ItemsInPeriod(ctx context.Context, input model.InputItemsInPeriod) (*model.ItemsInPeriod, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -295,6 +314,7 @@ func (r *queryResolver) ItemsInPeriod(ctx context.Context, input model.InputItem
 	return result, nil
 }
 
+// Invite is the resolver for the invite field.
 func (r *queryResolver) Invite(ctx context.Context) (*model.Invite, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -309,6 +329,7 @@ func (r *queryResolver) Invite(ctx context.Context) (*model.Invite, error) {
 	return result, nil
 }
 
+// InviteByCode is the resolver for the inviteByCode field.
 func (r *queryResolver) InviteByCode(ctx context.Context, code string) (*model.User, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -323,6 +344,7 @@ func (r *queryResolver) InviteByCode(ctx context.Context, code string) (*model.U
 	return result, nil
 }
 
+// RelationshipRequests is the resolver for the relationshipRequests field.
 func (r *queryResolver) RelationshipRequests(ctx context.Context, input model.InputRelationshipRequests) (*model.RelationshipRequests, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {
@@ -345,6 +367,7 @@ func (r *queryResolver) RelationshipRequests(ctx context.Context, input model.In
 	return result, nil
 }
 
+// Relationships is the resolver for the relationships field.
 func (r *queryResolver) Relationships(ctx context.Context, input model.InputRelationships) (*model.Relationships, error) {
 	g, err := NewGraph(ctx, r.App, r.FirestoreClient)
 	if err != nil {

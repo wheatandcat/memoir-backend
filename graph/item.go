@@ -189,9 +189,16 @@ func (g *Graph) GetItemsInPeriod(ctx context.Context, input model.InputItemsInPe
 		pi.HasNextPage = input.First == len(items)
 		pi.EndCursor = ibpes[len(items)-1].Cursor
 	}
+
+	totalCount, err := g.App.ItemRepository.GetCountUserMultipleInPeriod(ctx, g.FirestoreClient, sip)
+	if err != nil {
+		return nil, ce.CustomError(err)
+	}
+
 	ibp := &model.ItemsInPeriod{
-		Edges:    ibpes,
-		PageInfo: pi,
+		Edges:      ibpes,
+		PageInfo:   pi,
+		TotalCount: totalCount,
 	}
 
 	return ibp, nil

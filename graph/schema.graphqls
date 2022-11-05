@@ -73,6 +73,7 @@ type ItemsInPeriodEdge {
 type ItemsInPeriod {
   pageInfo: PageInfo!
   edges: [ItemsInPeriodEdge!]!
+  totalCount: Int!
 }
 
 input InputItemsInPeriod {

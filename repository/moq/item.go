@@ -28,6 +28,9 @@ var _ repository.ItemRepositoryInterface = &ItemRepositoryInterfaceMock{}
 //			DeleteFunc: func(ctx context.Context, f *firestore.Client, userID string, i *model.DeleteItem) error {
 //				panic("mock out the Delete method")
 //			},
+//			GetCountUserMultipleInPeriodFunc: func(ctx context.Context, f *firestore.Client, sip repository.SearchItemParam) (int, error) {
+//				panic("mock out the GetCountUserMultipleInPeriod method")
+//			},
 //			GetItemFunc: func(ctx context.Context, f *firestore.Client, userID string, id string) (*model.Item, error) {
 //				panic("mock out the GetItem method")
 //			},
@@ -55,6 +58,9 @@ type ItemRepositoryInterfaceMock struct {
 
 	// DeleteFunc mocks the Delete method.
 	DeleteFunc func(ctx context.Context, f *firestore.Client, userID string, i *model.DeleteItem) error
+
+	// GetCountUserMultipleInPeriodFunc mocks the GetCountUserMultipleInPeriod method.
+	GetCountUserMultipleInPeriodFunc func(ctx context.Context, f *firestore.Client, sip repository.SearchItemParam) (int, error)
 
 	// GetItemFunc mocks the GetItem method.
 	GetItemFunc func(ctx context.Context, f *firestore.Client, userID string, id string) (*model.Item, error)
@@ -94,6 +100,15 @@ type ItemRepositoryInterfaceMock struct {
 			UserID string
 			// I is the i argument value.
 			I *model.DeleteItem
+		}
+		// GetCountUserMultipleInPeriod holds details about calls to the GetCountUserMultipleInPeriod method.
+		GetCountUserMultipleInPeriod []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// F is the f argument value.
+			F *firestore.Client
+			// Sip is the sip argument value.
+			Sip repository.SearchItemParam
 		}
 		// GetItem holds details about calls to the GetItem method.
 		GetItem []struct {
@@ -161,13 +176,14 @@ type ItemRepositoryInterfaceMock struct {
 			UpdatedAt time.Time
 		}
 	}
-	lockCreate                      sync.RWMutex
-	lockDelete                      sync.RWMutex
-	lockGetItem                     sync.RWMutex
-	lockGetItemUserMultipleInPeriod sync.RWMutex
-	lockGetItemsInDate              sync.RWMutex
-	lockGetItemsInPeriod            sync.RWMutex
-	lockUpdate                      sync.RWMutex
+	lockCreate                       sync.RWMutex
+	lockDelete                       sync.RWMutex
+	lockGetCountUserMultipleInPeriod sync.RWMutex
+	lockGetItem                      sync.RWMutex
+	lockGetItemUserMultipleInPeriod  sync.RWMutex
+	lockGetItemsInDate               sync.RWMutex
+	lockGetItemsInPeriod             sync.RWMutex
+	lockUpdate                       sync.RWMutex
 }
 
 // Create calls CreateFunc.
@@ -255,6 +271,46 @@ func (mock *ItemRepositoryInterfaceMock) DeleteCalls() []struct {
 	mock.lockDelete.RLock()
 	calls = mock.calls.Delete
 	mock.lockDelete.RUnlock()
+	return calls
+}
+
+// GetCountUserMultipleInPeriod calls GetCountUserMultipleInPeriodFunc.
+func (mock *ItemRepositoryInterfaceMock) GetCountUserMultipleInPeriod(ctx context.Context, f *firestore.Client, sip repository.SearchItemParam) (int, error) {
+	if mock.GetCountUserMultipleInPeriodFunc == nil {
+		panic("ItemRepositoryInterfaceMock.GetCountUserMultipleInPeriodFunc: method is nil but ItemRepositoryInterface.GetCountUserMultipleInPeriod was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		F   *firestore.Client
+		Sip repository.SearchItemParam
+	}{
+		Ctx: ctx,
+		F:   f,
+		Sip: sip,
+	}
+	mock.lockGetCountUserMultipleInPeriod.Lock()
+	mock.calls.GetCountUserMultipleInPeriod = append(mock.calls.GetCountUserMultipleInPeriod, callInfo)
+	mock.lockGetCountUserMultipleInPeriod.Unlock()
+	return mock.GetCountUserMultipleInPeriodFunc(ctx, f, sip)
+}
+
+// GetCountUserMultipleInPeriodCalls gets all the calls that were made to GetCountUserMultipleInPeriod.
+// Check the length with:
+//
+//	len(mockedItemRepositoryInterface.GetCountUserMultipleInPeriodCalls())
+func (mock *ItemRepositoryInterfaceMock) GetCountUserMultipleInPeriodCalls() []struct {
+	Ctx context.Context
+	F   *firestore.Client
+	Sip repository.SearchItemParam
+} {
+	var calls []struct {
+		Ctx context.Context
+		F   *firestore.Client
+		Sip repository.SearchItemParam
+	}
+	mock.lockGetCountUserMultipleInPeriod.RLock()
+	calls = mock.calls.GetCountUserMultipleInPeriod
+	mock.lockGetCountUserMultipleInPeriod.RUnlock()
 	return calls
 }
 

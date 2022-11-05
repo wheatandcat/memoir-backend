@@ -16,7 +16,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/introspection"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
-
 	"github.com/wheatandcat/memoir-backend/graph/model"
 )
 
@@ -79,8 +78,9 @@ type ComplexityRoot struct {
 	}
 
 	ItemsInPeriod struct {
-		Edges    func(childComplexity int) int
-		PageInfo func(childComplexity int) int
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
 	}
 
 	ItemsInPeriodEdge struct {
@@ -376,6 +376,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ItemsInPeriod.PageInfo(childComplexity), true
+
+	case "ItemsInPeriod.totalCount":
+		if e.complexity.ItemsInPeriod.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.ItemsInPeriod.TotalCount(childComplexity), true
 
 	case "ItemsInPeriodEdge.cursor":
 		if e.complexity.ItemsInPeriodEdge.Cursor == nil {
@@ -1044,6 +1051,7 @@ type ItemsInPeriodEdge {
 type ItemsInPeriod {
   pageInfo: PageInfo!
   edges: [ItemsInPeriodEdge!]!
+  totalCount: Int!
 }
 
 input InputItemsInPeriod {
@@ -2595,6 +2603,50 @@ func (ec *executionContext) fieldContext_ItemsInPeriod_edges(ctx context.Context
 				return ec.fieldContext_ItemsInPeriodEdge_cursor(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ItemsInPeriodEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemsInPeriod_totalCount(ctx context.Context, field graphql.CollectedField, obj *model.ItemsInPeriod) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ItemsInPeriod_totalCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ItemsInPeriod_totalCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemsInPeriod",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4317,6 +4369,8 @@ func (ec *executionContext) fieldContext_Query_itemsInPeriod(ctx context.Context
 				return ec.fieldContext_ItemsInPeriod_pageInfo(ctx, field)
 			case "edges":
 				return ec.fieldContext_ItemsInPeriod_edges(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_ItemsInPeriod_totalCount(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ItemsInPeriod", field.Name)
 		},
@@ -7719,7 +7773,12 @@ func (ec *executionContext) unmarshalInputDeleteItem(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"id"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "id":
 			var err error
@@ -7742,7 +7801,12 @@ func (ec *executionContext) unmarshalInputInputItemsInPeriod(ctx context.Context
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"after", "first", "startDate", "endDate", "userIDList", "categoryID", "like", "dislike"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "after":
 			var err error
@@ -7821,7 +7885,12 @@ func (ec *executionContext) unmarshalInputInputRelationshipRequests(ctx context.
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"after", "first"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "after":
 			var err error
@@ -7852,7 +7921,12 @@ func (ec *executionContext) unmarshalInputInputRelationships(ctx context.Context
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"after", "first"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "after":
 			var err error
@@ -7883,7 +7957,12 @@ func (ec *executionContext) unmarshalInputNewAuthUser(ctx context.Context, obj i
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"id", "isNewUser"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "id":
 			var err error
@@ -7914,7 +7993,12 @@ func (ec *executionContext) unmarshalInputNewItem(ctx context.Context, obj inter
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"title", "categoryID", "date", "like", "dislike"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "title":
 			var err error
@@ -7969,7 +8053,12 @@ func (ec *executionContext) unmarshalInputNewPushToken(ctx context.Context, obj 
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"token", "deviceID"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "token":
 			var err error
@@ -8000,7 +8089,12 @@ func (ec *executionContext) unmarshalInputNewRelationshipRequest(ctx context.Con
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"code"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "code":
 			var err error
@@ -8023,7 +8117,12 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, obj inter
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"id"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "id":
 			var err error
@@ -8046,7 +8145,12 @@ func (ec *executionContext) unmarshalInputUpdateItem(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"id", "title", "categoryID", "date", "like", "dislike"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "id":
 			var err error
@@ -8109,7 +8213,12 @@ func (ec *executionContext) unmarshalInputUpdateUser(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"displayName", "image"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "displayName":
 			var err error
@@ -8385,6 +8494,13 @@ func (ec *executionContext) _ItemsInPeriod(ctx context.Context, sel ast.Selectio
 		case "edges":
 
 			out.Values[i] = ec._ItemsInPeriod_edges(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "totalCount":
+
+			out.Values[i] = ec._ItemsInPeriod_totalCount(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
