@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -21,9 +22,9 @@ const (
 
 type RelationshipRequestInterface interface {
 	Create(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) error
-	Update(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest)
-	DeleteByFollowedID(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error
-	DeleteByFollowerID(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error
+	Update(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.RelationshipRequest) error
+	DeleteByFollowedID(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, userID string) error
+	DeleteByFollowerID(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, userID string) error
 	Find(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) (*model.RelationshipRequest, error)
 	FindByFollowedID(ctx context.Context, f *firestore.Client, userID string, first int, cursor RelationshipRequestCursor) ([]*model.RelationshipRequest, error)
 }
@@ -65,7 +66,7 @@ func (re *RelationshipRequestRepository) Create(ctx context.Context, f *firestor
 }
 
 // Update 更新する
-func (re *RelationshipRequestRepository) Update(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest) {
+func (re *RelationshipRequestRepository) Update(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.RelationshipRequest) error {
 	var u []firestore.Update
 	if i.Status != 0 {
 		u = append(u, firestore.Update{Path: "Status", Value: i.Status})
@@ -73,11 +74,21 @@ func (re *RelationshipRequestRepository) Update(ctx context.Context, f *firestor
 	u = append(u, firestore.Update{Path: "UpdatedAt", Value: i.UpdatedAt})
 
 	ref := f.Collection("relationshipRequests").Doc(i.FollowerID + "_" + i.FollowedID)
-	batch.Update(ref, u)
+	j, err := batch.Update(ref, u)
+	if err != nil {
+		return ce.CustomError(err)
+	}
+	if j == nil {
+		return ce.CustomError(fmt.Errorf("BulkWriter: got nil"))
+	}
+	if _, err := j.Results(); err != nil {
+		return ce.CustomError(err)
+	}
+	return nil
 }
 
 // DeleteByFollowedID ユーザーIDから削除する
-func (re *RelationshipRequestRepository) DeleteByFollowedID(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error {
+func (re *RelationshipRequestRepository) DeleteByFollowedID(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, userID string) error {
 	matchItem := f.Collection("relationshipRequests").Where("FollowedID", "==", userID).OrderBy("CreatedAt", firestore.Desc).Documents(ctx)
 	docs, err := matchItem.GetAll()
 
@@ -90,14 +101,23 @@ func (re *RelationshipRequestRepository) DeleteByFollowedID(ctx context.Context,
 	}
 
 	for _, doc := range docs {
-		batch.Delete(doc.Ref)
+		j, err := batch.Delete(doc.Ref)
+		if err != nil {
+			return ce.CustomError(err)
+		}
+		if j == nil {
+			return ce.CustomError(fmt.Errorf("BulkWriter: got nil"))
+		}
+		if _, err := j.Results(); err != nil {
+			return ce.CustomError(err)
+		}
 	}
 
 	return nil
 }
 
 // DeleteByFollowerID ユーザーIDから削除する
-func (re *RelationshipRequestRepository) DeleteByFollowerID(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, userID string) error {
+func (re *RelationshipRequestRepository) DeleteByFollowerID(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, userID string) error {
 	matchItem := f.Collection("relationshipRequests").Where("FollowerID", "==", userID).OrderBy("CreatedAt", firestore.Desc).Documents(ctx)
 	docs, err := matchItem.GetAll()
 
@@ -110,7 +130,16 @@ func (re *RelationshipRequestRepository) DeleteByFollowerID(ctx context.Context,
 	}
 
 	for _, doc := range docs {
-		batch.Delete(doc.Ref)
+		j, err := batch.Delete(doc.Ref)
+		if err != nil {
+			return ce.CustomError(err)
+		}
+		if j == nil {
+			return ce.CustomError(fmt.Errorf("BulkWriter: got nil"))
+		}
+		if _, err := j.Results(); err != nil {
+			return ce.CustomError(err)
+		}
 	}
 
 	return nil

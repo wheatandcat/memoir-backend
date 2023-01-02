@@ -106,11 +106,16 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 		isFollowedRequest = true
 	}
 
-	batch := g.FirestoreClient.Batch()
-	g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr1)
+	batch := g.FirestoreClient.BulkWriter(ctx)
+	if err := g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr1); err != nil {
+		return nil, ce.CustomError(err)
+	}
+
 	if isFollowedRequest {
 		// 相手側もリクエストしていた場合はstatusを更新
-		g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr2)
+		if err := g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr2); err != nil {
+			return nil, ce.CustomError(err)
+		}
 	}
 
 	r1 := &model.Relationship{
@@ -127,12 +132,14 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 		CreatedAt:  g.Client.Time.Now(),
 		UpdatedAt:  g.Client.Time.Now(),
 	}
-	g.App.RelationshipRepository.Create(ctx, g.FirestoreClient, batch, r1)
-	g.App.RelationshipRepository.Create(ctx, g.FirestoreClient, batch, r2)
-
-	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
+	if err := g.App.RelationshipRepository.Create(ctx, g.FirestoreClient, batch, r1); err != nil {
 		return nil, ce.CustomError(err)
 	}
+	if err := g.App.RelationshipRepository.Create(ctx, g.FirestoreClient, batch, r2); err != nil {
+		return nil, ce.CustomError(err)
+	}
+
+	g.App.CommonRepository.Commit(ctx, batch)
 
 	tokens := g.App.PushTokenRepository.GetTokens(ctx, g.FirestoreClient, followedID)
 
@@ -169,14 +176,12 @@ func (g *Graph) NgRelationshipRequest(ctx context.Context, followedID string) (*
 		UpdatedAt:  g.Client.Time.Now(),
 	}
 
-	batch := g.FirestoreClient.Batch()
-	g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr)
-
-	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
-
+	batch := g.FirestoreClient.BulkWriter(ctx)
+	if err := g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr); err != nil {
 		return nil, ce.CustomError(err)
 	}
 
+	g.App.CommonRepository.Commit(ctx, batch)
 	return rr, nil
 }
 

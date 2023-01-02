@@ -38,7 +38,7 @@ func TestGetItemsInDate(t *testing.T) {
 		UpdatedAt:  date,
 	}}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	itemRepositoryMock := &moq_repository.ItemRepositoryInterfaceMock{
 		GetItemsInDateFunc: func(ctx context.Context, f *firestore.Client, userID string, date time.Time) ([]*model.Item, error) {
@@ -105,7 +105,7 @@ func TestGetItemsInPeriod(t *testing.T) {
 		UpdatedAt:  date,
 	}}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	itemRepositoryMock := &moq_repository.ItemRepositoryInterfaceMock{
 		GetItemUserMultipleInPeriodFunc: func(_ context.Context, _ *firestore.Client, _ repository.SearchItemParam, _ int, _ repository.ItemsInPeriodCursor) ([]*model.Item, error) {

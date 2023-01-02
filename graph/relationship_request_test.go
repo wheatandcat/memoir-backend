@@ -54,7 +54,7 @@ func TestCreateRelationshipRequest(t *testing.T) {
 		UpdatedAt: date,
 	}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	inviteRepositoryMock := &moq_repository.InviteRepositoryInterfaceMock{
 		FindFunc: func(ctx context.Context, f *firestore.Client, code string) (*model.Invite, error) {
@@ -142,22 +142,23 @@ func TestAcceptRelationshipRequest(t *testing.T) {
 		UpdatedAt:   date,
 	}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	relationshipRequestRepositoryMock := &moq_repository.RelationshipRequestInterfaceMock{
-		UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest) {
+		UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.RelationshipRequest) error {
+			return nil
 		},
 		FindFunc: func(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) (*model.RelationshipRequest, error) {
 			return &model.RelationshipRequest{}, nil
 		},
 	}
 	relationshipRepositoryMock := &moq_repository.RelationshipInterfaceMock{
-		CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship) {
+		CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error {
+			return nil
 		},
 	}
 	commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
-		CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
-			return nil
+		CommitFunc: func(ctx context.Context, batch *firestore.BulkWriter) {
 		},
 	}
 	pushTokenRepositoryMock := &moq_repository.PushTokenRepositoryInterfaceMock{
@@ -223,15 +224,15 @@ func TestNgRelationshipRequest(t *testing.T) {
 		UpdatedAt:  date,
 	}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	relationshipRequestRepositoryMock := &moq_repository.RelationshipRequestInterfaceMock{
-		UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.RelationshipRequest) {
+		UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.RelationshipRequest) error {
+			return nil
 		},
 	}
 	commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
-		CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
-			return nil
+		CommitFunc: func(ctx context.Context, batch *firestore.BulkWriter) {
 		},
 	}
 
@@ -251,6 +252,7 @@ func TestNgRelationshipRequest(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -323,7 +325,7 @@ func TestGetRelationshipRequests(t *testing.T) {
 		UpdatedAt:   date,
 	}}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	relationshipRequestRepositoryMock := &moq_repository.RelationshipRequestInterfaceMock{
 		FindByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string, first int, cursor repository.RelationshipRequestCursor) ([]*model.RelationshipRequest, error) {

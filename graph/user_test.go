@@ -26,7 +26,7 @@ type contextKey struct {
 
 type __ = context.Context
 type ___ = *firestore.Client
-type ____ = *firestore.WriteBatch
+type ____ = *firestore.BulkWriter
 
 func TestUpdateUser(t *testing.T) {
 	t.Parallel()
@@ -42,7 +42,7 @@ func TestUpdateUser(t *testing.T) {
 		Time: &timegen.Time{},
 	}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	userRepositoryMock := &moq_repository.UserRepositoryInterfaceMock{
 		UpdateFunc: func(_ __, _ ___, u *model.User) error {
@@ -98,7 +98,7 @@ func TestCreateUser(t *testing.T) {
 		Time: &timegen.Time{},
 	}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	userRepositoryMock := &moq_repository.UserRepositoryInterfaceMock{
 		CreateFunc: func(_ __, _ ___, u *model.User) error {
@@ -151,7 +151,7 @@ func TestCreateAuthUser(t *testing.T) {
 		UUID: &uuidgen.UUID{},
 		Time: &timegen.Time{},
 	}
-	g := newGraph()
+	g := newGraph(ctx)
 
 	tests := []struct {
 		name   string
@@ -240,7 +240,7 @@ func TestGetUser(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	u := &model.User{
 		ID: "test",
@@ -285,7 +285,7 @@ func TestDeleteUser(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	relationshipMock := &moq_repository.RelationshipInterfaceMock{
 		ExistByFollowedIDFunc: func(_ __, _ ___, _ string) (bool, error) {
@@ -299,7 +299,8 @@ func TestDeleteUser(t *testing.T) {
 		},
 	}
 	authRepositoryMock := &moq_repository.AuthRepositoryInterfaceMock{
-		DeleteFunc: func(_ __, _ ___, _ ____, uid string) {
+		DeleteFunc: func(_ __, _ ___, _ ____, uid string) error {
+			return nil
 		},
 	}
 
@@ -325,8 +326,7 @@ func TestDeleteUser(t *testing.T) {
 	}
 
 	commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
-		CommitFunc: func(_ __, _ ____) error {
-			return nil
+		CommitFunc: func(_ __, _ ____) {
 		},
 	}
 

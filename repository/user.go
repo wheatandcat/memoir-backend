@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -16,7 +17,7 @@ type UserRepositoryInterface interface {
 	Create(ctx context.Context, f *firestore.Client, u *model.User) error
 	Update(ctx context.Context, f *firestore.Client, u *model.User) error
 	UpdateFirebaseUID(ctx context.Context, f *firestore.Client, user *User) error
-	Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string) error
+	Delete(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, uid string) error
 	FindByUID(ctx context.Context, f *firestore.Client, uid string) (*model.User, error)
 	FindDatabaseDataByUID(ctx context.Context, f *firestore.Client, uid string) (*User, error)
 	FindByFirebaseUID(ctx context.Context, f *firestore.Client, fUID string) (*model.User, error)
@@ -64,9 +65,18 @@ func (re *UserRepository) Update(ctx context.Context, f *firestore.Client, u *mo
 }
 
 // Delete ユーザーを削除する
-func (re *UserRepository) Delete(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, uid string) error {
+func (re *UserRepository) Delete(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, uid string) error {
 	ref := f.Collection("users").Doc(uid)
-	batch.Delete(ref)
+	j, err := batch.Delete(ref)
+	if err != nil {
+		return ce.CustomError(err)
+	}
+	if j == nil {
+		return ce.CustomError(fmt.Errorf("BulkWriter: got nil"))
+	}
+	if _, err := j.Results(); err != nil {
+		return ce.CustomError(err)
+	}
 
 	matchPushToken := ref.Collection("pushToken").Documents(ctx)
 	docPushTokens, err := matchPushToken.GetAll()
@@ -74,7 +84,16 @@ func (re *UserRepository) Delete(ctx context.Context, f *firestore.Client, batch
 		return ce.CustomError(err)
 	}
 	for _, doc := range docPushTokens {
-		batch.Delete(doc.Ref)
+		j, err := batch.Delete(doc.Ref)
+		if err != nil {
+			return ce.CustomError(err)
+		}
+		if j == nil {
+			return ce.CustomError(fmt.Errorf("BulkWriter: got nil"))
+		}
+		if _, err := j.Results(); err != nil {
+			return ce.CustomError(err)
+		}
 	}
 
 	matchItems := ref.Collection("items").Documents(ctx)
@@ -83,7 +102,16 @@ func (re *UserRepository) Delete(ctx context.Context, f *firestore.Client, batch
 		return ce.CustomError(err)
 	}
 	for _, doc := range docItems {
-		batch.Delete(doc.Ref)
+		j, err := batch.Delete(doc.Ref)
+		if err != nil {
+			return ce.CustomError(err)
+		}
+		if j == nil {
+			return ce.CustomError(fmt.Errorf("BulkWriter: got nil"))
+		}
+		if _, err := j.Results(); err != nil {
+			return ce.CustomError(err)
+		}
 	}
 
 	return nil

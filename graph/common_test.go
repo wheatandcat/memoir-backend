@@ -1,10 +1,14 @@
 package graph_test
 
 import (
+	"context"
 	"errors"
+	"io/ioutil"
 	"testing"
 
+	firebase "firebase.google.com/go"
 	"go.opentelemetry.io/otel/trace"
+	"google.golang.org/api/option"
 	"gopkg.in/go-playground/assert.v1"
 
 	mock_authToken "github.com/wheatandcat/memoir-backend/client/authToken/mocks"
@@ -20,7 +24,7 @@ import (
 	moq_usecase_auth "github.com/wheatandcat/memoir-backend/usecase/auth/moq"
 )
 
-func newGraph() graph.Graph {
+func newGraph(ctx context.Context) graph.Graph {
 	client := &graph.Client{
 		UUID:      &mock_uuidgen.UUID{},
 		Time:      &mock_timegen.Time{},
@@ -45,10 +49,26 @@ func newGraph() graph.Graph {
 		AuthUseCase: &moq_usecase_auth.UseCaseMock{},
 	}
 
+	credJSON, err := ioutil.ReadFile("../serviceAccount.json")
+	if err != nil {
+		panic(err)
+	}
+	opt := option.WithCredentialsJSON(credJSON)
+	f, err := firebase.NewApp(ctx, nil, opt)
+	if err != nil {
+		panic(err)
+	}
+
+	fc, err := f.Firestore(ctx)
+	if err != nil {
+		panic(err)
+	}
+
 	g := graph.Graph{
-		UserID: "test",
-		Client: client,
-		App:    app,
+		UserID:          "test",
+		Client:          client,
+		App:             app,
+		FirestoreClient: fc,
 	}
 
 	return g
