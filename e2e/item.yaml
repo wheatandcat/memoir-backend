@@ -1,73 +1,72 @@
-
 title: アイテム
 steps:
-- title: login
-  include: './login.yaml'
-  bind:
-    vars:
-      userToken: "{{vars.userToken}}"
-- title: アイテムを作成する①
-  bind:
-    vars:
-      itemID: "{{response.data.createItem.id}}"
-  protocol: http
-  request:
-    method: POST
-    url: "http://{{env.HOST}}/query"
-    header:
-      Authorization: "Bearer {{vars.userToken}}"
-      Content-Type: application/json
-    body: 
-      query: |-
-        mutation CreateItem($input: NewItem!) {
-          createItem(input: $input) {
-            id
-            title
-            date
-            categoryID
-            like
-            dislike
-            createdAt
-            updatedAt
+  - title: login
+    include: "./login.yaml"
+    bind:
+      vars:
+        userToken1: "{{vars.userToken1}}"
+  - title: アイテムを作成する①
+    bind:
+      vars:
+        itemID: "{{response.data.createItem.id}}"
+    protocol: http
+    request:
+      method: POST
+      url: "http://{{env.HOST}}/query"
+      header:
+        Authorization: "Bearer {{vars.userToken1}}"
+        Content-Type: application/json
+      body:
+        query: |-
+          mutation CreateItem($input: NewItem!) {
+            createItem(input: $input) {
+              id
+              title
+              date
+              categoryID
+              like
+              dislike
+              createdAt
+              updatedAt
+            }
           }
-        }
-      variables: 
-        input:
-          title: 散歩に行った
-          categoryID: 1
-          date: 2021-01-01T00:00:00+09:00
-          like: true
-          dislike: false
+        variables:
+          input:
+            title: 散歩に行った
+            categoryID: 1
+            date: 2021-01-01T00:00:00+09:00
+            like: true
+            dislike: false
 
-- title: アイテムを取得する
-  protocol: http
-  request:
-    method: POST
-    url: "http://{{env.HOST}}/query"
-    header:
-      Authorization: "Bearer {{vars.userToken}}"
-      Content-Type: application/json
-    body: 
-      query: |-
-        query Item($id: ID!) {
-          item(id: $id) {
-            id
-            title
-            categoryID
-            date
-            like
-            dislike
+  - title: アイテムを取得する
+    protocol: http
+    request:
+      method: POST
+      url: "http://{{env.HOST}}/query"
+      header:
+        Authorization: "Bearer {{vars.userToken1}}"
+        Content-Type: application/json
+      body:
+        query: |-
+          query Item($id: ID!) {
+            item(id: $id) {
+              id
+              title
+              categoryID
+              date
+              like
+              dislike
+            }
           }
-        }
-      variables: 
-        id: "{{vars.itemID}}"
-  expect:
-    body:
-      data:
-        item: 
+        variables:
           id: "{{vars.itemID}}"
-          title: 散歩に行った
-          categoryID: 1
-          date: 2021-01-01T00:00:00+09:00
-          like: true
-          dislike: false
+    expect:
+      body:
+        data:
+          item:
+            id: "{{vars.itemID}}"
+            title: 散歩に行った
+            categoryID: 1
+            date: 2021-01-01T00:00:00+09:00
+            like: true
+            dislike: false

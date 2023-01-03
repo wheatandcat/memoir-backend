@@ -1,5 +1,6 @@
 schemaVersion: config/v1
 
 scenarios:
-- user.yaml
-- item.yaml
+  - user1.yaml
+  - user2.yaml
+  - item.yaml
