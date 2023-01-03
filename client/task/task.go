@@ -7,7 +7,7 @@ import (
 	"os"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
-	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
+	taskspb "cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
 
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )

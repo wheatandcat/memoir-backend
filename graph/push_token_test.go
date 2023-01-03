@@ -35,7 +35,7 @@ func TestCreatePushToken(t *testing.T) {
 		UpdatedAt: date,
 	}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	pushTokenRepositoryMock := &moq_repository.PushTokenRepositoryInterfaceMock{
 		CreateFunc: func(ctx context.Context, f *firestore.Client, userID string, i *model.PushToken) error {

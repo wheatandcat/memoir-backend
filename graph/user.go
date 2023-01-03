@@ -128,12 +128,14 @@ func (g *Graph) DeleteUser(ctx context.Context) (*model.User, error) {
 		return nil, ce.CustomError(ce.NewRequestError(ce.HasRelationshipByDeleteUser, "共有メンバーが設定されています"))
 	}
 
-	batch := g.FirestoreClient.Batch()
+	batch := g.FirestoreClient.BulkWriter(ctx)
 	if err := g.App.UserRepository.Delete(ctx, g.FirestoreClient, batch, uid); err != nil {
 		return nil, ce.CustomError(err)
 	}
 
-	g.App.AuthRepository.Delete(ctx, g.FirestoreClient, batch, g.FirebaseUID)
+	if err := g.App.AuthRepository.Delete(ctx, g.FirestoreClient, batch, g.FirebaseUID); err != nil {
+		return nil, ce.CustomError(err)
+	}
 	if err := g.App.InviteRepository.DeleteByUserID(ctx, g.FirestoreClient, batch, uid); err != nil {
 		return nil, ce.CustomError(err)
 	}
@@ -149,9 +151,7 @@ func (g *Graph) DeleteUser(ctx context.Context) (*model.User, error) {
 		}
 	}
 
-	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
-		return nil, ce.CustomError(err)
-	}
+	g.App.CommonRepository.Commit(ctx, batch)
 
 	return u, nil
 }

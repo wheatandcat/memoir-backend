@@ -26,15 +26,15 @@ func TestDeleteRelationship(t *testing.T) {
 		FollowedID: "test",
 	}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	relationshipRepositoryMock := &moq_repository.RelationshipInterfaceMock{
-		DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Relationship) {
+		DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error {
+			return nil
 		},
 	}
 	commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
-		CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
-			return nil
+		CommitFunc: func(ctx context.Context, batch *firestore.BulkWriter) {
 		},
 	}
 
@@ -126,7 +126,7 @@ func TestGetRelationships(t *testing.T) {
 		UpdatedAt:   date,
 	}}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	relationshipRepositoryMock := &moq_repository.RelationshipInterfaceMock{
 		FindByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string, first int, cursor repository.RelationshipCursor) ([]*model.Relationship, error) {

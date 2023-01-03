@@ -20,7 +20,7 @@ var _ repository.CommonRepositoryInterface = &CommonRepositoryInterfaceMock{}
 //
 //		// make and configure a mocked repository.CommonRepositoryInterface
 //		mockedCommonRepositoryInterface := &CommonRepositoryInterfaceMock{
-//			CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
+//			CommitFunc: func(ctx context.Context, batch *firestore.BulkWriter)  {
 //				panic("mock out the Commit method")
 //			},
 //		}
@@ -31,7 +31,7 @@ var _ repository.CommonRepositoryInterface = &CommonRepositoryInterfaceMock{}
 //	}
 type CommonRepositoryInterfaceMock struct {
 	// CommitFunc mocks the Commit method.
-	CommitFunc func(ctx context.Context, batch *firestore.WriteBatch) error
+	CommitFunc func(ctx context.Context, batch *firestore.BulkWriter)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -40,20 +40,20 @@ type CommonRepositoryInterfaceMock struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Batch is the batch argument value.
-			Batch *firestore.WriteBatch
+			Batch *firestore.BulkWriter
 		}
 	}
 	lockCommit sync.RWMutex
 }
 
 // Commit calls CommitFunc.
-func (mock *CommonRepositoryInterfaceMock) Commit(ctx context.Context, batch *firestore.WriteBatch) error {
+func (mock *CommonRepositoryInterfaceMock) Commit(ctx context.Context, batch *firestore.BulkWriter) {
 	if mock.CommitFunc == nil {
 		panic("CommonRepositoryInterfaceMock.CommitFunc: method is nil but CommonRepositoryInterface.Commit was just called")
 	}
 	callInfo := struct {
 		Ctx   context.Context
-		Batch *firestore.WriteBatch
+		Batch *firestore.BulkWriter
 	}{
 		Ctx:   ctx,
 		Batch: batch,
@@ -61,7 +61,7 @@ func (mock *CommonRepositoryInterfaceMock) Commit(ctx context.Context, batch *fi
 	mock.lockCommit.Lock()
 	mock.calls.Commit = append(mock.calls.Commit, callInfo)
 	mock.lockCommit.Unlock()
-	return mock.CommitFunc(ctx, batch)
+	mock.CommitFunc(ctx, batch)
 }
 
 // CommitCalls gets all the calls that were made to Commit.
@@ -70,11 +70,11 @@ func (mock *CommonRepositoryInterfaceMock) Commit(ctx context.Context, batch *fi
 //	len(mockedCommonRepositoryInterface.CommitCalls())
 func (mock *CommonRepositoryInterfaceMock) CommitCalls() []struct {
 	Ctx   context.Context
-	Batch *firestore.WriteBatch
+	Batch *firestore.BulkWriter
 } {
 	var calls []struct {
 		Ctx   context.Context
-		Batch *firestore.WriteBatch
+		Batch *firestore.BulkWriter
 	}
 	mock.lockCommit.RLock()
 	calls = mock.calls.Commit

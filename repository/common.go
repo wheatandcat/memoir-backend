@@ -7,14 +7,12 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
 
 //go:generate moq -out=moq/common.go -pkg=moqs . CommonRepositoryInterface
 
 type CommonRepositoryInterface interface {
-	Commit(ctx context.Context, batch *firestore.WriteBatch) error
+	Commit(ctx context.Context, batch *firestore.BulkWriter)
 }
 
 type CommonRepository struct {
@@ -25,10 +23,8 @@ func NewCommonRepository() CommonRepositoryInterface {
 }
 
 // Commit コミットする
-func (re *CommonRepository) Commit(ctx context.Context, batch *firestore.WriteBatch) error {
-	_, err := batch.Commit(ctx)
-
-	return ce.CustomError(err)
+func (re *CommonRepository) Commit(ctx context.Context, batch *firestore.BulkWriter) {
+	batch.Flush()
 }
 
 func GrpcErrorStatusCode(err error) codes.Code {

@@ -5,12 +5,15 @@ on:
   workflow_dispatch:
 
 env:
+  SERVICE_ACCOUNT_JSON: ${{ secrets.REVIEW_SERVICE_ACCOUNT_JSON }}
   METRICS_SERVICE_ACCOUNT_JSON: ${{ secrets.METRICS_SERVICE_ACCOUNT_JSON }}
 jobs:
   metrics:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Create serviceAccount.json file
+        run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
       - uses: actions/setup-go@v3
         with:
           go-version: "^1.19"

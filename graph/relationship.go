@@ -15,7 +15,7 @@ func (g *Graph) DeleteRelationship(ctx context.Context, followedID string) (*mod
 		return nil, ce.CustomError(ce.NewInvalidAuthError("invalid authorization"))
 	}
 
-	batch := g.FirestoreClient.Batch()
+	batch := g.FirestoreClient.BulkWriter(ctx)
 
 	r1 := &model.Relationship{
 		FollowerID: g.UserID,
@@ -26,12 +26,14 @@ func (g *Graph) DeleteRelationship(ctx context.Context, followedID string) (*mod
 		FollowedID: g.UserID,
 	}
 
-	g.App.RelationshipRepository.Delete(ctx, g.FirestoreClient, batch, r1)
-	g.App.RelationshipRepository.Delete(ctx, g.FirestoreClient, batch, r2)
-
-	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
+	if err := g.App.RelationshipRepository.Delete(ctx, g.FirestoreClient, batch, r1); err != nil {
 		return nil, ce.CustomError(err)
 	}
+	if err := g.App.RelationshipRepository.Delete(ctx, g.FirestoreClient, batch, r2); err != nil {
+		return nil, ce.CustomError(err)
+	}
+
+	g.App.CommonRepository.Commit(ctx, batch)
 
 	return r1, nil
 }

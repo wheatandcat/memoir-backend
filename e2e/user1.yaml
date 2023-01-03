@@ -1,0 +1,10 @@
+title: ユーザー1
+steps:
+  - title: login
+    include: "./login.yaml"
+    bind:
+      vars:
+        userToken: "{{vars.userToken1}}"
+        userID: "test_id1"
+  - title: ユーザーの操作
+    include: "./user.yaml"

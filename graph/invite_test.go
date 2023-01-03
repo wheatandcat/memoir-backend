@@ -34,18 +34,18 @@ func TestCreateInvite(t *testing.T) {
 	}
 
 	appFunc := func(param appParam) graph.Graph {
-		g := newGraph()
+		g := newGraph(ctx)
 
 		inviteRepositoryMock := &moq_repository.InviteRepositoryInterfaceMock{
-			CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Invite) {
+			CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Invite) error {
+				return nil
 			},
 			FindByUserIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (*model.Invite, error) {
 				return param.Invite, nil
 			},
 		}
 		commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
-			CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
-				return nil
+			CommitFunc: func(ctx context.Context, batch *firestore.BulkWriter) {
 			},
 		}
 
@@ -128,12 +128,14 @@ func TestUpdateInvite(t *testing.T) {
 		UpdatedAt: date,
 	}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	inviteRepositoryMock := &moq_repository.InviteRepositoryInterfaceMock{
-		CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, i *model.Invite) {
+		CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Invite) error {
+			return nil
 		},
-		DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.WriteBatch, code string) {
+		DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, code string) error {
+			return nil
 		},
 		FindByUserIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (*model.Invite, error) {
 			return &model.Invite{
@@ -144,8 +146,7 @@ func TestUpdateInvite(t *testing.T) {
 	}
 
 	commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
-		CommitFunc: func(ctx context.Context, batch *firestore.WriteBatch) error {
-			return nil
+		CommitFunc: func(ctx context.Context, batch *firestore.BulkWriter) {
 		},
 	}
 
@@ -195,7 +196,7 @@ func TestGetInviteByUseID(t *testing.T) {
 		UpdatedAt: date,
 	}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	inviteRepositoryMock := &moq_repository.InviteRepositoryInterfaceMock{
 		FindByUserIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (*model.Invite, error) {
@@ -253,7 +254,7 @@ func TestGetInviteByCode(t *testing.T) {
 		UpdatedAt: date,
 	}
 
-	g := newGraph()
+	g := newGraph(ctx)
 
 	inviteRepositoryMock := &moq_repository.InviteRepositoryInterfaceMock{
 		FindFunc: func(ctx context.Context, f *firestore.Client, code string) (*model.Invite, error) {

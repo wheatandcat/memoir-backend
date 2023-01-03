@@ -33,12 +33,12 @@ func (g *Graph) CreateInvite(ctx context.Context) (*model.Invite, error) {
 		UpdatedAt: g.Client.Time.Now(),
 	}
 
-	batch := g.FirestoreClient.Batch()
-	g.App.InviteRepository.Create(ctx, g.FirestoreClient, batch, i)
-
-	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
+	batch := g.FirestoreClient.BulkWriter(ctx)
+	if err := g.App.InviteRepository.Create(ctx, g.FirestoreClient, batch, i); err != nil {
 		return nil, ce.CustomError(err)
 	}
+
+	g.App.CommonRepository.Commit(ctx, batch)
 
 	return i, nil
 }
@@ -57,16 +57,18 @@ func (g *Graph) UpdateInvite(ctx context.Context) (*model.Invite, error) {
 	uuid := g.Client.UUID.Get()
 	code := strings.ToUpper(uuid[0:8])
 
-	batch := g.FirestoreClient.Batch()
-	g.App.InviteRepository.Delete(ctx, g.FirestoreClient, batch, i.Code)
+	batch := g.FirestoreClient.BulkWriter(ctx)
+	if err := g.App.InviteRepository.Delete(ctx, g.FirestoreClient, batch, i.Code); err != nil {
+		return nil, ce.CustomError(err)
+	}
 
 	i.Code = code
 	i.UpdatedAt = g.Client.Time.Now()
-	g.App.InviteRepository.Create(ctx, g.FirestoreClient, batch, i)
-
-	if err := g.App.CommonRepository.Commit(ctx, batch); err != nil {
+	if err := g.App.InviteRepository.Create(ctx, g.FirestoreClient, batch, i); err != nil {
 		return nil, ce.CustomError(err)
 	}
+
+	g.App.CommonRepository.Commit(ctx, batch)
 
 	return i, nil
 }
