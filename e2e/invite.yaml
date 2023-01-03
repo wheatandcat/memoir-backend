@@ -1,0 +1,193 @@
+title: 招待
+steps:
+  - title: login
+    include: "./login.yaml"
+    bind:
+      vars:
+        userToken1: "{{vars.userToken1}}"
+        userToken2: "{{vars.userToken2}}"
+  - title: 招待コード作成
+    bind:
+      vars:
+        inviteCode: "{{response.data.createInvite.code}}"
+    protocol: http
+    request:
+      method: POST
+      url: "http://{{env.HOST}}/query"
+      header:
+        Authorization: "Bearer {{vars.userToken1}}"
+        Content-Type: application/json
+      body:
+        query: |-
+          mutation CreateInvite {
+            createInvite {
+              code
+            }
+          }
+  - title: 招待をリクエスト
+    bind:
+      vars:
+        followerId: "{{response.data.createRelationshipRequest.followerId}}"
+        followedId: "{{response.data.createRelationshipRequest.followedId}}"
+    protocol: http
+    request:
+      method: POST
+      url: "http://{{env.HOST}}/query"
+      header:
+        Authorization: "Bearer {{vars.userToken2}}"
+        Content-Type: application/json
+      body:
+        query: |-
+          mutation CreateRelationshipRequest($input: NewRelationshipRequest!) {
+            createRelationshipRequest(input: $input) {
+              id
+              followerId
+              followedId
+              status
+              createdAt
+              updatedAt
+              user {
+                id
+                displayName
+              }
+            }
+          }
+        variables:
+          input:
+            code: "{{vars.inviteCode}}"
+  - title: 招待をリクエスト一覧を取得
+    protocol: http
+    request:
+      method: POST
+      url: "http://{{env.HOST}}/query"
+      header:
+        Authorization: "Bearer {{vars.userToken1}}"
+        Content-Type: application/json
+      body:
+        query: |-
+          query RelationshipRequests($input: InputRelationshipRequests!, $skip: Boolean) {
+            relationshipRequests(input: $input) {
+              edges {
+                node {
+                  id
+                  followerId
+                  followedId
+                  user(skip: $skip) {
+                    id
+                    displayName
+                    image
+                  }
+                }
+              }
+            }
+          }
+        variables:
+          input:
+            after: ""
+            first: 1
+          skip: true
+    expect:
+      body:
+        data:
+          relationshipRequests:
+            edges:
+              - node:
+                  followerId: "test_id2"
+                  followedId: "test_id1"
+  - title: 招待リクエストを承諾
+    protocol: http
+    request:
+      method: POST
+      url: "http://{{env.HOST}}/query"
+      header:
+        Authorization: "Bearer {{vars.userToken1}}"
+        Content-Type: application/json
+      body:
+        query: |-
+          mutation AcceptRelationshipRequest($followedID: String!) {
+            acceptRelationshipRequest(followedID: $followedID) {
+              id
+              followerId
+              followedId
+            }
+          }
+        variables:
+          followedID: "{{vars.followerId}}"
+  - title: 共有ユーザーを取得①
+    protocol: http
+    request:
+      method: POST
+      url: "http://{{env.HOST}}/query"
+      header:
+        Authorization: "Bearer {{vars.userToken2}}"
+        Content-Type: application/json
+      body:
+        query: |-
+          query Relationships($input: InputRelationships!, $skip: Boolean) {
+            relationships(input: $input) {
+              edges {
+                node {
+                  id
+                  followerId
+                  followedId
+                  user(skip: $skip) {
+                    id
+                    displayName
+                    image
+                  }
+                }
+              }
+            }
+          }
+        variables:
+          input:
+            after: ""
+            first: 1
+          skip: true
+    expect:
+      body:
+        data:
+          relationships:
+            edges:
+              - node:
+                  followerId: "test_id1"
+                  followedId: "test_id2"
+  - title: 共有ユーザーを取得②
+    protocol: http
+    request:
+      method: POST
+      url: "http://{{env.HOST}}/query"
+      header:
+        Authorization: "Bearer {{vars.userToken1}}"
+        Content-Type: application/json
+      body:
+        query: |-
+          query Relationships($input: InputRelationships!, $skip: Boolean) {
+            relationships(input: $input) {
+              edges {
+                node {
+                  id
+                  followerId
+                  followedId
+                  user(skip: $skip) {
+                    id
+                    displayName
+                    image
+                  }
+                }
+              }
+            }
+          }
+        variables:
+          input:
+            after: ""
+            first: 1
+          skip: true
+    expect:
+      body:
+        data:
+          relationships:
+            edges:
+              - node:
+                  followerId: "test_id2"
+                  followedId: "test_id1"
