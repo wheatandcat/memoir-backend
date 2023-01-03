@@ -6,9 +6,9 @@ import (
 
 	"cloud.google.com/go/firestore"
 
+	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
-	firestorev1 "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 //go:generate moq -out=moq/item.go -pkg=moqs . ItemRepositoryInterface
@@ -229,7 +229,7 @@ func (re *ItemRepository) GetCountUserMultipleInPeriod(ctx context.Context, f *f
 		return 0, nil
 	}
 
-	ce := count.(*firestorev1.Value)
+	ce := count.(*firestorepb.Value)
 
 	return int(ce.GetIntegerValue()), nil
 }
