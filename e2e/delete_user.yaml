@@ -1,0 +1,41 @@
+title: ユーザー退会
+steps:
+  - title: login
+    include: "./login.yaml"
+    bind:
+      vars:
+        userToken: "{{vars.userToken1}}"
+  - title: 共有メンバーを解除する
+    protocol: http
+    request:
+      method: POST
+      url: "http://{{env.HOST}}/query"
+      header:
+        Authorization: "Bearer {{vars.userToken}}"
+        Content-Type: application/json
+      body:
+        query: |-
+          mutation DeleteRelationship($followedID: String!) {
+            deleteRelationship(followedID: $followedID) {
+              id
+              followerId
+              followedId
+            }
+          }
+        variables:
+          followedID: "test_id2"
+  - title: ユーザーを退会する
+    protocol: http
+    request:
+      method: POST
+      url: "http://{{env.HOST}}/query"
+      header:
+        Authorization: "Bearer {{vars.userToken}}"
+        Content-Type: application/json
+      body:
+        query: |-
+          mutation DeleteUser {
+            deleteUser {
+              id
+            }
+          }
