@@ -3,6 +3,7 @@ package graph
 import (
 	"context"
 
+	"cloud.google.com/go/firestore"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
@@ -128,30 +129,33 @@ func (g *Graph) DeleteUser(ctx context.Context) (*model.User, error) {
 		return nil, ce.CustomError(ce.NewRequestError(ce.HasRelationshipByDeleteUser, "共有メンバーが設定されています"))
 	}
 
-	batch := g.FirestoreClient.BulkWriter(ctx)
-	if err := g.App.UserRepository.Delete(ctx, g.FirestoreClient, batch, uid); err != nil {
-		return nil, ce.CustomError(err)
-	}
+	err = g.FirestoreClient.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
 
-	if err := g.App.AuthRepository.Delete(ctx, g.FirestoreClient, batch, g.FirebaseUID); err != nil {
-		return nil, ce.CustomError(err)
-	}
-	if err := g.App.InviteRepository.DeleteByUserID(ctx, g.FirestoreClient, batch, uid); err != nil {
-		return nil, ce.CustomError(err)
-	}
-	if err := g.App.RelationshipRequestRepository.DeleteByFollowedID(ctx, g.FirestoreClient, batch, uid); err != nil {
-		return nil, ce.CustomError(err)
-	}
-	if err := g.App.RelationshipRequestRepository.DeleteByFollowerID(ctx, g.FirestoreClient, batch, uid); err != nil {
-		return nil, ce.CustomError(err)
-	}
-	if g.FirebaseUID != "" {
-		if err := g.App.AuthUseCase.DeleteAuthUser(ctx, g.FirestoreClient, g.FirebaseUID); err != nil {
-			return nil, ce.CustomError(err)
+		if err := g.App.UserRepository.Delete(ctx, g.FirestoreClient, tx, uid); err != nil {
+			return err
 		}
+		if err := g.App.AuthRepository.Delete(ctx, g.FirestoreClient, tx, g.FirebaseUID); err != nil {
+			return err
+		}
+		if err := g.App.InviteRepository.DeleteByUserID(ctx, g.FirestoreClient, tx, uid); err != nil {
+			return err
+		}
+		if err := g.App.RelationshipRequestRepository.DeleteByFollowedID(ctx, g.FirestoreClient, tx, uid); err != nil {
+			return err
+		}
+		if err := g.App.RelationshipRequestRepository.DeleteByFollowerID(ctx, g.FirestoreClient, tx, uid); err != nil {
+			return err
+		}
+		if g.FirebaseUID != "" {
+			if err := g.App.AuthUseCase.DeleteAuthUser(ctx, g.FirestoreClient, g.FirebaseUID); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, ce.CustomError(err)
 	}
-
-	g.App.CommonRepository.Commit(ctx, batch)
 
 	return u, nil
 }

@@ -26,7 +26,7 @@ type contextKey struct {
 
 type __ = context.Context
 type ___ = *firestore.Client
-type ____ = *firestore.BulkWriter
+type ____ = *firestore.Transaction
 
 func TestUpdateUser(t *testing.T) {
 	t.Parallel()
@@ -326,18 +326,12 @@ func TestDeleteUser(t *testing.T) {
 		},
 	}
 
-	commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
-		CommitFunc: func(_ __, _ ____) {
-		},
-	}
-
 	g.App.RelationshipRepository = relationshipMock
 	g.App.AuthRepository = authRepositoryMock
 	g.App.UserRepository = userRepositoryMock
 	g.App.InviteRepository = inviteRepositoryMock
 	g.App.RelationshipRequestRepository = relationshipRequestMock
 	g.App.AuthUseCase = authMock
-	g.App.CommonRepository = commonRepositoryMock
 
 	tests := []struct {
 		name   string

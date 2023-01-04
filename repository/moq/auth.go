@@ -20,7 +20,7 @@ var _ repository.AuthRepositoryInterface = &AuthRepositoryInterfaceMock{}
 //
 //		// make and configure a mocked repository.AuthRepositoryInterface
 //		mockedAuthRepositoryInterface := &AuthRepositoryInterfaceMock{
-//			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, uid string) error {
+//			DeleteFunc: func(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, uid string) error {
 //				panic("mock out the Delete method")
 //			},
 //		}
@@ -31,7 +31,7 @@ var _ repository.AuthRepositoryInterface = &AuthRepositoryInterfaceMock{}
 //	}
 type AuthRepositoryInterfaceMock struct {
 	// DeleteFunc mocks the Delete method.
-	DeleteFunc func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, uid string) error
+	DeleteFunc func(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, uid string) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -41,8 +41,8 @@ type AuthRepositoryInterfaceMock struct {
 			Ctx context.Context
 			// F is the f argument value.
 			F *firestore.Client
-			// Batch is the batch argument value.
-			Batch *firestore.BulkWriter
+			// Tx is the tx argument value.
+			Tx *firestore.Transaction
 			// UID is the uid argument value.
 			UID string
 		}
@@ -51,25 +51,25 @@ type AuthRepositoryInterfaceMock struct {
 }
 
 // Delete calls DeleteFunc.
-func (mock *AuthRepositoryInterfaceMock) Delete(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, uid string) error {
+func (mock *AuthRepositoryInterfaceMock) Delete(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, uid string) error {
 	if mock.DeleteFunc == nil {
 		panic("AuthRepositoryInterfaceMock.DeleteFunc: method is nil but AuthRepositoryInterface.Delete was just called")
 	}
 	callInfo := struct {
-		Ctx   context.Context
-		F     *firestore.Client
-		Batch *firestore.BulkWriter
-		UID   string
+		Ctx context.Context
+		F   *firestore.Client
+		Tx  *firestore.Transaction
+		UID string
 	}{
-		Ctx:   ctx,
-		F:     f,
-		Batch: batch,
-		UID:   uid,
+		Ctx: ctx,
+		F:   f,
+		Tx:  tx,
+		UID: uid,
 	}
 	mock.lockDelete.Lock()
 	mock.calls.Delete = append(mock.calls.Delete, callInfo)
 	mock.lockDelete.Unlock()
-	return mock.DeleteFunc(ctx, f, batch, uid)
+	return mock.DeleteFunc(ctx, f, tx, uid)
 }
 
 // DeleteCalls gets all the calls that were made to Delete.
@@ -77,16 +77,16 @@ func (mock *AuthRepositoryInterfaceMock) Delete(ctx context.Context, f *firestor
 //
 //	len(mockedAuthRepositoryInterface.DeleteCalls())
 func (mock *AuthRepositoryInterfaceMock) DeleteCalls() []struct {
-	Ctx   context.Context
-	F     *firestore.Client
-	Batch *firestore.BulkWriter
-	UID   string
+	Ctx context.Context
+	F   *firestore.Client
+	Tx  *firestore.Transaction
+	UID string
 } {
 	var calls []struct {
-		Ctx   context.Context
-		F     *firestore.Client
-		Batch *firestore.BulkWriter
-		UID   string
+		Ctx context.Context
+		F   *firestore.Client
+		Tx  *firestore.Transaction
+		UID string
 	}
 	mock.lockDelete.RLock()
 	calls = mock.calls.Delete
