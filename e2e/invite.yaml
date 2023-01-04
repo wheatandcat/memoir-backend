@@ -191,3 +191,22 @@ steps:
               - node:
                   followerId: "test_id2"
                   followedId: "test_id1"
+  - title: 共有メンバーを解除する
+    protocol: http
+    request:
+      method: POST
+      url: "http://{{env.HOST}}/query"
+      header:
+        Authorization: "Bearer {{vars.userToken1}}"
+        Content-Type: application/json
+      body:
+        query: |-
+          mutation DeleteRelationship($followedID: String!) {
+            deleteRelationship(followedID: $followedID) {
+              id
+              followerId
+              followedId
+            }
+          }
+        variables:
+          followedID: "test_id2"

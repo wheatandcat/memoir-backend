@@ -1,0 +1,10 @@
+title: ユーザー3
+steps:
+  - title: login
+    include: "./login.yaml"
+    bind:
+      vars:
+        userToken: "{{vars.userToken3}}"
+        userID: "e2e-delete-user"
+  - title: ユーザーの操作
+    include: "./user.yaml"

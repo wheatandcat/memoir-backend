@@ -147,8 +147,11 @@ func (g *Graph) DeleteUser(ctx context.Context) (*model.User, error) {
 			return err
 		}
 		if g.FirebaseUID != "" {
-			if err := g.App.AuthUseCase.DeleteAuthUser(ctx, g.FirestoreClient, g.FirebaseUID); err != nil {
-				return err
+			// e2eのダミーユーザーの場合は削除しない
+			if uid != "e2e-delete-user" {
+				if err := g.App.AuthUseCase.DeleteAuthUser(ctx, g.FirestoreClient, g.FirebaseUID); err != nil {
+					return err
+				}
 			}
 		}
 		return nil
