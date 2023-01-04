@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"cloud.google.com/go/firestore"
@@ -15,8 +14,8 @@ import (
 //go:generate moq -out=moq/relationship.go -pkg=moqs . RelationshipInterface
 
 type RelationshipInterface interface {
-	Create(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error
-	Delete(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error
+	Create(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, i *model.Relationship) error
+	Delete(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, i *model.Relationship) error
 	FindByFollowedID(ctx context.Context, f *firestore.Client, userID string, first int, cursor RelationshipCursor) ([]*model.Relationship, error)
 	ExistByFollowedID(ctx context.Context, f *firestore.Client, userID string) (bool, error)
 }
@@ -42,7 +41,7 @@ type RelationshipData struct {
 }
 
 // Create 作成する
-func (re *RelationshipRepository) Create(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error {
+func (re *RelationshipRepository) Create(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, i *model.Relationship) error {
 	rrd := RelationshipData{
 		ID:         i.ID,
 		FollowerID: i.FollowerID,
@@ -52,30 +51,18 @@ func (re *RelationshipRepository) Create(ctx context.Context, f *firestore.Clien
 	}
 
 	ref := f.Collection("relationships").Doc(i.FollowerID + "_" + i.FollowedID)
-	j, err := batch.Set(ref, rrd)
+	err := tx.Set(ref, rrd)
 	if err != nil {
-		return ce.CustomError(err)
-	}
-	if j == nil {
-		return ce.CustomError(fmt.Errorf("BulkWriter: got nil"))
-	}
-	if _, err := j.Results(); err != nil {
 		return ce.CustomError(err)
 	}
 	return nil
 }
 
 // Delete 削除する
-func (re *RelationshipRepository) Delete(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error {
+func (re *RelationshipRepository) Delete(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, i *model.Relationship) error {
 	ref := f.Collection("relationships").Doc(i.FollowerID + "_" + i.FollowedID)
-	j, err := batch.Delete(ref)
+	err := tx.Delete(ref)
 	if err != nil {
-		return ce.CustomError(err)
-	}
-	if j == nil {
-		return ce.CustomError(fmt.Errorf("BulkWriter: got nil"))
-	}
-	if _, err := j.Results(); err != nil {
 		return ce.CustomError(err)
 	}
 	return nil

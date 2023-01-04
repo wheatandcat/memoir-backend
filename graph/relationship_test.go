@@ -29,17 +29,12 @@ func TestDeleteRelationship(t *testing.T) {
 	g := newGraph(ctx)
 
 	relationshipRepositoryMock := &moq_repository.RelationshipInterfaceMock{
-		DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error {
+		DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.Transaction, i *model.Relationship) error {
 			return nil
-		},
-	}
-	commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
-		CommitFunc: func(ctx context.Context, batch *firestore.BulkWriter) {
 		},
 	}
 
 	g.App.RelationshipRepository = relationshipRepositoryMock
-	g.App.CommonRepository = commonRepositoryMock
 
 	tests := []struct {
 		name   string

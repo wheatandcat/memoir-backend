@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"cloud.google.com/go/firestore"
 	"google.golang.org/grpc/codes"
@@ -14,9 +13,9 @@ import (
 //go:generate moq -out=moq/invite.go -pkg=moqs . InviteRepositoryInterface
 
 type InviteRepositoryInterface interface {
-	Create(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Invite) error
-	Delete(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, code string) error
-	DeleteByUserID(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, userID string) error
+	Create(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, i *model.Invite) error
+	Delete(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, code string) error
+	DeleteByUserID(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, userID string) error
 	Find(ctx context.Context, f *firestore.Client, code string) (*model.Invite, error)
 	FindByUserID(ctx context.Context, f *firestore.Client, userID string) (*model.Invite, error)
 }
@@ -29,32 +28,21 @@ func NewInviteRepository() InviteRepositoryInterface {
 }
 
 // Create 招待を作成する
-func (re *InviteRepository) Create(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Invite) error {
+func (re *InviteRepository) Create(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, i *model.Invite) error {
 	ref := f.Collection("invites").Doc(i.Code)
-	j, err := batch.Set(ref, i)
+	err := tx.Set(ref, i)
 	if err != nil {
 		return ce.CustomError(err)
 	}
-	if j == nil {
-		return ce.CustomError(fmt.Errorf("BulkWriter: got nil"))
-	}
-	if _, err := j.Results(); err != nil {
-		return ce.CustomError(err)
-	}
+
 	return nil
 }
 
 // Delete アイテムを削除する
-func (re *InviteRepository) Delete(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, code string) error {
+func (re *InviteRepository) Delete(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, code string) error {
 	ref := f.Collection("invites").Doc(code)
-	j, err := batch.Delete(ref)
+	err := tx.Delete(ref)
 	if err != nil {
-		return ce.CustomError(err)
-	}
-	if j == nil {
-		return ce.CustomError(fmt.Errorf("BulkWriter: got nil"))
-	}
-	if _, err := j.Results(); err != nil {
 		return ce.CustomError(err)
 	}
 	return nil
@@ -104,7 +92,7 @@ func (re *InviteRepository) Find(ctx context.Context, f *firestore.Client, code 
 }
 
 // DeleteByUserID ユーザーIDから削除する
-func (re *InviteRepository) DeleteByUserID(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, userID string) error {
+func (re *InviteRepository) DeleteByUserID(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, userID string) error {
 	matchItem := f.Collection("invites").Where("UserID", "==", userID).OrderBy("CreatedAt", firestore.Desc).Documents(ctx)
 	docs, err := matchItem.GetAll()
 
@@ -117,14 +105,8 @@ func (re *InviteRepository) DeleteByUserID(ctx context.Context, f *firestore.Cli
 	}
 
 	for _, doc := range docs {
-		j, err := batch.Delete(doc.Ref)
+		err := tx.Delete(doc.Ref)
 		if err != nil {
-			return ce.CustomError(err)
-		}
-		if j == nil {
-			return ce.CustomError(fmt.Errorf("BulkWriter: got nil"))
-		}
-		if _, err := j.Results(); err != nil {
 			return ce.CustomError(err)
 		}
 	}

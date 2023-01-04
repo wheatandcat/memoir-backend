@@ -145,7 +145,7 @@ func TestAcceptRelationshipRequest(t *testing.T) {
 	g := newGraph(ctx)
 
 	relationshipRequestRepositoryMock := &moq_repository.RelationshipRequestInterfaceMock{
-		UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.RelationshipRequest) error {
+		UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.Transaction, i *model.RelationshipRequest) error {
 			return nil
 		},
 		FindFunc: func(ctx context.Context, f *firestore.Client, i *model.RelationshipRequest) (*model.RelationshipRequest, error) {
@@ -153,12 +153,8 @@ func TestAcceptRelationshipRequest(t *testing.T) {
 		},
 	}
 	relationshipRepositoryMock := &moq_repository.RelationshipInterfaceMock{
-		CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error {
+		CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.Transaction, i *model.Relationship) error {
 			return nil
-		},
-	}
-	commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
-		CommitFunc: func(ctx context.Context, batch *firestore.BulkWriter) {
 		},
 	}
 	pushTokenRepositoryMock := &moq_repository.PushTokenRepositoryInterfaceMock{
@@ -174,7 +170,6 @@ func TestAcceptRelationshipRequest(t *testing.T) {
 
 	g.App.RelationshipRequestRepository = relationshipRequestRepositoryMock
 	g.App.RelationshipRepository = relationshipRepositoryMock
-	g.App.CommonRepository = commonRepositoryMock
 	g.App.UserRepository = userRepositoryMock
 	g.App.PushTokenRepository = pushTokenRepositoryMock
 
@@ -227,17 +222,12 @@ func TestNgRelationshipRequest(t *testing.T) {
 	g := newGraph(ctx)
 
 	relationshipRequestRepositoryMock := &moq_repository.RelationshipRequestInterfaceMock{
-		UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.RelationshipRequest) error {
+		UpdateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.Transaction, i *model.RelationshipRequest) error {
 			return nil
-		},
-	}
-	commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
-		CommitFunc: func(ctx context.Context, batch *firestore.BulkWriter) {
 		},
 	}
 
 	g.App.RelationshipRequestRepository = relationshipRequestRepositoryMock
-	g.App.CommonRepository = commonRepositoryMock
 
 	tests := []struct {
 		name   string
