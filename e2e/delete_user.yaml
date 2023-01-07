@@ -20,3 +20,5 @@ steps:
               id
             }
           }
+    expect:
+      code: 200

@@ -24,6 +24,8 @@ steps:
               code
             }
           }
+    expect:
+      code: 200
   - title: 招待をリクエスト
     bind:
       vars:
@@ -87,6 +89,7 @@ steps:
             first: 1
           skip: true
     expect:
+      code: 200
       body:
         data:
           relationshipRequests:
@@ -113,6 +116,8 @@ steps:
           }
         variables:
           followedID: "{{vars.followerId}}"
+    expect:
+      code: 200
   - title: 共有ユーザーを取得①
     protocol: http
     request:
@@ -184,6 +189,7 @@ steps:
             first: 1
           skip: true
     expect:
+      code: 200
       body:
         data:
           relationships:
@@ -210,3 +216,5 @@ steps:
           }
         variables:
           followedID: "test_id2"
+    expect:
+      code: 200
