@@ -23,6 +23,7 @@ e2e/login.yaml
 e2e/serviceAccount.json
 ui-debug.log
 firestore-debug.log
+firebase-debug.log
 envenb.go
 service-review.yaml
 build-config-review.yaml

@@ -21,10 +21,10 @@ var _ repository.RelationshipInterface = &RelationshipInterfaceMock{}
 //
 //		// make and configure a mocked repository.RelationshipInterface
 //		mockedRelationshipInterface := &RelationshipInterfaceMock{
-//			CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error {
+//			CreateFunc: func(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, i *model.Relationship) error {
 //				panic("mock out the Create method")
 //			},
-//			DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error {
+//			DeleteFunc: func(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, i *model.Relationship) error {
 //				panic("mock out the Delete method")
 //			},
 //			ExistByFollowedIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (bool, error) {
@@ -41,10 +41,10 @@ var _ repository.RelationshipInterface = &RelationshipInterfaceMock{}
 //	}
 type RelationshipInterfaceMock struct {
 	// CreateFunc mocks the Create method.
-	CreateFunc func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error
+	CreateFunc func(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, i *model.Relationship) error
 
 	// DeleteFunc mocks the Delete method.
-	DeleteFunc func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error
+	DeleteFunc func(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, i *model.Relationship) error
 
 	// ExistByFollowedIDFunc mocks the ExistByFollowedID method.
 	ExistByFollowedIDFunc func(ctx context.Context, f *firestore.Client, userID string) (bool, error)
@@ -60,8 +60,8 @@ type RelationshipInterfaceMock struct {
 			Ctx context.Context
 			// F is the f argument value.
 			F *firestore.Client
-			// Batch is the batch argument value.
-			Batch *firestore.BulkWriter
+			// Tx is the tx argument value.
+			Tx *firestore.Transaction
 			// I is the i argument value.
 			I *model.Relationship
 		}
@@ -71,8 +71,8 @@ type RelationshipInterfaceMock struct {
 			Ctx context.Context
 			// F is the f argument value.
 			F *firestore.Client
-			// Batch is the batch argument value.
-			Batch *firestore.BulkWriter
+			// Tx is the tx argument value.
+			Tx *firestore.Transaction
 			// I is the i argument value.
 			I *model.Relationship
 		}
@@ -106,25 +106,25 @@ type RelationshipInterfaceMock struct {
 }
 
 // Create calls CreateFunc.
-func (mock *RelationshipInterfaceMock) Create(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error {
+func (mock *RelationshipInterfaceMock) Create(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, i *model.Relationship) error {
 	if mock.CreateFunc == nil {
 		panic("RelationshipInterfaceMock.CreateFunc: method is nil but RelationshipInterface.Create was just called")
 	}
 	callInfo := struct {
-		Ctx   context.Context
-		F     *firestore.Client
-		Batch *firestore.BulkWriter
-		I     *model.Relationship
+		Ctx context.Context
+		F   *firestore.Client
+		Tx  *firestore.Transaction
+		I   *model.Relationship
 	}{
-		Ctx:   ctx,
-		F:     f,
-		Batch: batch,
-		I:     i,
+		Ctx: ctx,
+		F:   f,
+		Tx:  tx,
+		I:   i,
 	}
 	mock.lockCreate.Lock()
 	mock.calls.Create = append(mock.calls.Create, callInfo)
 	mock.lockCreate.Unlock()
-	return mock.CreateFunc(ctx, f, batch, i)
+	return mock.CreateFunc(ctx, f, tx, i)
 }
 
 // CreateCalls gets all the calls that were made to Create.
@@ -132,16 +132,16 @@ func (mock *RelationshipInterfaceMock) Create(ctx context.Context, f *firestore.
 //
 //	len(mockedRelationshipInterface.CreateCalls())
 func (mock *RelationshipInterfaceMock) CreateCalls() []struct {
-	Ctx   context.Context
-	F     *firestore.Client
-	Batch *firestore.BulkWriter
-	I     *model.Relationship
+	Ctx context.Context
+	F   *firestore.Client
+	Tx  *firestore.Transaction
+	I   *model.Relationship
 } {
 	var calls []struct {
-		Ctx   context.Context
-		F     *firestore.Client
-		Batch *firestore.BulkWriter
-		I     *model.Relationship
+		Ctx context.Context
+		F   *firestore.Client
+		Tx  *firestore.Transaction
+		I   *model.Relationship
 	}
 	mock.lockCreate.RLock()
 	calls = mock.calls.Create
@@ -150,25 +150,25 @@ func (mock *RelationshipInterfaceMock) CreateCalls() []struct {
 }
 
 // Delete calls DeleteFunc.
-func (mock *RelationshipInterfaceMock) Delete(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Relationship) error {
+func (mock *RelationshipInterfaceMock) Delete(ctx context.Context, f *firestore.Client, tx *firestore.Transaction, i *model.Relationship) error {
 	if mock.DeleteFunc == nil {
 		panic("RelationshipInterfaceMock.DeleteFunc: method is nil but RelationshipInterface.Delete was just called")
 	}
 	callInfo := struct {
-		Ctx   context.Context
-		F     *firestore.Client
-		Batch *firestore.BulkWriter
-		I     *model.Relationship
+		Ctx context.Context
+		F   *firestore.Client
+		Tx  *firestore.Transaction
+		I   *model.Relationship
 	}{
-		Ctx:   ctx,
-		F:     f,
-		Batch: batch,
-		I:     i,
+		Ctx: ctx,
+		F:   f,
+		Tx:  tx,
+		I:   i,
 	}
 	mock.lockDelete.Lock()
 	mock.calls.Delete = append(mock.calls.Delete, callInfo)
 	mock.lockDelete.Unlock()
-	return mock.DeleteFunc(ctx, f, batch, i)
+	return mock.DeleteFunc(ctx, f, tx, i)
 }
 
 // DeleteCalls gets all the calls that were made to Delete.
@@ -176,16 +176,16 @@ func (mock *RelationshipInterfaceMock) Delete(ctx context.Context, f *firestore.
 //
 //	len(mockedRelationshipInterface.DeleteCalls())
 func (mock *RelationshipInterfaceMock) DeleteCalls() []struct {
-	Ctx   context.Context
-	F     *firestore.Client
-	Batch *firestore.BulkWriter
-	I     *model.Relationship
+	Ctx context.Context
+	F   *firestore.Client
+	Tx  *firestore.Transaction
+	I   *model.Relationship
 } {
 	var calls []struct {
-		Ctx   context.Context
-		F     *firestore.Client
-		Batch *firestore.BulkWriter
-		I     *model.Relationship
+		Ctx context.Context
+		F   *firestore.Client
+		Tx  *firestore.Transaction
+		I   *model.Relationship
 	}
 	mock.lockDelete.RLock()
 	calls = mock.calls.Delete

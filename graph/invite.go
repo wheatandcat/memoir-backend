@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"cloud.google.com/go/firestore"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
 )
@@ -33,12 +34,16 @@ func (g *Graph) CreateInvite(ctx context.Context) (*model.Invite, error) {
 		UpdatedAt: g.Client.Time.Now(),
 	}
 
-	batch := g.FirestoreClient.BulkWriter(ctx)
-	if err := g.App.InviteRepository.Create(ctx, g.FirestoreClient, batch, i); err != nil {
+	err = g.FirestoreClient.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+		if err := g.App.InviteRepository.Create(ctx, g.FirestoreClient, tx, i); err != nil {
+			return ce.CustomError(err)
+		}
+
+		return nil
+	})
+	if err != nil {
 		return nil, ce.CustomError(err)
 	}
-
-	g.App.CommonRepository.Commit(ctx, batch)
 
 	return i, nil
 }
@@ -57,18 +62,22 @@ func (g *Graph) UpdateInvite(ctx context.Context) (*model.Invite, error) {
 	uuid := g.Client.UUID.Get()
 	code := strings.ToUpper(uuid[0:8])
 
-	batch := g.FirestoreClient.BulkWriter(ctx)
-	if err := g.App.InviteRepository.Delete(ctx, g.FirestoreClient, batch, i.Code); err != nil {
+	err = g.FirestoreClient.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+		if err := g.App.InviteRepository.Delete(ctx, g.FirestoreClient, tx, i.Code); err != nil {
+			return err
+		}
+
+		i.Code = code
+		i.UpdatedAt = g.Client.Time.Now()
+		if err := g.App.InviteRepository.Create(ctx, g.FirestoreClient, tx, i); err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
 		return nil, ce.CustomError(err)
 	}
-
-	i.Code = code
-	i.UpdatedAt = g.Client.Time.Now()
-	if err := g.App.InviteRepository.Create(ctx, g.FirestoreClient, batch, i); err != nil {
-		return nil, ce.CustomError(err)
-	}
-
-	g.App.CommonRepository.Commit(ctx, batch)
 
 	return i, nil
 }

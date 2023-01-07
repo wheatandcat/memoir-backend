@@ -37,7 +37,8 @@ steps:
             date: 2021-01-01T00:00:00+09:00
             like: true
             dislike: false
-
+    expect:
+      code: 200
   - title: アイテムを取得する
     protocol: http
     request:
@@ -61,6 +62,7 @@ steps:
         variables:
           id: "{{vars.itemID}}"
     expect:
+      code: 200
       body:
         data:
           item:

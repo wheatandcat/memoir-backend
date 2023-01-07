@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"cloud.google.com/go/firestore"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
 	ce "github.com/wheatandcat/memoir-backend/usecase/custom_error"
@@ -15,8 +16,6 @@ func (g *Graph) DeleteRelationship(ctx context.Context, followedID string) (*mod
 		return nil, ce.CustomError(ce.NewInvalidAuthError("invalid authorization"))
 	}
 
-	batch := g.FirestoreClient.BulkWriter(ctx)
-
 	r1 := &model.Relationship{
 		FollowerID: g.UserID,
 		FollowedID: followedID,
@@ -26,14 +25,20 @@ func (g *Graph) DeleteRelationship(ctx context.Context, followedID string) (*mod
 		FollowedID: g.UserID,
 	}
 
-	if err := g.App.RelationshipRepository.Delete(ctx, g.FirestoreClient, batch, r1); err != nil {
-		return nil, ce.CustomError(err)
-	}
-	if err := g.App.RelationshipRepository.Delete(ctx, g.FirestoreClient, batch, r2); err != nil {
-		return nil, ce.CustomError(err)
-	}
+	err := g.FirestoreClient.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
 
-	g.App.CommonRepository.Commit(ctx, batch)
+		if err := g.App.RelationshipRepository.Delete(ctx, g.FirestoreClient, tx, r1); err != nil {
+			return err
+		}
+		if err := g.App.RelationshipRepository.Delete(ctx, g.FirestoreClient, tx, r2); err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, ce.CustomError(err)
+	}
 
 	return r1, nil
 }

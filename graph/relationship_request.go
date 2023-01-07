@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"cloud.google.com/go/firestore"
 	"google.golang.org/grpc/codes"
 
 	"github.com/wheatandcat/memoir-backend/client/task"
@@ -106,40 +107,45 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 		isFollowedRequest = true
 	}
 
-	batch := g.FirestoreClient.BulkWriter(ctx)
-	if err := g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr1); err != nil {
-		return nil, ce.CustomError(err)
-	}
+	err := g.FirestoreClient.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
 
-	if isFollowedRequest {
-		// 相手側もリクエストしていた場合はstatusを更新
-		if err := g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr2); err != nil {
-			return nil, ce.CustomError(err)
+		if err := g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, tx, rr1); err != nil {
+			return err
 		}
-	}
 
-	r1 := &model.Relationship{
-		ID:         g.Client.UUID.Get(),
-		FollowerID: g.UserID,
-		FollowedID: followedID,
-		CreatedAt:  g.Client.Time.Now(),
-		UpdatedAt:  g.Client.Time.Now(),
-	}
-	r2 := &model.Relationship{
-		ID:         g.Client.UUID.Get(),
-		FollowerID: followedID,
-		FollowedID: g.UserID,
-		CreatedAt:  g.Client.Time.Now(),
-		UpdatedAt:  g.Client.Time.Now(),
-	}
-	if err := g.App.RelationshipRepository.Create(ctx, g.FirestoreClient, batch, r1); err != nil {
+		if isFollowedRequest {
+			// 相手側もリクエストしていた場合はstatusを更新
+			if err := g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, tx, rr2); err != nil {
+				return err
+			}
+		}
+
+		r1 := &model.Relationship{
+			ID:         g.Client.UUID.Get(),
+			FollowerID: g.UserID,
+			FollowedID: followedID,
+			CreatedAt:  g.Client.Time.Now(),
+			UpdatedAt:  g.Client.Time.Now(),
+		}
+		r2 := &model.Relationship{
+			ID:         g.Client.UUID.Get(),
+			FollowerID: followedID,
+			FollowedID: g.UserID,
+			CreatedAt:  g.Client.Time.Now(),
+			UpdatedAt:  g.Client.Time.Now(),
+		}
+
+		if err := g.App.RelationshipRepository.Create(ctx, g.FirestoreClient, tx, r1); err != nil {
+			return err
+		}
+		if err := g.App.RelationshipRepository.Create(ctx, g.FirestoreClient, tx, r2); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
 		return nil, ce.CustomError(err)
 	}
-	if err := g.App.RelationshipRepository.Create(ctx, g.FirestoreClient, batch, r2); err != nil {
-		return nil, ce.CustomError(err)
-	}
-
-	g.App.CommonRepository.Commit(ctx, batch)
 
 	tokens := g.App.PushTokenRepository.GetTokens(ctx, g.FirestoreClient, followedID)
 
@@ -176,12 +182,16 @@ func (g *Graph) NgRelationshipRequest(ctx context.Context, followedID string) (*
 		UpdatedAt:  g.Client.Time.Now(),
 	}
 
-	batch := g.FirestoreClient.BulkWriter(ctx)
-	if err := g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, batch, rr); err != nil {
+	err := g.FirestoreClient.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+		if err := g.App.RelationshipRequestRepository.Update(ctx, g.FirestoreClient, tx, rr); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
 		return nil, ce.CustomError(err)
 	}
 
-	g.App.CommonRepository.Commit(ctx, batch)
 	return rr, nil
 }
 

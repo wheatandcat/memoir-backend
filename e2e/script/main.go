@@ -22,6 +22,7 @@ const verifyCustomTokenURL = "https://www.googleapis.com/identitytoolkit/v3/rely
 type User struct {
 	UserToken1 string `yaml:"userToken1"`
 	UserToken2 string `yaml:"userToken2"`
+	UserToken3 string `yaml:"userToken3"`
 }
 
 type LoginYaml struct {
@@ -57,9 +58,15 @@ func main() {
 		log.Fatalf("error minting custom token: %v\n", err)
 	}
 
+	idToken3, err := makeUser(client, ctx, "e2e-delete-user")
+	if err != nil {
+		log.Fatalf("error minting custom token: %v\n", err)
+	}
+
 	ly := LoginYaml{}
 	ly.Vars.UserToken1 = idToken1
 	ly.Vars.UserToken2 = idToken2
+	ly.Vars.UserToken3 = idToken3
 
 	if err := WriteOnFile("./login.yaml", ly); err != nil {
 		log.Fatalf("WriteOnFile: %v\n", err)

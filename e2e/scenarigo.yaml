@@ -5,4 +5,5 @@ scenarios:
   - user2.yaml
   - item.yaml
   - invite.yaml
+  - user3.yaml
   - delete_user.yaml

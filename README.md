@@ -16,6 +16,12 @@ $ make install
 $ air
 ```
 
+### ローカル環境で Firesbase エミュレータ起動して使用する
+
+```
+$ npx firebase --config ./e2e/simulator/firebase.json emulators:start
+```
+
 ## GraphQL スキーマドキュメント
 
 ```
@@ -44,7 +50,7 @@ $ make moqgen
 $ go test ./...
 ```
 
-### カバレッジ表示
+## カバレッジ表示
 
 ### インストール
 

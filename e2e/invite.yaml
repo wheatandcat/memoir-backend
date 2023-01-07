@@ -24,6 +24,8 @@ steps:
               code
             }
           }
+    expect:
+      code: 200
   - title: 招待をリクエスト
     bind:
       vars:
@@ -87,6 +89,7 @@ steps:
             first: 1
           skip: true
     expect:
+      code: 200
       body:
         data:
           relationshipRequests:
@@ -113,6 +116,8 @@ steps:
           }
         variables:
           followedID: "{{vars.followerId}}"
+    expect:
+      code: 200
   - title: 共有ユーザーを取得①
     protocol: http
     request:
@@ -184,6 +189,7 @@ steps:
             first: 1
           skip: true
     expect:
+      code: 200
       body:
         data:
           relationships:
@@ -191,3 +197,24 @@ steps:
               - node:
                   followerId: "test_id2"
                   followedId: "test_id1"
+  - title: 共有メンバーを解除する
+    protocol: http
+    request:
+      method: POST
+      url: "http://{{env.HOST}}/query"
+      header:
+        Authorization: "Bearer {{vars.userToken1}}"
+        Content-Type: application/json
+      body:
+        query: |-
+          mutation DeleteRelationship($followedID: String!) {
+            deleteRelationship(followedID: $followedID) {
+              id
+              followerId
+              followedId
+            }
+          }
+        variables:
+          followedID: "test_id2"
+    expect:
+      code: 200

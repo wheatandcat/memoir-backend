@@ -37,20 +37,15 @@ func TestCreateInvite(t *testing.T) {
 		g := newGraph(ctx)
 
 		inviteRepositoryMock := &moq_repository.InviteRepositoryInterfaceMock{
-			CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Invite) error {
+			CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.Transaction, i *model.Invite) error {
 				return nil
 			},
 			FindByUserIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (*model.Invite, error) {
 				return param.Invite, nil
 			},
 		}
-		commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
-			CommitFunc: func(ctx context.Context, batch *firestore.BulkWriter) {
-			},
-		}
 
 		g.App.InviteRepository = inviteRepositoryMock
-		g.App.CommonRepository = commonRepositoryMock
 
 		return g
 	}
@@ -131,10 +126,10 @@ func TestUpdateInvite(t *testing.T) {
 	g := newGraph(ctx)
 
 	inviteRepositoryMock := &moq_repository.InviteRepositoryInterfaceMock{
-		CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, i *model.Invite) error {
+		CreateFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.Transaction, i *model.Invite) error {
 			return nil
 		},
-		DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.BulkWriter, code string) error {
+		DeleteFunc: func(ctx context.Context, f *firestore.Client, batch *firestore.Transaction, code string) error {
 			return nil
 		},
 		FindByUserIDFunc: func(ctx context.Context, f *firestore.Client, userID string) (*model.Invite, error) {
@@ -145,13 +140,7 @@ func TestUpdateInvite(t *testing.T) {
 		},
 	}
 
-	commonRepositoryMock := &moq_repository.CommonRepositoryInterfaceMock{
-		CommitFunc: func(ctx context.Context, batch *firestore.BulkWriter) {
-		},
-	}
-
 	g.App.InviteRepository = inviteRepositoryMock
-	g.App.CommonRepository = commonRepositoryMock
 
 	tests := []struct {
 		name   string
