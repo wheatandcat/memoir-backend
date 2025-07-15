@@ -42,7 +42,7 @@ jobs:
         working-directory: ./e2e
       - uses: actions/setup-node@v4
         with:
-          node-version: "16"
+          node-version: "22"
       - name: setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
