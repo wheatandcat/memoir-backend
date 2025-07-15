@@ -31,29 +31,29 @@ type ExistAuthUser struct {
 }
 
 type InputItemsInPeriod struct {
-	After *string `json:"after"`
+	After *string `json:"after,omitempty"`
 	First int     `json:"first"`
 	// 開始日
 	StartDate time.Time `json:"startDate"`
 	// 終了日
 	EndDate time.Time `json:"endDate"`
 	// ユーザーID
-	UserIDList []*string `json:"userIDList"`
+	UserIDList []*string `json:"userIDList,omitempty"`
 	// カテゴリーID
-	CategoryID *int `json:"categoryID"`
+	CategoryID *int `json:"categoryID,omitempty"`
 	// Good
-	Like *bool `json:"like"`
+	Like *bool `json:"like,omitempty"`
 	// Bad
-	Dislike *bool `json:"dislike"`
+	Dislike *bool `json:"dislike,omitempty"`
 }
 
 type InputRelationshipRequests struct {
-	After *string `json:"after"`
+	After *string `json:"after,omitempty"`
 	First int     `json:"first"`
 }
 
 type InputRelationships struct {
-	After *string `json:"after"`
+	After *string `json:"after,omitempty"`
 	First int     `json:"first"`
 }
 
@@ -94,8 +94,11 @@ type ItemsInPeriod struct {
 }
 
 type ItemsInPeriodEdge struct {
-	Node   *Item  `json:"node"`
+	Node   *Item  `json:"node,omitempty"`
 	Cursor string `json:"cursor"`
+}
+
+type Mutation struct {
 }
 
 type NewAuthUser struct {
@@ -151,6 +154,9 @@ type PushToken struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+type Query struct {
+}
+
 type Relationship struct {
 	// ID
 	ID string `json:"id"`
@@ -163,11 +169,11 @@ type Relationship struct {
 	// 更新日時
 	UpdatedAt time.Time `json:"updatedAt"`
 	// ユーザー情報
-	User *User `json:"user"`
+	User *User `json:"user,omitempty"`
 }
 
 type RelationshipEdge struct {
-	Node   *Relationship `json:"node"`
+	Node   *Relationship `json:"node,omitempty"`
 	Cursor string        `json:"cursor"`
 }
 
@@ -185,11 +191,11 @@ type RelationshipRequest struct {
 	// 更新日時
 	UpdatedAt time.Time `json:"updatedAt"`
 	// ユーザー情報
-	User *User `json:"user"`
+	User *User `json:"user,omitempty"`
 }
 
 type RelationshipRequestEdge struct {
-	Node   *RelationshipRequest `json:"node"`
+	Node   *RelationshipRequest `json:"node,omitempty"`
 	Cursor string               `json:"cursor"`
 }
 
@@ -207,13 +213,13 @@ type UpdateItem struct {
 	// アイテムID
 	ID string `json:"id"`
 	// タイトル
-	Title *string `json:"title"`
+	Title *string `json:"title,omitempty"`
 	// カテゴリーID
-	CategoryID *int `json:"categoryID"`
+	CategoryID *int `json:"categoryID,omitempty"`
 	// 日付
-	Date    *time.Time `json:"date"`
-	Like    *bool      `json:"like"`
-	Dislike *bool      `json:"dislike"`
+	Date    *time.Time `json:"date,omitempty"`
+	Like    *bool      `json:"like,omitempty"`
+	Dislike *bool      `json:"dislike,omitempty"`
 }
 
 type UpdateUser struct {

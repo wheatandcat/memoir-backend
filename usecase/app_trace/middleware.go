@@ -65,7 +65,7 @@ func (t graphqlTracer) InterceptResponse(
 
 	if len(res.Errors) > 0 {
 		span.SetStatus(codes.Error, res.Errors.Error())
-		span.RecordError(fmt.Errorf(res.Errors.Error()))
+		span.RecordError(fmt.Errorf("%s", res.Errors.Error()))
 		err := res.Errors[0]
 		span.SetAttributes(attribute.Key("error.message").String(err.Message))
 
@@ -120,7 +120,7 @@ func (t graphqlTracer) InterceptField(
 	errList := graphql.GetFieldErrors(ctx, fc)
 	if len(errList) != 0 {
 		span.SetStatus(codes.Error, errList.Error())
-		span.RecordError(fmt.Errorf(errList.Error()))
+		span.RecordError(fmt.Errorf("%s", errList.Error()))
 		err := errList[0]
 		span.SetAttributes(attribute.Key("error.message").String(err.Message))
 	}
