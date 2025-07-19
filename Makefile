@@ -9,7 +9,7 @@ install:
 	brew install golangci-lint
 	brew upgrade golangci-lint
 	go install golang.org/x/tools/cmd/goimports@latest
-	go install github.com/scenarigo/scenarigo/cmd/scenarigo@latest
+	go install github.com/scenarigo/scenarigo/cmd/scenarigo@v0.21.3
 .PHONY: moqgen
 moqgen: 
 	go generate ./repository/...
