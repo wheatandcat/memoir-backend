@@ -78,7 +78,7 @@ $ octocov view graph/invite.go
 ## E2E テスト
 
 ```zsh
-$ FIRESTORE_EMULATOR_HOST=127.0.0.1:3600 air
+$ FIRESTORE_EMULATOR_HOST=localhost:3600 air
 ```
 
 ```zsh

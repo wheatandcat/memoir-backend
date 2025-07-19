@@ -16,7 +16,7 @@ moqgen:
 	go generate ./usecase/...
 .PHONY: ci_setup_server
 ci_setup_server:
-	FIRESTORE_EMULATOR_HOST=127.0.0.1:3600 APP_ENV=local go run main.go &
+	FIRESTORE_EMULATOR_HOST=localhost:3600 APP_ENV=local go run main.go &
 .PHONY: precommit
 precommit: goimports fmt vet errcheck staticcheck
 .PHONY: goimports
