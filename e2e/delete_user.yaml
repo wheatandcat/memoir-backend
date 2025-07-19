@@ -1,5 +1,7 @@
 title: ユーザー退会
 steps:
+  - title: create user 3
+    include: "./user3.yaml"
   - title: login
     include: "./login.yaml"
     bind:

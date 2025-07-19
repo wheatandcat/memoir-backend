@@ -1,9 +1,9 @@
 schemaVersion: config/v1
 
 scenarios:
-  - user1.yaml
-  - user2.yaml
   - item.yaml
   - invite.yaml
-  - user3.yaml
   - delete_user.yaml
+output:
+  summary: true
+  colored: true
