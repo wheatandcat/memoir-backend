@@ -8,5 +8,5 @@ scenarios:
   - user3.yaml
   - delete_user.yaml
 output:
-  summary: false
+  summary: true
   colored: true
