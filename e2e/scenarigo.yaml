@@ -3,7 +3,7 @@ schemaVersion: config/v1
 scenarios:
   - item.yaml
   - invite.yaml
-#  - delete_user.yaml
+  - delete_user.yaml
 output:
   summary: true
   colored: true
