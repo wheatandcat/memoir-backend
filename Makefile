@@ -2,13 +2,14 @@
 install:
 	go install github.com/matryer/moq@latest
 	go install github.com/go-delve/delve/cmd/dlv@latest
-	go install github.com/cosmtrek/air@latest
+	go install github.com/air-verse/air@latest
 	go install github.com/kisielk/errcheck@latest
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 	go install github.com/securego/gosec/v2/cmd/gosec@latest
 	brew install golangci-lint
 	brew upgrade golangci-lint
 	go install golang.org/x/tools/cmd/goimports@latest
+	go install github.com/scenarigo/scenarigo/cmd/scenarigo@v0.21.3
 .PHONY: moqgen
 moqgen: 
 	go generate ./repository/...

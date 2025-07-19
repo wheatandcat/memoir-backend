@@ -7,3 +7,6 @@ scenarios:
   - invite.yaml
   - user3.yaml
   - delete_user.yaml
+output:
+  summary: true
+  colored: true
