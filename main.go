@@ -147,7 +147,7 @@ func main() {
 		App:             app,
 	}
 
-	srv := handler.New(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
 	srv.Use(app_trace.NewGraphQLTracer(tr))
 

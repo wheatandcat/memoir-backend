@@ -149,7 +149,7 @@ func (re *UserRepository) FindByFirebaseUID(ctx context.Context, f *firestore.Cl
 	}
 
 	if len(docs) == 0 {
-		return nil, ce.CustomError(ce.NewNotFoundError("ユーザーが存在しません,uid=" + fUID))
+		return nil, ce.CustomError(ce.NewNotFoundError("ユーザーが存在しません"))
 	}
 
 	if err = docs[0].DataTo(&u); err != nil {
