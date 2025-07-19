@@ -1,9 +1,5 @@
 title: 招待
 steps:
-  - title: create user1
-    include: "./user1.yaml"
-  - title: create user2
-    include: "./user2.yaml"
   - title: login
     include: "./login.yaml"
     bind:
