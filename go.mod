@@ -18,6 +18,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/pkg/errors v0.9.1
+	github.com/samber/lo v1.51.0
 	github.com/vektah/gqlparser/v2 v2.5.30
 	go.opentelemetry.io/otel v1.37.0
 	go.opentelemetry.io/otel/sdk v1.37.0
