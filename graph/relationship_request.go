@@ -7,6 +7,7 @@ import (
 	"cloud.google.com/go/firestore"
 	"google.golang.org/grpc/codes"
 
+	"github.com/samber/lo"
 	"github.com/wheatandcat/memoir-backend/client/task"
 	"github.com/wheatandcat/memoir-backend/graph/model"
 	"github.com/wheatandcat/memoir-backend/repository"
@@ -57,6 +58,8 @@ func (g *Graph) CreateRelationshipRequest(ctx context.Context, input model.NewRe
 	tokens := g.App.PushTokenRepository.GetTokens(ctx, g.FirestoreClient, i.UserID)
 
 	if len(tokens) > 0 {
+		tokens = lo.Uniq(tokens)
+
 		me, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, g.UserID)
 		if err != nil {
 			return nil, ce.CustomError(err)
@@ -150,6 +153,8 @@ func (g *Graph) AcceptRelationshipRequest(ctx context.Context, followedID string
 	tokens := g.App.PushTokenRepository.GetTokens(ctx, g.FirestoreClient, followedID)
 
 	if len(tokens) > 0 {
+		tokens = lo.Uniq(tokens)
+
 		u, err := g.App.UserRepository.FindByUID(ctx, g.FirestoreClient, g.UserID)
 		if err != nil {
 			return nil, ce.CustomError(err)
