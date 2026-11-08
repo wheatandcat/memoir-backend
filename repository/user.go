@@ -100,7 +100,7 @@ func (re *UserRepository) Delete(ctx context.Context, f *firestore.Client, tx *f
 
 // UpdateFirebaseUID ユーザーFirebaseUIを更新する
 func (re *UserRepository) UpdateFirebaseUID(ctx context.Context, f *firestore.Client, user *User) error {
-	var u []firestore.Update
+	u := make([]firestore.Update, 0, 2)
 	u = append(u, firestore.Update{Path: "FirebaseUID", Value: user.FirebaseUID})
 	u = append(u, firestore.Update{Path: "UpdatedAt", Value: user.UpdatedAt})
 

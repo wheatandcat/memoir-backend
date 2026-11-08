@@ -11,15 +11,15 @@ jobs:
   metrics:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Create serviceAccount.json file
         run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
-          go-version: "^1.24"
+          go-version-file: go.mod
       - run: go version
       - name: cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-memoir-backend-${{ hashFiles('**/go.sum') }}
@@ -27,11 +27,11 @@ jobs:
             ${{ runner.os }}-memoir-backend-
       - name: Run tests with coverage report output
         run: go test ./... -coverprofile=coverage.out
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           cache: yarn
       - name: Cache metrics node_modules
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-memoir-backend-metrics-${{ hashFiles(format('{0}{1}', github.workspace, '/scripts/send-metrics/yarn.lock')) }}
