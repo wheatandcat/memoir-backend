@@ -16,7 +16,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v7"
 
       - name: Create serviceAccount.json file
         run: echo $SERVICE_ACCOUNT_JSON | base64 --decode -i > ./serviceAccount.json
@@ -25,13 +25,13 @@ jobs:
 
       - id: "auth"
         name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.REVIEW_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: github-actions@${{ secrets.REVIEW_GCP_PROJECT_ID }}.iam.gserviceaccount.com
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: Authorize Docker push
         run: gcloud auth configure-docker
@@ -52,7 +52,7 @@ jobs:
             --no-traffic
 
       - name: Find Comment
-        uses: peter-evans/find-comment@v2
+        uses: peter-evans/find-comment@v4
         id: fc
         with:
           issue-number: ${{ github.event.pull_request.number }}
@@ -61,16 +61,16 @@ jobs:
 
       - name: Create Preview URL
         id: preview-url
-        run: echo "::set-output name=value::https://pr-${{ github.event.pull_request.number }}---memoir-backend-pmrozdfyha-an.a.run.app"
+        run: echo "value=https://pr-${{ github.event.pull_request.number }}---memoir-backend-pmrozdfyha-an.a.run.app" >> "$GITHUB_OUTPUT"
 
       - name: Get datetime for now
         id: datetime
-        run: echo "::set-output name=value::$(date)"
+        run: echo "value=$(date)" >> "$GITHUB_OUTPUT"
         env:
           TZ: Asia/Tokyo
 
       - name: Create or update comment
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v5
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}

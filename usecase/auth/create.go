@@ -35,7 +35,7 @@ func (uci *useCaseImpl) CreateAuthUser(ctx context.Context, f *firestore.Client,
 		return displayName, ce.CustomError(err)
 	}
 
-	arr1 := strings.Split(user.UserInfo.Email, "@")
+	arr1 := strings.Split(user.Email, "@")
 	if len(arr1) > 0 {
 		displayName = arr1[0]
 	}

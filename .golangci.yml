@@ -1,29 +1,38 @@
+version: "2"
 run:
   issues-exit-code: 0
   tests: false
-
-issues:
-  exclude-use-default: false
-
-linters-settings:
-  gosec:
-    config:
-      G306: "0600"
-      G101:
-        pattern: "(?i)example"
-        ignore_entropy: false
-        entropy_threshold: "80.0"
-        per_char_threshold: "3.0"
-        truncate: "32"
-
 linters:
-  disable-all: true
+  default: none
   enable:
-    - staticcheck
     - errcheck
-    - ineffassign
-    - unconvert
-    - misspell
-    - unparam
-    - prealloc
     - gosec
+    - ineffassign
+    - misspell
+    - prealloc
+    - staticcheck
+    - unconvert
+    - unparam
+  settings:
+    gosec:
+      config:
+        G101:
+          entropy_threshold: "80.0"
+          ignore_entropy: false
+          pattern: (?i)example
+          per_char_threshold: "3.0"
+          truncate: "32"
+        G306: "0600"
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

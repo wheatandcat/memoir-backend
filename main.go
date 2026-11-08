@@ -12,16 +12,14 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
-	gcppropagator "github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator"
+	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace" //nolint:staticcheck // SA1019: OTLP exporterへの移行は別途対応
 	sentry "github.com/getsentry/sentry-go"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 
 	"github.com/wheatandcat/memoir-backend/auth"
@@ -39,9 +37,6 @@ const defaultPort = "8080"
 func installPropagators() {
 	otel.SetTextMapPropagator(
 		propagation.NewCompositeTextMapPropagator(
-			// Putting the CloudTraceOneWayPropagator first means the TraceContext propagator
-			// takes precedence if both the traceparent and the XCTC headers exist.
-			gcppropagator.CloudTraceOneWayPropagator{},
 			propagation.TraceContext{},
 			propagation.Baggage{},
 		))
@@ -55,7 +50,7 @@ func main() {
 
 	ctx := context.Background()
 
-	var tr trace.Tracer = sdktrace.NewTracerProvider().Tracer("memoir-backend")
+	tr := sdktrace.NewTracerProvider().Tracer("memoir-backend")
 
 	if os.Getenv("APP_ENV") != "local" {
 		projectID := os.Getenv("GCP_PROJECT_ID")
@@ -76,7 +71,8 @@ func main() {
 			log.Fatalf("profiler.Start: %v", err)
 		}
 
-		exporter, err := texporter.New(texporter.WithProjectID(projectID))
+		// TODO: Cloud Trace exporterはdeprecatedのため、OTLP exporterへの移行が必要
+		exporter, err := texporter.New(texporter.WithProjectID(projectID)) //nolint:staticcheck // SA1019
 		if err != nil {
 			log.Fatalf("texporter.NewExporter: %v", err)
 		}
@@ -184,9 +180,11 @@ func main() {
 		sentry.WithScope(func(scope *sentry.Scope) {
 			scope.SetTag("kind", "GraphQL")
 			scope.SetTag("operationName", goc.OperationName)
-			scope.SetExtra("query", goc.RawQuery)
-			scope.SetExtra("variables", goc.Variables)
-			scope.SetExtra("errorCode", errorCode)
+			scope.SetContext("GraphQL", sentry.Context{
+				"query":     goc.RawQuery,
+				"variables": goc.Variables,
+				"errorCode": errorCode,
+			})
 
 			if err.Path.String() != "" {
 				sentry.AddBreadcrumb(&sentry.Breadcrumb{
