@@ -12,15 +12,21 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace" //nolint:staticcheck // SA1019: OTLP exporterへの移行は別途対応
 	sentry "github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/vektah/gqlparser/v2/gqlerror"
+	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.43.0"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/oauth"
 
 	"github.com/wheatandcat/memoir-backend/auth"
 	"github.com/wheatandcat/memoir-backend/graph"
@@ -32,6 +38,35 @@ import (
 )
 
 const defaultPort = "8080"
+
+// telemetryEndpoint はGoogle Cloud Telemetry API（OTLP）のエンドポイント
+const telemetryEndpoint = "telemetry.googleapis.com:443"
+
+// newTraceExporter はGoogle Cloud Telemetry APIへ送信するOTLP trace exporterを作成する
+func newTraceExporter(ctx context.Context) (sdktrace.SpanExporter, error) {
+	creds, err := oauth.NewApplicationDefault(ctx, "https://www.googleapis.com/auth/cloud-platform")
+	if err != nil {
+		return nil, err
+	}
+
+	return otlptracegrpc.New(ctx,
+		otlptracegrpc.WithEndpoint(telemetryEndpoint),
+		otlptracegrpc.WithDialOption(grpc.WithPerRPCCredentials(creds)),
+	)
+}
+
+// newTraceResource はトレースに付与するResourceを作成する
+func newTraceResource(ctx context.Context, projectID, version string) (*resource.Resource, error) {
+	return resource.New(ctx,
+		resource.WithDetectors(gcp.NewDetector()),
+		resource.WithTelemetrySDK(),
+		resource.WithAttributes(
+			semconv.ServiceName("memoir-backend"),
+			semconv.ServiceVersion(version),
+			attribute.String("gcp.project_id", projectID),
+		),
+	)
+}
 
 //lint:ignore U1000 is used in graphql generated code
 func installPropagators() {
@@ -71,13 +106,18 @@ func main() {
 			log.Fatalf("profiler.Start: %v", err)
 		}
 
-		// TODO: Cloud Trace exporterはdeprecatedのため、OTLP exporterへの移行が必要
-		exporter, err := texporter.New(texporter.WithProjectID(projectID)) //nolint:staticcheck // SA1019
+		exporter, err := newTraceExporter(ctx)
 		if err != nil {
-			log.Fatalf("texporter.NewExporter: %v", err)
+			log.Fatalf("newTraceExporter: %v", err)
+		}
+
+		res, err := newTraceResource(ctx, projectID, v)
+		if err != nil {
+			log.Fatalf("newTraceResource: %v", err)
 		}
 
 		tp := sdktrace.NewTracerProvider(
+			sdktrace.WithResource(res),
 			sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.05)),
 			//sdktrace.WithSampler(sdktrace.AlwaysSample()),
 			sdktrace.WithBatcher(exporter),
